@@ -1,8 +1,9 @@
 library(readr)
 library(stringr)
 library(purrr)
+library(dplyr)
 
-# Read Kraken reports -----------------------------------------------------
+# Read Kraken reports with Pavian ---------------------------------------------
 
 # Obtain the filenames of all Kraken reports
 
@@ -14,11 +15,31 @@ krakenReportNames <- list.files(path = Sys.glob("./post_PhiXFilter_Kraken/"),
                             pattern = "*.tabular")
 
 krakenReportNames <- krakenReportNames %>%
-  map(function(x) str_replace(x, "_Kraken\\.tabular$", ""))
+  map(function(x) str_replace(x, "\\.tabular$", ""))
+
 
 krakenReports <- krakenReportPaths %>%
   map(read_tsv)
   # set_names(nm=krakenReportNames)
+
+# krakenReportsPavian <- lapply(krakenReportPaths, function(x) pavian::read_report(x))
+  
+krakenReportsPavian <- krakenReportPaths %>%
+  map(function(x) pavian::read_report(x)) %>%
+  set_names(nm=krakenReportNames)
+
+# krakenReportsPavianFilt <- krakenReportsPavian %>%
+#   map(function(x) pavian::filter_cladeReads(cladeReads = "cladeReads",
+#                                             tax_data=x, 
+#                                             rm_taxa = c("u_unclassifed", 
+#                                                         "p_Chordata")))
+
+krakenReportsPavianMerged <- krakenReportsPavian %>%
+  map_dfr(function(x){
+    x <- x %>%
+      filter(name != "u_unclassified") # Filter names of tax ranks (e.g. D,P)
+    x
+    }, .id = "Sample")
 
 # Read AMR and MegaBio Coverage Sampler Results -------------------------------
 
