@@ -2,6 +2,7 @@ library(readr)
 library(stringr)
 library(purrr)
 library(dplyr)
+library(tidyr)
 
 # Read Kraken reports with Pavian ---------------------------------------------
 
@@ -40,6 +41,18 @@ krakenReportsPavianMerged <- krakenReportsPavian %>%
       filter(name != "u_unclassified") # Filter names of tax ranks (e.g. D,P)
     x
     }, .id = "Sample")
+
+krakenAnalytical <- krakenReportsPavianMerged %>%
+  select(Sample, cladeReads, taxLineage) %>%
+  spread(key = Sample, value = cladeReads, fill = 0)
+
+lineages <- krakenAnalytical$taxLineage
+
+krakenAnalytical <- krakenAnalytical %>%
+  select(-taxLineage) %>%
+  as.matrix(.)
+
+row.names(krakenAnalytical) <- lineages
 
 # Read AMR and MegaBio Coverage Sampler Results -------------------------------
 
