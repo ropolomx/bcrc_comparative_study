@@ -7,18 +7,18 @@ library(purrr)
 # Obtain the filenames of all Kraken reports
 
 krakenReportPaths <- Sys.glob(file.path(".",
-                                    "",
-                                    '*Kraken*.tabular'))
+                                    "post_PhiXFilter_Kraken",
+                                    '*.tabular'))
 
-krakenReportNames <- list.files(path = Sys.glob("./*"),
-                            pattern = "*Kraken*.tabular")
+krakenReportNames <- list.files(path = Sys.glob("./post_PhiXFilter_Kraken/"),
+                            pattern = "*.tabular")
 
 krakenReportNames <- krakenReportNames %>%
   map(function(x) str_replace(x, "_Kraken\\.tabular$", ""))
 
 krakenReports <- krakenReportPaths %>%
-  map(read_tsv) %>%
-  set_names(nm=krakenReportNames)
+  map(read_tsv)
+  # set_names(nm=krakenReportNames)
 
 # Read AMR and MegaBio Coverage Sampler Results -------------------------------
 
