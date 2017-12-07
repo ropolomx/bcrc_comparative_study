@@ -1,0 +1,256 @@
+header,class,mechanism,group
+ENA|corA|AAA02966|AAA02966.1|Salmonellaentericasubsp.entericaserovarTyphimuriumMg2+transportprotein|Metal_resistance|metal_resistance_protein|corA,Metal resistance,metal resistance protein,corA
+ENA|rpoS|AAA03294|AAA03294.1|ShigellaflexneriRNApolymerasesigmafactor|Biocide_resistance|biocide_resistance_regulator|rpoS,Biocide resistance,biocide resistance regulator,rpoS
+ENA|arsA|AAA21094|AAA21094.1|PlasmidR773ArsA|Metal_resistance|metal_efflux_pump|arsA,Metal resistance,metal efflux pump,arsA
+ENA|arsB|AAA21095|AAA21095.1|PlasmidR773ArsB|Metal_resistance|metal_efflux_pump|arsB,Metal resistance,metal efflux pump,arsB
+ENA|arsC|AAA21096|AAA21096.1|PlasmidR773ArsC:Location:1..426|Metal_resistance|metal_efflux_pump|arsC,Metal resistance,metal efflux pump,arsC
+ENA|glpF|AAA21363|AAA21363.1|Escherichiacoliglyceroldiffusionfacilitatorprotein:Location:1..846|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|glpF,Metal and biocide resistance,metal and biocide resistance protein,glpF
+ENA|fecD|AAA23764|AAA23764.1|Escherichiacolihypotheticalprotein|Metal_resistance|metal_efflux_protein|fecD,Metal resistance,metal efflux protein,fecD
+ENA|zraS/hydG|AAA24003|AAA24003.1|Escherichiacolihypotheticalprotein:Location:1..415|Metal_resistance|metal_resistance_regulator|zraS/hydG,Metal resistance,metal resistance regulator,zraS/hydG
+ENA|zraR/hydH|AAA24004|AAA24004.1|Escherichiacolihypotheticalprotein|Zinc_resistance|zinc_resistance_regulator|zraR/hydH,Zinc resistance,zinc resistance regulator,zraR/hydH
+ENA|arsR|AAA25636|AAA25636.1|PlasmidpI258arsoperonregulatoryprotein(repressor):Location:1..3|15|Metal_resistance|metal_efflux_regulator|arsR,Metal resistance,metal efflux regulator,arsR
+ENA|arsB|AAA25637|AAA25637.1|PlasmidpI258arseniceffluxpumpprotein|Metal_resistance|metal_efflux_pump|arsB,Metal resistance,metal efflux pump,arsB
+ENA|arsC|AAA25638|AAA25638.1|PlasmidpI258arsenatereductase:Location:1..3|96|Arsenic_resistance|arsenic_resistance_protein|arsC,Arsenic resistance,arsenic resistance protein,arsC
+ENA|qacC/qacD/smr|AAA26666|AAA26666.1|Staphylococcusaureusresistanceprotein:Location:1..3|24|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|qacC,Drug and biocide resistance,drug and biocide SMR efflux pump,qacC
+ENA|arsR|AAA27587|AAA27587.1|PlasmidpSX267arsoperonregulatoryprotein(repressor):Location:1..3|15|Metal_resistance|metal_efflux_regulator|arsR,Metal resistance,metal efflux regulator,arsR
+ENA|arsB|AAA27588|AAA27588.1|PlasmidpSX267arseniceffluxpumpprotein|Metal_resistance|metal_efflux_pump|arsB,Metal resistance,metal efflux pump,arsB
+ENA|arsC|AAA27589|AAA27589.1|PlasmidpSX267arsenatereductase:Location:1..3|96|Arsenic_resistance|arsenic_resistance_protein|arsC,Arsenic resistance,arsenic resistance protein,arsC
+ENA|copA|AAA61835|AAA61835.1|EnterococcushiraeATPase|Copper_resistance|copper_resistance_protein|copA,Copper resistance,copper resistance protein,copA
+ENA|copB|AAA61836|AAA61836.1|EnterococcushiraeATPase|Metal_resistance|metal_efflux_protein|copB,Metal resistance,metal efflux protein,copB
+ENA|mgtA|AAA68988|AAA68988.1|Salmonellaentericasubsp.entericaserovarTyphimuriumhypotheticalprotein|Magnesium_resistance|magnesium_resistance_protein|mgtA,Magnesium resistance,magnesium resistance protein,mgtA
+ENA|znuB/yebI|AAA81031|AAA81031.1|EscherichiacolipartialYebI:Location:1..2|77|Zinc_resistance|zinc_ABC_efflux_pump_|znuB,Zinc resistance,zinc ABC efflux pump ,znuB
+ENA|modC|AAA83840|AAA83840.1|Escherichiacolihypotheticalprotein:Location:1..903|Metal_resistance|metal_ABC_efflux_pump|modC,Metal resistance,metal ABC efflux pump,modC
+ENA|merR1|AAA83973|AAA83973.1|Bacillussp.RC607mercuryresistanceoperonnegativeregulatorMerR1:Location:1..3|99|Mercury_resistance|mercuric_resistance_regulator|merR1,Mercury resistance,mercuric resistance regulator,merR1
+ENA|merA|AAA83977|AAA83977.1|Bacillussp.RC607mercuricreductaseMerA|Mercury_resistance|mercuric_resistance_protein|merA,Mercury resistance,mercuric resistance protein,merA
+ENA|terZ|AAA86846|AAA86846.2|SerratiamarcescensputativeTerZ:Location:1..582|Tellurium_resistance|tellurium_resistance_protein|terZ,Tellurium resistance,tellurium resistance protein,terZ
+ENA|merA|AAA88368|AAA88368.1|PlasmidpDU1358partialmercuricreductase:Location:1..3|59|Mercury_resistance|mercuric_resistance_protein|merA,Mercury resistance,mercuric resistance protein,merA
+ENA|merB|AAA88369|AAA88369.1|PlasmidpDU1358organomercuriallyase:Location:1..639|Mercury_resistance|mercuric_resistance_protein|merB,Mercury resistance,mercuric resistance protein,merB
+ENA|merD|AAA88370|AAA88370.1|PlasmidpDU1358mercuryresistanceprotein:Location:1..3|66|Mercury_resistance|mercuric_resistance_regulator|merD,Mercury resistance,mercuric resistance regulator,merD
+ENA|merE|AAA88371|AAA88371.1|PlasmidpDU1358unknownprotein:Location:1..2|37|Mercury_resistance|mercuric_resistance_protein|merE,Mercury resistance,mercuric resistance protein,merE
+ENA|chrA|AAA88432|AAA88432.1|Pseudomonasaeruginosachromatetransportprotein|Chromium_resistance|chromate_efflux_pump|chrA,Chromium resistance,chromate efflux pump,chrA
+ENA|arsD|AAA93060|AAA93060.1|EscherichiacoliArsD:Location:1..3|63|Arsenic_resistance|arsenic_resistance_regulator|arsD,Arsenic resistance,arsenic resistance regulator,arsD
+ENA|fecE|AAA97183|AAA97183.1|Escherichiacolihypotheticalprotein:Location:1..768|Metal_resistance|metal_efflux_protein|fecE,Metal resistance,metal efflux protein,fecE
+ENA|fecD|AAA97184|AAA97184.1|Escherichiacolihypotheticalprotein|Metal_resistance|metal_efflux_protein|fecD,Metal resistance,metal efflux protein,fecD
+ENA|merR|AAA98221|AAA98221.1|PlasmidpDU1358mercuryresistanceprotein:Location:1..435|Mercury_resistance|mercuric_resistance_regulator|merR,Mercury resistance,mercuric resistance regulator,merR
+ENA|merT|AAA98222|AAA98222.1|PlasmidpDU1358hypotheticalprotein:Location:1..3|51|Mercury_resistance|mercuric_resistance_protein|merT,Mercury resistance,mercuric resistance protein,merT
+ENA|merP|AAA98223|AAA98223.1|PlasmidpDU1358mercuryresistanceprotein:Location:1..2|76|Mercury_resistance|mercuric_resistance_protein|merP,Mercury resistance,mercuric resistance protein,merP
+ENA|merA|AAA98224|AAA98224.1|PlasmidpDU1358partialmercuryresistanceprotein|Mercury_resistance|mercuric_resistance_protein|merA,Mercury resistance,mercuric resistance protein,merA
+ENA|merR|AAA98241|AAA98241.1|Staphylococcusaureushypotheticalprotein:Location:1..408|Mercury_resistance|mercuric_resistance_regulator|merR,Mercury resistance,mercuric resistance regulator,merR
+ENA|merT|AAA98244|AAA98244.1|StaphylococcusaureusMerT:Location:1..3|87|Mercury_resistance|mercuric_resistance_protein|merT,Mercury resistance,mercuric resistance protein,merT
+ENA|merA|AAA98245|AAA98245.1|Staphylococcusaureusmercuricreductase|Mercury_resistance|mercuric_resistance_protein|merA,Mercury resistance,mercuric resistance protein,merA
+ENA|merB|AAA98246|AAA98246.1|Staphylococcusaureusorganomercuriallyase:Location:1..651|Mercury_resistance|mercuric_resistance_protein|merB,Mercury resistance,mercuric resistance protein,merB
+ENA|terB|AAA98290|AAA98290.1|PlasmidpMJ606hypotheticalprotein:Location:1..3|69|Tellurium_resistance|tellurium_resistance_protein|terB,Tellurium resistance,tellurium resistance protein,terB
+ENA|terC|AAA98291|AAA98291.1|PlasmidpMJ606hypotheticalprotein|Tellurium_resistance|tellurium_resistance_protein|terC,Tellurium resistance,tellurium resistance protein,terC
+ENA|terD|AAA98292|AAA98292.1|PlasmidpMJ606hypotheticalprotein:Location:1..579|Tellurium_resistance|tellurium_resistance_protein|terD,Tellurium resistance,tellurium resistance protein,terD
+ENA|terE|AAA98293|AAA98293.1|PlasmidpMJ606hypotheticalprotein:Location:1..576|Tellurium_resistance|tellurium_resistance_protein|terE,Tellurium resistance,tellurium resistance protein,terE
+ENA|arsR|AAB09624|AAB09624.1|PlasmidR46ArsR:Location:1..3|54|Metal_resistance|metal_efflux_regulator|arsR,Metal resistance,metal efflux regulator,arsR
+ENA|arsD|AAB09625|AAB09625.1|PlasmidR46ArsD:Location:1..3|63|Metal_resistance|metal_efflux_regulator|arsD,Metal resistance,metal efflux regulator,arsD
+ENA|arsA|AAB09626|AAB09626.1|PlasmidR46ArsA|Metal_resistance|metal_efflux_pump|arsA,Metal resistance,metal efflux pump,arsA
+ENA|arsB|AAB09627|AAB09627.1|PlasmidR46ArsB|Metal_resistance|metal_efflux_pump|arsB,Metal resistance,metal efflux pump,arsB
+ENA|arsC|AAB09628|AAB09628.1|PlasmidR46ArsC:Location:1..426|Metal_resistance|metal_efflux_pump|arsC,Metal resistance,metal efflux pump,arsC
+ENA|cadC|AAB59153|AAB59153.1|PlasmidpI258unknownprotein:Location:1..3|69|Metal_resistance|metal_efflux_regulator|cadC,Metal resistance,metal efflux regulator,cadC
+ENA|bmrR|AAB81540|AAB81540.2|Bacillussubtilismultidrug-effluxtransporterregulator:Location:1..837|Drug_and_biocide_resistance|drug_and_biocide_efflux_regulator|bmrR,Drug and biocide resistance,drug and biocide efflux regulator,bmrR
+ENA|mntA/ytgA|AAC00229|AAC00229.1|BacillussubtilisYtgA|Manganese_resistance|manganese_resistance_protein|mntA,Manganese resistance,manganese resistance protein,mntA
+ENA|corC|AAC36474|AAC36474.1|Salmonellaentericasubsp.entericaserovarTyphimuriumintegralmembraneproteinCorC|Metal_resistance|metal_resistance_protein|corC,Metal resistance,metal resistance protein,corC
+ENA|merT|AAC38218|AAC38218.1|PseudomonasstutzeriMerT:Location:1..3|51|Mercury_resistance|mercuric_resistance_protein|merT,Mercury resistance,mercuric resistance protein,merT
+ENA|merP|AAC38219|AAC38219.1|PseudomonasstutzeriMerP:Location:1..2|76|Mercury_resistance|mercuric_resistance_protein|merP,Mercury resistance,mercuric resistance protein,merP
+ENA|merA|AAC38220|AAC38220.1|PseudomonasstutzeriMerA|Mercury_resistance|mercuric_resistance_protein|merA,Mercury resistance,mercuric resistance protein,merA
+ENA|merD|AAC38221|AAC38221.1|PseudomonasstutzeriMerD:Location:1..3|66|Mercury_resistance|mercuric_resistance_regulator|merD,Mercury resistance,mercuric resistance regulator,merD
+ENA|merE|AAC38222|AAC38222.1|PseudomonasstutzeriUrf1:Location:1..2|37|Mercury_resistance|mercuric_resistance_protein|merE,Mercury resistance,mercuric resistance protein,merE
+ENA|merR2|AAC38229|AAC38229.1|Pseudomonasstutzeriorganomercurialresistanceregulatoryprotein:Location:1..435|Mercury_resistance|mercuric_resistance_regulator|merR2,Mercury resistance,mercuric resistance regulator,merR2
+ENA|merD|AAC38235|AAC38235.1|Pseudomonasstutzerimercuryoperoncoregulatorprotein:Location:1..3|66|Mercury_resistance|mercuric_resistance_regulator|merD,Mercury resistance,mercuric resistance regulator,merD
+ENA|merE|AAC38236|AAC38236.1|PseudomonasstutzeriUrf1:Location:1..2|37|Mercury_resistance|mercuric_resistance_protein|merE,Mercury resistance,mercuric resistance protein,merE
+ENA|dsbA|AAC43519|AAC43519.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32PP:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43520|AAC43520.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32TR:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43521|AAC43521.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32LQ:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43522|AAC43522.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32VL:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43523|AAC43523.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32SF:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43524|AAC43524.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32LL:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43525|AAC43525.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32QA:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43526|AAC43526.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32RC:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43527|AAC43527.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32FL:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43528|AAC43528.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32ST:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43529|AAC43529.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32QL:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43530|AAC43530.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32PS:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43531|AAC43531.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32LT:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43532|AAC43532.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32AL:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43533|AAC43533.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32SV:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43534|AAC43534.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32PR:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|dsbA|AAC43535|AAC43535.1|Escherichiacolithiol:disulfideinterchangeproteinDsbAmutantPH31/32PL:Location:1..627|Metal_resistance|metal_efflux_regulator|dsbA,Metal resistance,metal efflux regulator,dsbA
+ENA|terW|AAC44736|AAC44736.1|PlasmidR478terW:Location:1..468|Tellurium_resistance|tellurium_resistance_protein|terW,Tellurium resistance,tellurium resistance protein,terW
+ENA|ybtQ|AAC69584|AAC69584.1|YersiniapestisYbtQ|Iron_resistance|iron_ABC_efflux_pump|ybtQ,Iron resistance,iron ABC efflux pump,ybtQ
+ENA|fecD|AAC77244|AAC77244.3|Escherichiacolistr.K-12substr.MG1655ferriccitrateABCtransporterpermease|Metal_resistance|metal_efflux_protein|fecD,Metal resistance,metal efflux protein,fecD
+ENA|corC|AAD09823|AAD09823.1|Salmonellaentericasubsp.entericaserovarTyphimuriumpartialmagnesiumeffluxproteinCorC:Location:1..823|Metal_resistance|metal_resistance_protein|corC,Metal resistance,metal resistance protein,corC
+ENA|silE|AAD11743|AAD11743.1|Salmonellaentericasubsp.entericaserovarTyphimuriumsilverbindingproteinprecursorSilE:Location:1..432|Silver_resistance|silver_RND_efflux_pump|silE,Silver resistance,silver RND efflux pump,silE
+ENA|silS|AAD11744|AAD11744.1|Salmonellaentericasubsp.entericaserovarTyphimuriumputativemembranekinasesensorSilS|Silver_resistance|silver_RND_efflux_regulator|silS,Silver resistance,silver RND efflux regulator,silS
+ENA|silR|AAD11745|AAD11745.1|Salmonellaentericasubsp.entericaserovarTyphimuriumputativetranscriptionalregulatorresponderSilR:Location:1..687|Silver_resistance|silver_RND_efflux_regulator|silR,Silver resistance,silver RND efflux regulator,silR
+ENA|silC|AAD11746|AAD11746.1|Salmonellaentericasubsp.entericaserovarTyphimuriumputativeoutermembraneproteinSilC|Silver_resistance|silver_RND_efflux_pump|silC,Silver resistance,silver RND efflux pump,silC
+ENA|silB|AAD11748|AAD11748.1|Salmonellaentericasubsp.entericaserovarTyphimuriumputativemembranefusionproteinSilB|Silver_resistance|silver_RND_efflux_pump|silB,Silver resistance,silver RND efflux pump,silB
+ENA|silA|AAD11749|AAD11749.1|Salmonellaentericasubsp.entericaserovarTyphimuriumputativeinnermembraneproton/cationantiporterSilA|Silver_resistance|silver_RND_efflux_pump|silA,Silver resistance,silver RND efflux pump,silA
+ENA|silP|AAD11750|AAD11750.1|Salmonellaentericasubsp.entericaserovarTyphimuriumputativecationtransportingP-typeATPaseSilP|Silver_resistance|silver_RND_efflux_pump|silP,Silver resistance,silver RND efflux pump,silP
+ENA|qacF|AAD22143|AAD22143.3|Enterobacteraerogenesquarternaryammoniumdeterminant:Location:1..3|33|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|qacF,Drug and biocide resistance,drug and biocide SMR efflux pump,qacF
+ENA|merR2|AAD25959|AAD25959.1|Bacillussp.RC607mercuryresistanceoperonnegativeregulatorMerR2:Location:1..3|90|Mercury_resistance|mercuric_resistance_regulator|merR2,Mercury resistance,mercuric resistance regulator,merR2
+ENA|merB2|AAD25960|AAD25960.1|Bacillussp.RC607organicmercuriclyaseMerB2:Location:1..630|Mercury_resistance|mercuric_resistance_protein|merB,Mercury resistance,mercuric resistance protein,merB
+ENA|cusC/ylcB|AAD30205|AAD30205.1|EscherichiacoliIbeB|Metal_resistance|metal_efflux_regulator|cusC,Metal resistance,metal efflux regulator,cusC
+ENA|corB|AAD31439|AAD31439.1|Salmonellaentericasubsp.entericaserovarTyphimuriumCorB:Location:1..684|Metal_resistance|metal_resistance_protein|corB,Metal resistance,metal resistance protein,corB
+ENA|sitB|AAD41066|AAD41066.1|Salmonellaentericasubsp.entericaserovarTyphimuriumSitB:Location:1..822|Metal_and_biocide_resistance|metal_and_biocide_ABC_efflux_pump|sitB,Metal and biocide resistance,metal and biocide ABC efflux pump,sitB
+ENA|sitC|AAD41067|AAD41067.1|Salmonellaentericasubsp.entericaserovarTyphimuriumSitC:Location:1..861|Metal_and_biocide_resistance|metal_and_biocide_ABC_efflux_pump|sitC,Metal and biocide resistance,metal and biocide ABC efflux pump,sitC
+ENA|sitD|AAD41068|AAD41068.1|Salmonellaentericasubsp.entericaserovarTyphimuriumSitD:Location:1..849|Metal_and_biocide_resistance|metal_and_biocide_ABC_efflux_pump|sitD,Metal and biocide resistance,metal and biocide ABC efflux pump,sitD
+ENA|sodB|AAG07754|AAG07754.2|PseudomonasaeruginosaPAO1superoxidedismutase:Location:1..582|Peroxide_resistance|peroxide_resistance_protein|sodB,Peroxide resistance,peroxide resistance protein,sodB
+ENA|dpr/dps|AAG33871|AAG33871.1|StreptococcussuisDpr:Location:1..519|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|dpr,Metal and biocide resistance,metal and biocide resistance protein,dpr
+ENA|evgS|AAG57495|AAG57495.2|EscherichiacoliO157:H7str.EDL933putativesensorforregulatorEvgA|Drug_and_biocide_resistance|drug_and_biocide_efflux_regulator|evgS,Drug and biocide resistance,drug and biocide efflux regulator,evgS
+ENA|pdrM|AAK99856|AAK99856.1|StreptococcuspneumoniaeR6Conservedhypotheticalprotein|Drug_and_biocide_resistance|drug_and_biocide_resistance_protein|norM,Drug and biocide resistance,drug and biocide resistance protein,norM
+ENA|tcrB|AAL05407|AAL05407.2|EnterococcusfaeciumTcrB|Copper_resistance|copper_resistance_protein|tcrB,Copper resistance,copper resistance protein,tcrB
+ENA|adeB|AAL14440|AAL14440.1|AcinetobacterbaumanniiAdeBRNDprotein|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeB,Drug and biocide resistance,drug and biocide RND efflux pump,adeB
+ENA|corD|AAL19053|AAL19053.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2putativecytoplasmicprotein:Location:1..3|78|Metal_resistance|metal_resistance_protein|corD,Metal resistance,metal resistance protein,corD
+ENA|cuiD|AAL19132|AAL19132.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2putativemulticopperoxidase|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|cueO,Metal and biocide resistance,metal and biocide resistance protein,cueO
+ENA|gesC|AAL19304|AAL19304.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2homologytooutermembraneeffluxprotein|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|gesC,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,gesC
+ENA|gesB|AAL19305|AAL19305.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2putativecationeffluxsystemprotein|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|gesB,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,gesB
+ENA|gesA|AAL19306|AAL19306.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2putativecationeffluxpump|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|gesA,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,gesA
+ENA|golT|AAL19307|AAL19307.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2putativecationtransportATPase|Metal_resistance|metal_efflux_protein|golT,Metal resistance,metal efflux protein,golT
+ENA|golS|AAL19308|AAL19308.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2putativetranscriptionalregulator:Location:1..465|Gold_resistance|gold_resistance_RND_efflux_regulator|golS,Gold resistance,gold resistance RND efflux regulator,golS
+ENA|corC|AAL19618|AAL19618.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2putativeCBSdomain-containingprotein|Metal_resistance|metal_resistance_protein|corC,Metal resistance,metal resistance protein,corC
+ENA|opmD/nmpC|AAL20490|AAL20490.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2newoutermembraneprotein|Biocide_resistance|biocide_resistance_protein|OmpD,Biocide resistance,biocide resistance protein,OmpD
+ENA|pmrG|AAL21197|AAL21197.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2aluminuminducibleprotein:Location:1..606|Iron_resistance|iron_resistance_protein|pmrG,Iron resistance,iron resistance protein,pmrG
+ENA|cueP|AAL22510|AAL22510.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.LT2putativeperiplasmicorexportedprotein:Location:1..540|Copper_resistance|copper_resistance_protein|cueP,Copper resistance,copper resistance protein,cueP
+ENA|cmeA|AAL74244|AAL74244.2|CampylobacterjejuniCmeA|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|cmeA,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,cmeA
+ENA|cmeB|AAL74245|AAL74245.2|CampylobacterjejuniCmeB|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|cmeB,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,cmeB
+ENA|cmeC|AAL74246|AAL74246.2|CampylobacterjejuniCmeC|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|cmeC,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,cmeC
+ENA|qacB|AAQ10692|AAQ10692.1|StaphylococcusaureusmultidrugeffluxproteinQacB|Drug_and_biocide_resistance|drug_and_biocide_MFS_efflux_pump|qacB,Drug and biocide resistance,drug and biocide MFS efflux pump,qacB
+ENA|mco|AAQ17236|AAQ17236.1|Staphylococcusaureusputativecopperoxidase|Metal_resistance|metal_resistance_protein|mco,Metal resistance,metal resistance protein,mco
+ENA|nirB|AAR82964|AAR82964.1|KlebsiellaoxytocaNirB:Location:1..2|70|Nickel_resistance|nickel_ABC_efflux_regulator|nirB,Nickel resistance,nickel ABC efflux regulator,nirB
+ENA|nirD|AAR82966|AAR82966.1|KlebsiellaoxytocaNirD:Location:1..495|Nickel_resistance|nickel_ABC_efflux_pump|nirD,Nickel resistance,nickel ABC efflux pump,nirD
+ENA|copL|AAR85972|AAR85972.1|XanthomonasperforansCopL:Location:1..3|69|Copper_resistance|copper_resistance_protein|copL,Copper resistance,copper resistance protein,copL
+ENA|tunR|AAS94663|AAS94663.1|Desulfovibriovulgarisstr.Hildenboroughmolybdenum-pterinbindingdomainprotein/site-specificrecombinasephageintegrasefamily|Metal_resistance|metal_ABC_efflux_regulator|tunR,Metal resistance,metal ABC efflux regulator,tunR
+ENA|modB|AAS94665|AAS94665.1|Desulfovibriovulgarisstr.HildenboroughmolybdenumABCtransporterpermeaseprotein:Location:1..702|Metal_resistance|metal_ABC_efflux_pump|modB,Metal resistance,metal ABC efflux pump,modB
+ENA|merF|ABA25986|ABA25986.1|Pseudomonassp.CT14MerF:Location:1..2|46|Mercury_resistance|mercuric_resistance_protein|merF,Mercury resistance,mercuric resistance protein,merF
+ENA|pbrD|ABF12808|ABF12808.2|CupriavidusmetalliduransCH34PbrDPb(II)bindingproteininvolvedinPb(II)resistance|Lead_resistance|lead_resistance_protein|pbrD,Lead resistance,lead resistance protein,pbrD
+ENA|czcP|ABF12829|ABF12829.2|CupriavidusmetalliduransCH34CzcPcationeffluxP1-ATPase|Metal_resistance|metal_RND_efflux_pump|czcP,Metal resistance,metal RND efflux pump,czcP
+"ENA|czcC|ABF12841|ABF12841.2|CupriavidusmetalliduransCH34CzcC,outermembraneprotein,threecomponentscationprotonantiportereffluxsysteminvolvedinCd(II),Zn(II),Co(II)resistance|Metal_resistance|metal_RND_efflux_pump|czcC",Metal resistance,metal RND efflux pump,czcC
+ENA|copJ|ABF12976|ABF12976.2|CupriavidusmetalliduransCH34CopJputativecytochromecproteininvolvedinCu(II)/Cu(I)resistance:Location:1..525|Copper_resistance|copper_resistance_protein|copJ,Copper resistance,copper resistance protein,copJ
+ENA|chrF|ABF13058|ABF13058.2|CupriavidusmetalliduransCH34ChrFregulatoryproteininvolvedinChromateresistance:Location:1..423|Chromium_resistance|chromate_efflux_regulator|chrF,Chromium resistance,chromate efflux regulator,chrF
+ENA|chrE|ABF13059|ABF13059.2|CupriavidusmetalliduransCH34ChrEinvolvedintheprocessingofchromium-glutathione-complexes:Location:1..3|42|Chromium_resistance|chromate_efflux_pump|chrE,Chromium resistance,chromate efflux pump,chrE
+ENA|ncrA|ABF61434|ABF61434.2|LeptospirillumferriphilumNcrA|Nickel_resistance|nickel_ABC_efflux_pump|ncrA,Nickel resistance,nickel ABC efflux pump,ncrA
+ENA|ncrB|ABF61435|ABF61435.2|LeptospirillumferriphilumNcrB:Location:1..2|70|Nickel_resistance|nickel_ABC_efflux_pump|ncrB,Nickel resistance,nickel ABC efflux pump,ncrB
+ENA|ncrY|ABF61437|ABF61437.2|LeptospirillumferriphilumNcrY:Location:1..423|Nickel_resistance|nickel_ABC_efflux_regulator|ncrY,Nickel resistance,nickel ABC efflux regulator,ncrY
+ENA|adeL|ABO12726|ABO12726.1|AcinetobacterbaumanniiATCC17978transcriptionalregulatorLysRfamily|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_regulator|adeL,Drug and biocide resistance,drug and biocide RND efflux regulator,adeL
+ENA|qacEdelta1|ABO47757|ABO47757.1|PseudomonasaeruginosaQacEdelta1:Location:1..3|48|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|qacEdelta1,Drug and biocide resistance,drug and biocide SMR efflux pump,qacEdelta1
+ENA|chrF|ABO70323|ABO70323.1|OchrobactrumtriticiChrF:Location:1..453|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|chrF,Metal and biocide resistance,metal and biocide resistance protein,chrF
+ENA|chrC|ABO70324|ABO70324.1|Ochrobactrumtriticisuperoxidedismutase:Location:1..609|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|chrC,Metal and biocide resistance,metal and biocide resistance protein,chrC
+ENA|kdeA|ABR76310|ABR76310.1|Klebsiellapneumoniaesubsp.pneumoniaeMGH78578multidrug/chloramphenicoleffluxtransportprotein(MFSfamily)|Drug_and_biocide_resistance|drug_and_biocide_MFS_efflux_pump|mdfA,Drug and biocide resistance,drug and biocide MFS efflux pump,mdfA
+ENA|kexD|ABR77492|ABR77492.1|Klebsiellapneumoniaesubsp.pneumoniaeMGH78578acridineeffluxpump|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|kexD,Drug and biocide resistance,drug and biocide RND efflux pump,kexD
+ENA|cadX|ABS57010|ABS57010.1|StreptococcussalivariusCadX:Location:1..3|39|Metal_resistance|metal_efflux_regulator|cadX,Metal resistance,metal efflux regulator,cadX
+ENA|eefX|ABV24993|ABV24993.1|KlebsiellapneumoniaeEefX:Location:1..1|86|Acid_resistance|acid_efflux_pump|eefX,Acid resistance,acid efflux pump,eefX
+ENA|eefA|ABV24994|ABV24994.1|KlebsiellapneumoniaeEefA|Acid_resistance|acid_efflux_pump|eefA,Acid resistance,acid efflux pump,eefA
+ENA|G2alt|ABY59726|ABY59726.1|Anoxybacillusgonensisaluminumresistanceprotein:Location:1..666|Aluminum_resistance|aluminum_resistance_protein|queC,Aluminum resistance,aluminum resistance protein,queC
+ENA|merH|ACC43904|ACC43904.1|MycobacteriummarinumMMercuriciontransportproteinMerH:Location:1..516|Mercury_resistance|mercuric_resistance_protein|merH,Mercury resistance,mercuric resistance protein,merH
+ENA|acr3|ACG76371|ACG76371.1|CampylobacterjejuniAcr3|Arsenic_resistance|arsenic_resistance_protein|acr3,Arsenic resistance,arsenic resistance protein,acr3
+ENA|adeN|ACJ57745|ACJ57745.1|AcinetobacterbaumanniiAB307-0294BacterialregulatoryproteintetRfamilyprotein:Location:1..654|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_regulator|adeN,Drug and biocide resistance,drug and biocide RND efflux regulator,adeN
+ENA|amvA|ACQ82816|ACQ82816.1|Acinetobacterbaumanniimajorfacilitatorsuperfamilyeffluxpump|Drug_and_biocide_resistance|drug_and_biocide_MFS_efflux|amvA,Drug and biocide resistance,drug and biocide MFS efflux,amvA
+ENA|adeT1|ACU27398|ACU27398.1|AcinetobacterbaumanniiAdeT1|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeT1,Drug and biocide resistance,drug and biocide RND efflux pump,adeT1
+ENA|adeT2|ACU27399|ACU27399.1|AcinetobacterbaumanniiAdeT2:Location:1..717|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeT2,Drug and biocide resistance,drug and biocide RND efflux pump,adeT2
+ENA|oqxB|ACX31789|ACX31789.1|EscherichiacoliRNDfamilymultidrugeffluxpermease|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|oqxB,Drug and biocide resistance,drug and biocide RND efflux pump,oqxB
+ENA|yddg/emrE|ACY88367|ACY88367.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.1|4028Shypotheticalprotein|Paraquat_resistance|paraquat_resistance_protein|yddg,Paraquat resistance,paraquat resistance protein,yddg
+ENA|smvA/emrB|ACY88371|ACY88371.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.1|4028Smethylviologenresistance|Biocide_resistance|biocide_MFS_efflux_pump|smvA,Biocide resistance,biocide MFS efflux pump,smvA
+ENA|mdtA|ACY89069|ACY89069.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.1|4028SmultidrugeffluxsystemsubunitMdtA|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|mdtA,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,mdtA
+ENA|mdtC|ACY89071|ACY89071.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.1|4028SmultidrugeffluxsystemsubunitMdtC|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|mdtC,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,mdtC
+"ENA|baeS|ACY89073|ACY89073.1|Salmonellaentericasubsp.entericaserovarTyphimuriumstr.1|4028Ssignaltransductionhistidine-proteinkinaseBaeS|Drug,_metal_and_biocide_resistance|drug,_metal_and_biocide_resistance_regulator|baeS","Drug, metal and biocide resistance","drug, metal and biocide resistance regulator",baeS
+ENA|qacR|ADA80841|ADA80841.1|Staphylococcusaureustranscriptionalregulator:Location:1..567|Drug_and_biocide_resistance|drug_and_biocide_MFS_regulator|qacR,Drug and biocide resistance,drug and biocide MFS regulator,qacR
+ENA|emmdR|ADF62863|ADF62863.1|Enterobactercloacaesubsp.cloacaeATCC13047MATEeffluxfamilyprotein|Biocide_resistance|biocide_MATE_efflux_pump|emmdR,Biocide resistance,biocide MATE efflux pump,emmdR
+ENA|ncrC|ADF64798|ADF64798.1|Enterobactercloacaesubsp.cloacaeATCC13047nickel-resistantmembraneprotein-likeproteinNcrC|Nickel_resistance|nickel_ABC_efflux_pump|ncrC,Nickel resistance,nickel ABC efflux pump,ncrC
+ENA|copA|ADR70747|ADR70747.1|Xanthomonascitrisubsp.citriCopA|Copper_resistance|copper_resistance_protein|copA,Copper resistance,copper resistance protein,copA
+ENA|copB|ADR70748|ADR70748.1|Xanthomonascitrisubsp.citriCopB|Copper_resistance|copper_resistance_protein|copB,Copper resistance,copper resistance protein,copB
+ENA|copC|ADR70753|ADR70753.1|Xanthomonascitrisubsp.citriCopC:Location:1..3|84|Copper_resistance|copper_resistance_protein|copC,Copper resistance,copper resistance protein,copC
+ENA|nreB|ADY84088|ADY84088.1|AcinetobactercalcoaceticusPHEA-2nrsDnreB;nickelpermeaseinvolvedinnickelandcobalttolerance|Metal_resistance|metal_resistance_protein|nreB,Metal resistance,metal resistance protein,nreB
+ENA|copA|AEC46567|AEC46567.1|Xanthomonasalfalfaesubsp.citrumeloniscopperresistanceproteinA|Copper_resistance|copper_resistance_protein|copA,Copper resistance,copper resistance protein,copA
+ENA|copB|AEC46568|AEC46568.1|Xanthomonasalfalfaesubsp.citrumeloniscopperresistanceproteinB|Copper_resistance|copper_resistance_protein|copB,Copper resistance,copper resistance protein,copB
+ENA|copA|AFM70729|AFM70729.1|EnterococcushiraeATCC9790copper-translocatingP-typeATPase|Copper_resistance|copper_resistance_protein|copA,Copper resistance,copper resistance protein,copA
+ENA|adeF|AIA51954|AIA51954.1|AcinetobacterbaumanniiRNDtransporter|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeF,Drug and biocide resistance,drug and biocide RND efflux pump,adeF
+ENA|adeI|AIL76805|AIL76805.1|AcinetobacterbaumanniihemolysinD|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeI,Drug and biocide resistance,drug and biocide RND efflux pump,adeI
+ENA|adeI|AIL78998|AIL78998.1|AcinetobacterbaumanniihemolysinD|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeI,Drug and biocide resistance,drug and biocide RND efflux pump,adeI
+ENA|abeM|AIL80156|AIL80156.1|AcinetobacterbaumanniimultidrugtransporterMatE|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|abeM,Metal and biocide resistance,metal and biocide resistance protein,abeM
+ENA|nikR|BAA04676|BAA04676.1|Escherichiacolipartialhypotheticalprotein:Location:1..1|21|Nickel_resistance|nickel_ABC_efflux_regulator|nikR,Nickel resistance,nickel ABC efflux regulator,nikR
+ENA|opmD/nmpC|BAA05056|BAA05056.1|Salmonellaentericasubsp.entericaserovarTyphimuriumpartialNmpCprotein:Location:1..849|Biocide_resistance|biocide_resistance_protein|OmpD,Biocide resistance,biocide resistance protein,OmpD
+ENA|ycnK|BAA09027|BAA09027.1|Bacillussubtilishypotheticalprotein:Location:1..573|Copper_resistance|copper_resistance_regulator|ycnK,Copper resistance,copper resistance regulator,ycnK
+ENA|yfmP|BAA20105|BAA20105.1|BacillussubtilisYfmP:Location:1..423|Copper_resistance|copper_resistance_regulator|yfmP,Copper resistance,copper resistance regulator,yfmP
+ENA|merR1|BAA20334|BAA20334.2|Pseudomonassp.K-62mercuricresistanceoperonregulatoryprotein:Location:1..435|Mercury_resistance|mercuric_resistance_regulator|merR1,Mercury resistance,mercuric resistance regulator,merR1
+ENA|merT|BAA20335|BAA20335.2|Pseudomonassp.K-62mercurictransportprotein:Location:1..3|51|Mercury_resistance|mercuric_resistance_protein|merT,Mercury resistance,mercuric resistance protein,merT
+ENA|merP|BAA20336|BAA20336.2|Pseudomonassp.K-62mercurictransportproteinperiplasmiccomponent:Location:1..2|76|Mercury_resistance|mercuric_resistance_protein|merP,Mercury resistance,mercuric resistance protein,merP
+ENA|merA|BAA20337|BAA20337.2|Pseudomonassp.K-62mercuricreductase|Mercury_resistance|mercuric_resistance_protein|merA,Mercury resistance,mercuric resistance protein,merA
+ENA|merB|BAA20338|BAA20338.2|Pseudomonassp.K-62organomercuriallyase:Location:1..639|Mercury_resistance|mercuric_resistance_protein|merB,Mercury resistance,mercuric resistance protein,merB
+ENA|merG|BAA23166|BAA23166.2|Pseudomonassp.K-62mercuricresistanceprotein:Location:1..654|Mercury_resistance|mercuric_resistance_protein|merG,Mercury resistance,mercuric resistance protein,merG
+ENA|fabL/ygaA|BAA24484|BAA24484.1|BacillussubtilisYfhR:Location:1..753|Phenolic_compound_resistance|phenol_resistance_protein|fabL,Phenolic compound resistance,phenol resistance protein,fabL
+ENA|arsA|BAA24822|BAA24822.1|AcidiphiliummultivorumArsA|Metal_resistance|metal_efflux_pump|arsA,Metal resistance,metal efflux pump,arsA
+ENA|arsB|BAA24823|BAA24823.1|AcidiphiliummultivorumArsB|Metal_resistance|metal_efflux_pump|arsB,Metal resistance,metal efflux pump,arsB
+ENA|arsC|BAA24824|BAA24824.1|AcidiphiliummultivorumArsC:Location:1..426|Metal_resistance|metal_efflux_pump|arsC,Metal resistance,metal efflux pump,arsC
+ENA|merR2|BAA36431|BAA36431.1|Pseudomonassp.K-62MerR2:Location:1..435|Mercury_resistance|mercuric_resistance_regulator|merR2,Mercury resistance,mercuric resistance regulator,merR2
+ENA|merB1|BAA82061|BAA82061.1|BacillusmegateriumpartialMerB1:Location:1..645|Mercury_resistance|mercuric_resistance_protein|merB,Mercury resistance,mercuric resistance protein,merB
+ENA|ebrA|BAA88575|BAA88575.1|BacillussubtilisEbrA:Location:1..3|18|Biocide_resistance|biocide_efflux_pump|ebrA,Biocide resistance,biocide efflux pump,ebrA
+ENA|ebrB|BAA88576|BAA88576.1|BacillussubtilisEbrB:Location:1..3|57|Biocide_resistance|biocide_efflux_pump|ebrB,Biocide resistance,biocide efflux pump,ebrB
+ENA|merB3|BAA89005|BAA89005.2|BacillusmegateriumMerB3:Location:1..729|Mercury_resistance|mercuric_resistance_protein|merB,Mercury resistance,mercuric resistance protein,merB
+ENA|cadD|BAB43874|BAB43874.1|Staphylococcusaureussubsp.aureusN315CadD:Location:1..618|Metal_resistance|metal_efflux_regulator|cadD,Metal resistance,metal efflux regulator,cadD
+ENA|merT|BAB62431|BAB62431.1|Bacilluscereusmercurytransportprotein:Location:1..2|97|Mercury_resistance|mercuric_resistance_protein|merT,Mercury resistance,mercuric resistance protein,merT
+ENA|merP|BAB62432|BAB62432.1|Bacilluscereusmercury-bindingprotein:Location:1..3|51|Mercury_resistance|mercuric_resistance_protein|merP,Mercury resistance,mercuric resistance protein,merP
+ENA|bexA|BAB64566|BAB64566.1|BacteroidesthetaiotaomicronBexA|Drug_and_biocide_resistance|drug_and_biocide_MATE_efflux_pump|bexA,Drug and biocide resistance,drug and biocide MATE efflux pump,bexA
+ENA|cepA|BAB89353|BAB89353.1|KlebsiellapneumoniaecationeffluxpumpA|Biguanide_resistance|biguanide_efflux_pump|cepA,Biguanide resistance,biguanide efflux pump,cepA
+ENA|qacB|BAG12275|BAG12275.1|StaphylococcusaureusantisepticeffluxproteinQacB|Drug_and_biocide_resistance|drug_and_biocide_MFS_efflux_pump|qacB,Drug and biocide resistance,drug and biocide MFS efflux pump,qacB
+ENA|cpxA|BAH60994|BAH60994.1|Klebsiellapneumoniaesubsp.pneumoniaeNTUH-K2044sensorproteinofstress-relatedtwo-componentregulatorysystem|Drug_and_biocide_resistance|drug_and_biocide_efflux_regulator|cpxA,Drug and biocide resistance,drug and biocide efflux regulator,cpxA
+ENA|cpxR|BAH60995|BAH60995.1|Klebsiellapneumoniaesubsp.pneumoniaeNTUH-K2044responseregulatorofstress-relatedtwo-componentregulatorysystem:Location:1..699|Drug_and_biocide_resistance|drug_and_biocide_efflux_regulator|cpxR,Drug and biocide resistance,drug and biocide efflux regulator,cpxR
+ENA|oxyRkp|BAH61025|BAH61025.1|Klebsiellapneumoniaesubsp.pneumoniaeNTUH-K2044activatorofhydrogenperoxide-induciblegenes|Biocide_resistance|biocide_RND_efflux_regulator|oxyR,Biocide resistance,biocide RND efflux regulator,oxyR
+ENA|phoR|BAH62843|BAH62843.1|Klebsiellapneumoniaesubsp.pneumoniaeNTUH-K2044sensorkinaseintwo-componentregulatorysystemwithPhoP|Biocide_resistance|biocide_resistance_regulator|phoR,Biocide resistance,biocide resistance regulator,phoR
+ENA|phoB|BAH62844|BAH62844.1|Klebsiellapneumoniaesubsp.pneumoniaeNTUH-K2044responseregulatorintwo-componentregulatorysystemwithPhoQ:Location:1..714|Biocide_resistance|biocide_resistance_regulator|phoB,Biocide resistance,biocide resistance regulator,phoB
+ENA|kpnE|BAH63251|BAH63251.1|Klebsiellapneumoniaesubsp.pneumoniaeNTUH-K2044multidrugtransportprotein:Location:1..3|63|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|mdtJ,Drug and biocide resistance,drug and biocide SMR efflux pump,mdtJ
+ENA|kpnF|BAH63252|BAH63252.1|Klebsiellapneumoniaesubsp.pneumoniaeNTUH-K2044multidrugtransportprotein:Location:1..3|30|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|mdtI,Drug and biocide resistance,drug and biocide SMR efflux pump,mdtI
+ENA|kpnO|BAH64431|BAH64431.1|Klebsiellapneumoniaesubsp.pneumoniaeNTUH-K2044outermembraneporinproteinC|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|ompC,Drug and biocide resistance,drug and biocide SMR efflux pump,ompC
+ENA|qacEdelta1|BAN78521|BAN78521.2|PseudomonasaeruginosaQacEdelta1multidrugexporter:Location:1..3|48|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|qacEdelta1,Drug and biocide resistance,drug and biocide SMR efflux pump,qacEdelta1
+ENA|pmrA|CAA07482|CAA07482.1|Streptococcuspneumoniaemulti-drugresistanceeffluxpump|Drug_and_biocide_resistance|drug_and_biocide_MFS_efflux_pump|mdtG,Drug and biocide resistance,drug and biocide MFS efflux pump,mdtG
+ENA|ybtP|CAA21388|CAA21388.1|Yersiniapestishypotheticalprotein|Iron_resistance|iron_ABC_efflux_pump|ybtP,Iron resistance,iron ABC efflux pump,ybtP
+ENA|tolC|CAA24914|CAA24914.1|Escherichiacolihypotheticalprotein|Drug_and_biocide_resistance|drug_and_biocide_resistance_protein|tolC,Drug and biocide resistance,drug and biocide resistance protein,tolC
+ENA|arsR|CAA34168|CAA34168.1|Escherichiacolihypotheticalprotein:Location:1..3|54|Metal_resistance|metal_efflux_regulator|arsR,Metal resistance,metal efflux regulator,arsR
+ENA|gadA|CAA44834|CAA44834.1|Escherichiacolipartialglutamatedecarboxylase:Location:1..852|Biocide_resistance|biocide_resistance_protein|gadA,Biocide resistance,biocide resistance protein,gadA
+ENA|sugE|CAA49571|CAA49571.1|EscherichiacoliSugES:Location:1..3|18|Biocide_resistance|biocide_resistance_protein|sugE,Biocide resistance,biocide resistance protein,sugE
+ENA|czcC|CAA50525|CAA50525.2|CupriavidusmetalliduransCH34putativecobalt-zinc-cadmiumoutermembraneresistanceprotein|Metal_resistance|metal_RND_efflux_pump|czcC,Metal resistance,metal RND efflux pump,czcC
+ENA|nikD|CAA51662|CAA51662.1|EscherichiacoliNikD:Location:1..762|Nickel_resistance|nickel_ABC_efflux_pump|nikD,Nickel resistance,nickel ABC efflux pump,nikD
+ENA|pcoA|CAA58525|CAA58525.1|Escherichiacolihypotheticalprotein|Copper_resistance|copper_resistance_protein|pcoA,Copper resistance,copper resistance protein,pcoA
+ENA|pcoB|CAA58526|CAA58526.1|Escherichiacolihypotheticalprotein:Location:1..891|Copper_resistance|copper_resistance_protein|pcoB,Copper resistance,copper resistance protein,pcoB
+ENA|pcoC|CAA58527|CAA58527.1|Escherichiacolihypotheticalprotein:Location:1..3|81|Copper_resistance|copper_resistance_protein|pcoC,Copper resistance,copper resistance protein,pcoC
+ENA|pcoD|CAA58528|CAA58528.1|Escherichiacolihypotheticalprotein|Copper_resistance|copper_resistance_protein|pcoD,Copper resistance,copper resistance protein,pcoD
+ENA|pcoR|CAA58529|CAA58529.1|Escherichiacolihypotheticalprotein:Location:1..681|Copper_resistance|copper_resistance_regulator|pcoR,Copper resistance,copper resistance regulator,pcoR
+ENA|pcoS|CAA58530|CAA58530.1|Escherichiacolihypotheticalprotein|Copper_resistance|copper_resistance_regulator|pcoS,Copper resistance,copper resistance regulator,pcoS
+ENA|pcoE|CAA58532|CAA58532.1|Escherichiacolihypotheticalprotein:Location:1..435|Metal_resistance|metal_efflux_protein|pcoE,Metal resistance,metal efflux protein,pcoE
+ENA|czcC|CAA67082|CAA67082.1|Cupriavidusmetalliduranshypotheticalprotein|Metal_resistance|metal_RND_efflux_pump|czcC,Metal resistance,metal RND efflux pump,czcC
+ENA|czcB|CAA67083|CAA67083.1|Cupriavidusmetalliduransmembranefusionprotein|Metal_resistance|metal_RND_efflux_pump|czcB,Metal resistance,metal RND efflux pump,czcB
+ENA|czcB|CAA67084|CAA67084.1|Cupriavidusmetalliduransmembrane-boundcation-proton-antiporter|Metal_resistance|metal_RND_efflux_pump|czcA,Metal resistance,metal RND efflux pump,czcA
+ENA|czcD|CAA67085|CAA67085.1|Cupriavidusmetalliduranshypotheticalprotein|Metal_resistance|metal_RND_efflux_pump|czcD,Metal resistance,metal RND efflux pump,czcD
+ENA|czcR|CAA67086|CAA67086.1|Cupriavidusmetalliduranshypotheticalprotein:Location:1..678|Metal_resistance|metal_RND_efflux_regulator|czcR,Metal resistance,metal RND efflux regulator,czcR
+ENA|czcS|CAA67087|CAA67087.1|Cupriavidusmetalliduranshypotheticalprotein|Metal_resistance|metal_RND_efflux_regulator|czcS,Metal resistance,metal RND efflux regulator,czcS
+ENA|merT|CAA70196|CAA70196.1|Alcaligenessp.mercuriciontransportprotein:Location:1..3|51|Mercury_resistance|mercuric_resistance_protein|merT,Mercury resistance,mercuric resistance protein,merT
+ENA|qacG|CAA76542|CAA76542.1|Staphylococcussp.quaternaryammoniumcompound-resistanceprotein:Location:1..3|24|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|qacG,Drug and biocide resistance,drug and biocide SMR efflux pump,qacG
+ENA|merR|CAA77320|CAA77320.1|PseudomonasaeruginosamerRprotein(repressor/inducer):Location:1..435|Mercury_resistance|mercuric_resistance_regulator|merR,Mercury resistance,mercuric resistance regulator,merR
+ENA|merD|CAA77324|CAA77324.1|PseudomonasaeruginosamerDprotein:Location:1..3|66|Mercury_resistance|mercuric_resistance_regulator|merD,Mercury resistance,mercuric resistance regulator,merD
+ENA|copY/tcrY|CAA86835|CAA86835.1|Enterococcushiraerepressorprotein:Location:1..438|Copper_resistance|copper_resistance_regulator|copY,Copper resistance,copper resistance regulator,copY
+ENA|copZ|CAA86836|CAA86836.1|EnterococcushiraeactivatorofcopYZAB:Location:1..2|10|Copper_resistance|copper_resistance_regulator|copZ,Copper resistance,copper resistance regulator,copZ
+ENA|csoR|CAB15357|CAB15357.3|Bacillussubtilissubsp.subtilisstr.1|68repressorofcopperutilisationproteins:Location:1..3|06|Copper_resistance|copper_resistance_regulator|csoR,Copper resistance,copper resistance regulator,csoR
+ENA|chrA1|CAC42411|CAC42411.1|CupriavidusmetalliduransChrA1protein|Chromium_resistance|chromate_efflux_pump|chrA1,Chromium resistance,chromate efflux pump,chrA1
+ENA|qacJ|CAD55144|CAD55144.1|Staphylococcusaureushypotheticalprotein:Location:1..3|24|Drug_and_biocide_resistance|drug_and_biocide_SMR_efflux_pump|qacJ,Drug and biocide resistance,drug and biocide SMR efflux pump,qacJ
+ENA|dpr/dps|CAH55666|CAH55666.1|StreptococcussuisDprprotein:Location:1..519|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|dpr,Metal and biocide resistance,metal and biocide resistance protein,dpr
+ENA|dpr/dps|CAH55667|CAH55667.1|StreptococcussuisDprprotein:Location:1..519|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|dpr,Metal and biocide resistance,metal and biocide resistance protein,dpr
+ENA|dpr/dps|CAH55668|CAH55668.1|StreptococcussuisDprprotein:Location:1..519|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|dpr,Metal and biocide resistance,metal and biocide resistance protein,dpr
+ENA|dpr/dps|CAH55669|CAH55669.1|StreptococcussuisDprprotein:Location:1..519|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|dpr,Metal and biocide resistance,metal and biocide resistance protein,dpr
+ENA|dpr/dps|CAH55670|CAH55670.1|StreptococcussuisDprprotein:Location:1..519|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|dpr,Metal and biocide resistance,metal and biocide resistance protein,dpr
+ENA|dpr/dps|CAH55671|CAH55671.1|StreptococcussuisDprprotein:Location:1..519|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|dpr,Metal and biocide resistance,metal and biocide resistance protein,dpr
+ENA|dpr/dps|CAH55672|CAH55672.1|StreptococcussuisDprprotein:Location:1..519|Metal_and_biocide_resistance|metal_and_biocide_resistance_protein|dpr,Metal and biocide resistance,metal and biocide resistance protein,dpr
+ENA|czcB|CAI11243|CAI11243.2|CupriavidusmetalliduransCH34cobalt-zinc-cadmiumresistanceprotein|Metal_resistance|metal_RND_efflux_pump|czcB,Metal resistance,metal RND efflux pump,czcB
+ENA|czcB|CAI11244|CAI11244.2|CupriavidusmetalliduransCH34cationeffluxsystemtransmembraneprotein|Metal_resistance|metal_RND_efflux_pump|czcA,Metal resistance,metal RND efflux pump,czcA
+ENA|czcR|CAI11246|CAI11246.2|CupriavidusmetalliduransCH34responseregulator:Location:1..678|Metal_resistance|metal_RND_efflux_regulator|czcR,Metal resistance,metal RND efflux regulator,czcR
+ENA|czcS|CAI11247|CAI11247.2|CupriavidusmetalliduransCH34responsesensorytransductionhistidinekinase|Metal_resistance|metal_RND_efflux_regulator|czcS,Metal resistance,metal RND efflux regulator,czcS
+ENA|copK|CAI11334|CAI11334.2|CupriavidusmetalliduransCH34hypotheticalprotein:Location:1..2|85|Copper_resistance|copper_resistance_protein|copK,Copper resistance,copper resistance protein,copK
+ENA|adeH|CAJ77855|CAJ77855.2|AcinetobacterbaumanniiPutativeRNDfamilydrugtransporter|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeH,Drug and biocide resistance,drug and biocide RND efflux pump,adeH
+ENA|adeG|CAJ77856|CAJ77856.2|Acinetobacterbaumanniication/multidrugeffluxpump|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeG,Drug and biocide resistance,drug and biocide RND efflux pump,adeG
+ENA|cmeD|CAL35149|CAL35149.1|Campylobacterjejunisubsp.jejuniNCTC11168=ATCC700819outermembranecomponentofeffluxsystem(multidrugeffluxsystemCmeDEF)|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|cmeD,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,cmeD
+ENA|cmeE|CAL35150|CAL35150.1|Campylobacterjejunisubsp.jejuniNCTC11168=ATCC700819membranefusioncomponentofeffluxsystem(mutlidrugeffluxsystemCmeDEF):Location:1..741|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|cmeE,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,cmeE
+ENA|cmeF|CAL35151|CAL35151.1|Campylobacterjejunisubsp.jejuniNCTC11168=ATCC700819integralmembranecomponentofeffluxsystem(multidrugeffluxsystemCmeDEF)|Drug_metal_and_biocide_resistance|drug_metal_and_biocide_RND_efflux_pump|cmeF,Drug metal and biocide resistance,drug metal and biocide RND efflux pump,cmeF
+ENA|emrRsm|CAQ45061|CAQ45061.1|StenotrophomonasmaltophiliaK279aputativeMarR-familytranscriptionalregulator:Location:1..444|Drug_and_biocide_resistance|drug_and_biocide_MFS_regulator|emrRsm,Drug and biocide resistance,drug and biocide MFS regulator,emrRsm
+ENA|emrBsm|CAQ45064|CAQ45064.1|StenotrophomonasmaltophiliaK279aputativemultidrugresistanceproteinB|Drug_and_biocide_resistance|drug_and_biocide_MFS_efflux_pump|emrBsm,Drug and biocide resistance,drug and biocide MFS efflux pump,emrBsm
+ENA|adeI|KGF57684|KGF57684.1|AcinetobacterbaumanniihemolysinD|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeI,Drug and biocide resistance,drug and biocide RND efflux pump,adeI
+ENA|adeK|KGF57686|KGF57686.1|Acinetobacterbaumanniiadeninedeaminase|Drug_and_biocide_resistance|drug_and_biocide_RND_efflux_pump|adeK,Drug and biocide resistance,drug and biocide RND efflux pump,adeK
