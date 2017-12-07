@@ -90,3 +90,25 @@ amrAnalytical <- amrAnalytical %>%
   as.matrix(.)
 
 row.names(amrAnalytical) <- amrClassification
+
+
+# Reading MEGABio data ----------------------------------------------------
+
+megaBioPaths <- Sys.glob(file.path(".",
+                                    "MegaBio_results",
+                                    "*",
+                                    '*CovSampler_parsed.tab'))
+
+megaBioNames <- list.files(path = Sys.glob("./MegaBio_results/*/"),
+                            pattern = "*CovSampler_parsed.tab")
+
+megaBioNames <- megaBioNames %>%
+  map(function(x) str_replace(x, "_MBio_CovSampler_parsed\\.tab$", ""))
+
+megaBioReports <- megaBioPaths %>%
+  map(function(x) read_tsv(x)) %>% 
+      set_names(nm=megaBioNames)
+
+megaBioReportsMerged <- megaBioReports %>%
+  map_dfr(function(x) x, .id="Sample")
+
