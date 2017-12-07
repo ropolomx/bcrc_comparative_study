@@ -60,19 +60,36 @@ row.names(krakenAnalytical) <- lineages
 
 # Then collect the names of the parsed files
 
-amrCovSamplerPaths <- Sys.glob(file.path(".",
-                                    "*",
-                                    '*CovSampler*.tabular'))
+# Make sure the fecal composite data is present as well.
 
-amrCovSamplerNames <- list.files(path = Sys.glob("./*"),
-                            pattern = "*CovSampler*.tabular")
+amrCovSamplerPaths <- Sys.glob(file.path(".",
+                                    "AMR_CovSampler_parsed",
+                                    '*CovSampler_parsed.tab'))
+
+amrCovSamplerNames <- list.files(path = Sys.glob("./AMR_CovSampler_parsed/"),
+                            pattern = "*CovSampler_parsed.tab")
 
 amrCovSamplerNames <- amrCovSamplerNames %>%
-  map(function(x) str_replace(x, "_CovSampler\\.tabular$", ""))
+  map(function(x) str_replace(x, "_CovSampler_parsed\\.tab$", ""))
 
 amrCovSampler <- amrCovSamplerPaths %>%
-  map(read_tsv) %>%
-  set_names(nm=amrCovSamplerNames)
+  map(function(x) read_tsv(x)) %>% 
+      set_names(nm=amrCovSamplerNames)
+
+amrReportsMerged <- amrCovSampler %>%
+  map_dfr(function(x) x, .id="Sample")
+
+amrAnalytical <- amrReportsMerged %>%
+  select(Sample, Header, Hits) %>%
+  spread(key = Sample, value = Hits, fill = 0)
+
+amrClassification <- amrAnalytical$Header
+
+amrAnalytical <- amrAnalytical %>%
+  select(-Header) %>%
+  as.matrix(.)
+
+row.names(amrAnalytical) <- amrClassification
 
 # Let's now read all the Coverage Sampler tabular files
 # We are using the readr package (read_tsv)
