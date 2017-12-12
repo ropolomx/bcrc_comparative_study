@@ -35,10 +35,14 @@ krakenReportsPavian <- krakenReportPaths %>%
 #                                             rm_taxa = c("u_unclassifed", 
 #                                                         "p_Chordata")))
 
+taxa_to_remove <- c("u_unclassified", "-_root", "-_cellular organisms")
+
 krakenReportsPavianMerged <- krakenReportsPavian %>%
   map_dfr(function(x){
     x <- x %>%
-      filter(name != "u_unclassified") # Filter names of tax ranks (e.g. D,P)
+      filter(!name %in% taxa_to_remove) %>%
+      mutate(taxLineage=str_replace(taxLineage, "-_root\\|-_cellular organisms\\|", "")) %>%
+      mutate(taxLineage=str_replace(taxLineage, "-_root\\|", ""))
     x
     }, .id = "Sample")
 
@@ -53,6 +57,7 @@ krakenAnalytical <- krakenAnalytical %>%
   as.matrix(.)
 
 row.names(krakenAnalytical) <- lineages
+
 
 # Read AMR and MegaBio Coverage Sampler Results -------------------------------
 
@@ -112,6 +117,33 @@ megaBioReports <- megaBioPaths %>%
 megaBioReportsMerged <- megaBioReports %>%
   map_dfr(function(x) x, .id="Sample")
 
+# Change sample names to reflect names in metadata files
+
+megaBioReportsMerged <- megaBioReportsMerged %>%
+  mutate(Sample = str_replace(Sample, "FC_A062_H_006", "FC_006_A062")) %>%
+  mutate(Sample = str_replace(Sample, "FC_A062_H_007", "FC_007_A062")) %>%
+  mutate(Sample = str_replace(Sample, "FC_A070_H_006", "FC_006_A070")) %>%
+  mutate(Sample = str_replace(Sample, "FC_A070_H_007", "FC_007_A070")) %>%
+  mutate(Sample = str_replace(Sample, "FC_N003_H_007", "FC_007_N003")) %>%
+  mutate(Sample = str_replace(Sample, "FC_N003_H_008", "FC_008_N003")) %>%
+  mutate(Sample = str_replace(Sample, "FC_N013_H_007", "FC_007_N013")) %>%
+  mutate(Sample = str_replace(Sample, "FC_N013_H_008", "FC_008_N013")) %>%
+  mutate(Sample = str_replace(Sample, "FC_S034_H_007", "FC_007_S034")) %>%
+  mutate(Sample = str_replace(Sample, "FC_S034_H_008", "FC_008_S034")) %>%
+  mutate(Sample = str_replace(Sample, "FC_S040_H_007", "FC_007_S040")) %>%
+  mutate(Sample = str_replace(Sample, "FC_S040_H_008", "FC_008_S040")) %>%
+  mutate(Sample = str_replace(Sample, "FC_S040_H_007", "FC_007_S040")) %>%
+  mutate(Sample = str_replace(Sample, "FC_S040_H_008", "FC_008_S040")) %>%
+  mutate(Sample = str_replace(Sample, "FC_V042_Nat", "FC_Nat_V042")) %>%
+  mutate(Sample = str_replace(Sample, "FC_V045_Nat", "FC_Nat_V045")) %>%
+  mutate(Sample = str_replace(Sample, "FC_V052_Nat", "FC_Nat_V052")) %>%
+  mutate(Sample = str_replace(Sample, "FC_V053_H_006", "FC_006_V053")) %>%
+  mutate(Sample = str_replace(Sample, "FC_V053_H_007", "FC_007_V053")) %>%
+  mutate(Sample = str_replace(Sample, "FC_V055", "FC_Con_V055")) %>%
+  mutate(Sample = str_replace(Sample, "Soil_N_", ""))
+  
+  
+  
 
 # Concatenate MEGARes and MEGABio data ------------------------------------
 
@@ -128,7 +160,6 @@ amrBioAnalytical <- amrBioAnalytical %>%
   as.matrix(.)
 
 row.names(amrBioAnalytical) <- amrBioClassification
-
 
 # Update annotations file with new MEGABio annotations ---------------------
 
