@@ -31,7 +31,8 @@
 ## statistical functions.
 
 # Set your working directory to the main folder for analysis:
-setwd('/home/lakinsm/Documents/morleyBioinformatics/CanadaAnalyticData/20March2017Analysis/')
+# Already set in project
+# setwd('/home/lakinsm/Documents/morleyBioinformatics/CanadaAnalyticData/20March2017Analysis/')
 
 # Set the output directory for graphs:
 graph_output_dir = 'graphs'
@@ -46,6 +47,7 @@ metadata_filepath = 'BCRC_metadata.csv'
 
 
 # Name of the megares annotation file used for this project
+
 megares_annotation_filename = 'megares_annotations_v1.01.csv'
 
 

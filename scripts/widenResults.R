@@ -128,3 +128,17 @@ amrBioAnalytical <- amrBioAnalytical %>%
   as.matrix(.)
 
 row.names(amrBioAnalytical) <- amrBioClassification
+
+
+# Update annotations file with new MEGABio annotations ---------------------
+
+megaresMegabioCSU <- read.csv('megares_annotations_v1.01.csv')
+
+megaBioAAFC <- read.csv('megabio_AAFC_v0.2_annotation.csv')
+
+megaresAMR <- megaresMegabioCSU %>%
+  slice(1:3824)
+
+megaresMegabioUpdated <- rbind(megaresAMR, megaBioAAFC)
+
+write.csv(megaresMegabioUpdated, 'megaresMegabioUpdated.csv', row.names = FALSE)
