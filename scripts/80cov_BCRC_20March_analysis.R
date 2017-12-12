@@ -1,7 +1,8 @@
 ## R script template for the production of basic qualitative
 ## statistics on the AMR and kraken output from AMR++
 
-## Author: Steven Lakin
+## Author: Steven Lakin (Colorado State University)
+## Edited by: Rodrigo Ortega Polo (University of Lethbridge)
 
 
 ## The files you want to use for input to this (for the MEG group analyses)

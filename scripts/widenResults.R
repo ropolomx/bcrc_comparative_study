@@ -112,3 +112,19 @@ megaBioReports <- megaBioPaths %>%
 megaBioReportsMerged <- megaBioReports %>%
   map_dfr(function(x) x, .id="Sample")
 
+
+# Concatenate MEGARes and MEGABio data ------------------------------------
+
+amrBioConcat <- rbind(amrReportsMerged, megaBioReportsMerged)
+
+amrBioAnalytical <- amrBioConcat %>%
+  select(Sample, Header, Hits) %>%
+  spread(key = Sample, value = Hits, fill = 0)
+
+amrBioClassification <- amrBioAnalytical$Header
+
+amrBioAnalytical <- amrBioAnalytical %>%
+  select(-Header) %>%
+  as.matrix(.)
+
+row.names(amrBioAnalytical) <- amrBioClassification
