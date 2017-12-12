@@ -41,7 +41,7 @@ krakenReportsPavianMerged <- krakenReportsPavian %>%
   map_dfr(function(x){
     x <- x %>%
       filter(!name %in% taxa_to_remove) %>%
-      filter(!taxRank != "-") %>%
+      filter(taxRank != "-") %>%
       mutate(taxLineage=str_replace(taxLineage, "-_root\\|-_cellular organisms\\|", "")) %>%
       mutate(taxLineage=str_replace(taxLineage, "-_root\\|", ""))
     x
@@ -54,13 +54,13 @@ krakenAnalytical <- krakenReportsPavianMerged %>%
 
 write.csv(krakenAnalytical, 'krakenAnalytical.csv', row.names = FALSE)
 
-lineages <- krakenAnalytical$taxLineage
-
-krakenAnalytical <- krakenAnalytical %>%
-  select(-taxLineage) %>%
-  as.matrix(.)
-
-row.names(krakenAnalytical) <- lineages
+# lineages <- krakenAnalytical$taxLineage
+# 
+# krakenAnalytical <- krakenAnalytical %>%
+#   select(-taxLineage) %>%
+#   as.matrix(.)
+# 
+# row.names(krakenAnalytical) <- lineages
 
 
 
