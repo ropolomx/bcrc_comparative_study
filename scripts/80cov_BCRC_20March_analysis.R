@@ -305,9 +305,8 @@ ifelse(!dir.exists(file.path('kraken_matrices/normalized')), dir.create(file.pat
 ifelse(!dir.exists(file.path('kraken_matrices/raw')), dir.create(file.path('kraken_matrices/raw'), mode='777'), FALSE)
 
 # Load the data, MEGARes annotations, and metadata
-# temp_kraken <- read.table('kraken_analytic_matrix.csv', header=T, row.names=1, sep=',')
+temp_kraken <- read.table('krakenAnalytical.csv', header=T, row.names=1, sep=',')
 
-temp_kraken <- krakenAnalytical
 
 # Specific to BCRC analysis for phiX removal
 temp_kraken <- temp_kraken[rownames(temp_kraken) !=
@@ -315,10 +314,7 @@ temp_kraken <- temp_kraken[rownames(temp_kraken) !=
 
 kraken <- newMRexperiment(temp_kraken[rowSums(temp_kraken) > 0, ])
 
-
-# amr <- newMRexperiment(read.table('80AMR_biometal_analytic_matrix.csv', header=T, row.names=1, sep=','))
-
-amr <- newMRexperiment(amrBioAnalytical)
+amr <- newMRexperiment(read.table('amrBioAnalytical.csv', header=T, row.names=1, sep=','))
 
 annotations <- data.table(read.csv(megares_annotation_filename, header=T))
 setkey(annotations, header)  # Data tables are SQL objects with optional primary keys

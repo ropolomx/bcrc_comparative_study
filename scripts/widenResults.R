@@ -41,6 +41,7 @@ krakenReportsPavianMerged <- krakenReportsPavian %>%
   map_dfr(function(x){
     x <- x %>%
       filter(!name %in% taxa_to_remove) %>%
+      filter(!taxRank != "-") %>%
       mutate(taxLineage=str_replace(taxLineage, "-_root\\|-_cellular organisms\\|", "")) %>%
       mutate(taxLineage=str_replace(taxLineage, "-_root\\|", ""))
     x
@@ -48,7 +49,10 @@ krakenReportsPavianMerged <- krakenReportsPavian %>%
 
 krakenAnalytical <- krakenReportsPavianMerged %>%
   select(Sample, cladeReads, taxLineage) %>%
-  spread(key = Sample, value = cladeReads, fill = 0)
+  spread(key = Sample, value = cladeReads, fill = 0) %>%
+  rename(Lineage = taxLineage)
+
+write.csv(krakenAnalytical, 'krakenAnalytical.csv', row.names = FALSE)
 
 lineages <- krakenAnalytical$taxLineage
 
@@ -57,6 +61,7 @@ krakenAnalytical <- krakenAnalytical %>%
   as.matrix(.)
 
 row.names(krakenAnalytical) <- lineages
+
 
 
 # Read AMR and MegaBio Coverage Sampler Results -------------------------------
@@ -160,6 +165,8 @@ amrBioAnalytical <- amrBioAnalytical %>%
   as.matrix(.)
 
 row.names(amrBioAnalytical) <- amrBioClassification
+
+write.csv(amrBioAnalytical, 'amrBioAnalytical.csv')
 
 # Update annotations file with new MEGABio annotations ---------------------
 
