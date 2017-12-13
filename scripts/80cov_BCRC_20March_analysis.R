@@ -406,6 +406,10 @@ amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Clas
 # the actual data and aggregate using lapply as before.
 kraken_taxonomy <- data.table(id=rownames(kraken))
 
+kraken_taxonomy <- data.table(
+  Domain = str_detect()
+)
+
 setDT(kraken_taxonomy)[, c('Domain',
                            'Phylum',
                            'Class',

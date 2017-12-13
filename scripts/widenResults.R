@@ -29,11 +29,8 @@ krakenReportsPavian <- krakenReportPaths %>%
   map(function(x) pavian::read_report(x)) %>%
   set_names(nm=krakenReportNames)
 
-# krakenReportsPavianFilt <- krakenReportsPavian %>%
-#   map(function(x) pavian::filter_cladeReads(cladeReads = "cladeReads",
-#                                             tax_data=x, 
-#                                             rm_taxa = c("u_unclassifed", 
-#                                                         "p_Chordata")))
+krakenReportsPavian <- krakenReportsPavian %>%
+  map(function(x) pavian::filter_taxon(report = x, filter_taxon = "Eukaryota", rm_clade = TRUE))
 
 taxa_to_remove <- c("u_unclassified", "-_root", "-_cellular organisms")
 
@@ -50,7 +47,8 @@ krakenReportsPavianMerged <- krakenReportsPavian %>%
 krakenAnalytical <- krakenReportsPavianMerged %>%
   select(Sample, cladeReads, taxLineage) %>%
   spread(key = Sample, value = cladeReads, fill = 0) %>%
-  rename(Lineage = taxLineage)
+  rename(Lineage = taxLineage) %>%
+  str_replace(Lineage, "\\|-_.*\\|", "\\|NA\\|")
 
 write.csv(krakenAnalytical, 'krakenAnalytical.csv', row.names = FALSE)
 
