@@ -406,9 +406,19 @@ amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Clas
 # the actual data and aggregate using lapply as before.
 kraken_taxonomy <- data.table(id=rownames(kraken))
 
-kraken_taxonomy <- data.table(
-  Domain = str_detect()
-)
+kraken_taxonomy <- str_split(string = kraken_taxonomy$id, pattern = "\\|") %>%
+  set_names(nm = kraken_taxonomy$id)
+  
+  
+  map_dfc(function(x){
+    id=names(.x)
+    Domain = bind_rows(str_extract_all(x, "d_.*", simplify = TRUE))
+    # Phylum = str_extract_all(x, "g_.*", simplify = TRUE)
+    # Class = str_extract_all(x, "c_.*", simplify = TRUE)
+    # Family = str_extract_all(x, "f_.*", simplify = TRUE)
+    # Genus = str_extract_all(x, "g_.*", simplify = TRUE)
+    # Species = str_extract_all(x, "s_.*", simplify = TRUE)
+    })
 
 setDT(kraken_taxonomy)[, c('Domain',
                            'Phylum',
@@ -417,6 +427,8 @@ setDT(kraken_taxonomy)[, c('Domain',
                            'Family',
                            'Genus',
                            'Species') := tstrsplit(id, '|', type.convert = TRUE, fixed = TRUE)]
+
+
 setkey(kraken_taxonomy, id)
 kraken_norm[, id :=(rownames(kraken)), ]
 setkey(kraken_norm, id)
