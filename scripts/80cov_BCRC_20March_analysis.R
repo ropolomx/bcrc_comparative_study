@@ -399,7 +399,6 @@ amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Clas
                                  melt_dt(MRcounts(amr_gene_raw_analytic), 'Gene'))
 
 
-
 # Aggregate the kraken data using the rownames:
 # this set of commands splits the rownames into their taxonomic levels and
 # fills empty values with NA.  We then join that taxonomy data table with
@@ -407,19 +406,14 @@ amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Clas
 kraken_taxonomy <- data.table(id=rownames(kraken))
 
 kraken_taxonomy <- str_split(string = kraken_taxonomy$id, pattern = "\\|") %>%
-  set_names(nm = kraken_taxonomy$id)
+  map(function(x){
+    Domain = str_extract_all(x, "d_.*", simplify = TRUE)
+    Phylum = str_extract(x, "p_.*", simplify = TRUE)
+    return(list(Domain, Phylum))
+  }) %>%
+  map(data.frame(Domain=Domain, Phylum=Phylum)) %>%
+  reduce(cbind)
   
-  
-  map_dfc(function(x){
-    id=names(.x)
-    Domain = bind_rows(str_extract_all(x, "d_.*", simplify = TRUE))
-    # Phylum = str_extract_all(x, "g_.*", simplify = TRUE)
-    # Class = str_extract_all(x, "c_.*", simplify = TRUE)
-    # Family = str_extract_all(x, "f_.*", simplify = TRUE)
-    # Genus = str_extract_all(x, "g_.*", simplify = TRUE)
-    # Species = str_extract_all(x, "s_.*", simplify = TRUE)
-    })
-
 setDT(kraken_taxonomy)[, c('Domain',
                            'Phylum',
                            'Class',
