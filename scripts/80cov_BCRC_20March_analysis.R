@@ -428,7 +428,40 @@ kraken_taxonomy$Class <- kraken_taxonomy$splitting %>%
       discard(is.na)
   })
 
-str_split(kraken_taxonomy$id, "\\|")
+kraken_taxonomy$Order <- kraken_taxonomy$splitting %>% 
+  map(function(x){
+    str_extract(x,"o_.*") %>%
+      discard(is.na)
+  })
+
+kraken_taxonomy$Family <- kraken_taxonomy$splitting %>% 
+  map(function(x){
+    str_extract(x,"f_.*") %>%
+      discard(is.na)
+  })
+
+kraken_taxonomy$Genus <- kraken_taxonomy$splitting %>% 
+  map(function(x){
+    str_extract(x,"g_.*") %>%
+      discard(is.na)
+  })
+
+kraken_taxonomy$Species <- kraken_taxonomy$splitting %>% 
+  map(function(x){
+    str_extract(x,"s_.*") %>%
+      discard(is.na)
+  })
+
+kraken_taxonomy <- kraken_taxonomy %>% 
+  select(id,
+         Phylum,
+         Class,
+         Order,
+         Family,
+         Genus,
+         Species)
+
+# str_split(kraken_taxonomy$id, "\\|")
 
 # %>%
 #   map(function(x){
@@ -441,13 +474,13 @@ str_split(kraken_taxonomy$id, "\\|")
 #   map(data.frame(Domain=Domain, Phylum=Phylum)) %>%
 #   reduce(cbind)
   
-setDT(kraken_taxonomy)[, c('Domain',
-                           'Phylum',
-                           'Class',
-                           'Order',
-                           'Family',
-                           'Genus',
-                           'Species') := tstrsplit(id, '|', type.convert = TRUE, fixed = TRUE)]
+# setDT(kraken_taxonomy)[, c('Domain',
+#                            'Phylum',
+#                            'Class',
+#                            'Order',
+#                            'Family',
+#                            'Genus',
+#                            'Species') := tstrsplit(id, '|', type.convert = TRUE, fixed = TRUE)]
 
 
 setkey(kraken_taxonomy, id)
