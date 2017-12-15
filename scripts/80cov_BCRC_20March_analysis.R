@@ -406,21 +406,28 @@ amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Clas
 
 kraken_taxonomy <- data.table(id=rownames(kraken))
 
+# Figure out a less convoluted method
+
 kraken_taxonomy$splitting <- str_split(string = kraken_taxonomy$id, pattern = "\\|")
 
-kraken_taxonomy$Domain <- kraken_taxonomy$splitting %>% flatten() %>% keep(str_detect(.,"d_"))
+kraken_taxonomy$Domain <- kraken_taxonomy$splitting %>% 
+  map(function(x){
+    str_extract(x,"d_.*") %>%
+      discard(is.na)
+  })
 
-kraken_taxonomy$Phylum <- flatten(kraken_taxonomy$splitting) %>% keep(str_detect(.,"p_"))
+kraken_taxonomy$Phylum <- kraken_taxonomy$splitting %>% 
+  map(function(x){
+    str_extract(x,"p_.*") %>%
+      discard(is.na)
+  })
 
-kraken_taxonomy$Class <- kraken_taxonomy$splitting %>% flatten() %>% keep(str_detect(.,"c_"))
+kraken_taxonomy$Class <- kraken_taxonomy$splitting %>% 
+  map(function(x){
+    str_extract(x,"c_.*") %>%
+      discard(is.na)
+  })
 
-kraken_taxonomy$Order <- kraken_taxonomy$splitting %>% flatten() %>% keep(str_detect(.,"o_"))
-
-kraken_taxonomy$Family <- kraken_taxonomy$splitting %>% flatten() %>% keep(str_detect(.,"f_"))
-
-kraken_taxonomy$Genus <- kraken_taxonomy$splitting %>% flatten() %>% keep(str_detect(.,"g_"))
-
-kraken_taxonomy$Species <- kraken_taxonomy$splitting %>% flatten() %>% keep(str_detect(.,"s_"))
 
 # %>%
 #   map(function(x){
