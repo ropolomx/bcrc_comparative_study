@@ -428,6 +428,7 @@ kraken_taxonomy$Class <- kraken_taxonomy$splitting %>%
       discard(is.na)
   })
 
+str_split(kraken_taxonomy$id, "\\|")
 
 # %>%
 #   map(function(x){
