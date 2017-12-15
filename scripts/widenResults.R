@@ -18,19 +18,12 @@ krakenReportNames <- list.files(path = Sys.glob("./post_PhiXFilter_Kraken/"),
 krakenReportNames <- krakenReportNames %>%
   map(function(x) str_replace(x, "\\.tabular$", ""))
 
-
-krakenReports <- krakenReportPaths %>%
-  map(read_tsv)
-  # set_names(nm=krakenReportNames)
-
-# krakenReportsPavian <- lapply(krakenReportPaths, function(x) pavian::read_report(x))
-  
 krakenReportsPavian <- krakenReportPaths %>%
   map(function(x) pavian::read_report(x)) %>%
   set_names(nm=krakenReportNames)
 
 krakenReportsPavian <- krakenReportsPavian %>%
-  map(function(x) pavian::filter_taxon(report = x, filter_taxon = "Eukaryota", rm_clade = TRUE))
+  map(function(x) pavian::filter_taxon(report = x, filter_taxon = c("Eukaryota","Fungi"), rm_clade = TRUE))
 
 taxa_to_remove <- c("u_unclassified", "-_root", "-_cellular organisms")
 
@@ -47,20 +40,9 @@ krakenReportsPavianMerged <- krakenReportsPavian %>%
 krakenAnalytical <- krakenReportsPavianMerged %>%
   select(Sample, cladeReads, taxLineage) %>%
   spread(key = Sample, value = cladeReads, fill = 0) %>%
-  rename(Lineage = taxLineage) %>%
-  str_replace(Lineage, "\\|-_.*\\|", "\\|NA\\|")
+  rename(Lineage = taxLineage)
 
 write.csv(krakenAnalytical, 'krakenAnalytical.csv', row.names = FALSE)
-
-# lineages <- krakenAnalytical$taxLineage
-# 
-# krakenAnalytical <- krakenAnalytical %>%
-#   select(-taxLineage) %>%
-#   as.matrix(.)
-# 
-# row.names(krakenAnalytical) <- lineages
-
-
 
 # Read AMR and MegaBio Coverage Sampler Results -------------------------------
 
@@ -143,6 +125,8 @@ megaBioReportsMerged <- megaBioReportsMerged %>%
   mutate(Sample = str_replace(Sample, "FC_V053_H_006", "FC_006_V053")) %>%
   mutate(Sample = str_replace(Sample, "FC_V053_H_007", "FC_007_V053")) %>%
   mutate(Sample = str_replace(Sample, "FC_V055", "FC_Con_V055")) %>%
+  mutate(Sample = str_replace(Sample, "FC_V046_H_006", "FC_006_V046")) %>%
+  mutate(Sample = str_replace(Sample, "FC_V046_H_007", "FC_007_V046")) %>%
   mutate(Sample = str_replace(Sample, "Soil_N_", ""))
   
   

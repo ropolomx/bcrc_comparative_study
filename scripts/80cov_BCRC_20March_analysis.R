@@ -319,7 +319,7 @@ amr <- newMRexperiment(read.table('amrBioAnalytical.csv', header=T, row.names=1,
 annotations <- data.table(read.csv(megares_annotation_filename, header=T))
 setkey(annotations, header)  # Data tables are SQL objects with optional primary keys
 
-metadata <- read.csv(metadata_filepath, header=T)
+metadata <- read.csv(metadata_filepath, header=T, stringsAsFactors = FALSE)
 metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
 
 
@@ -414,46 +414,54 @@ kraken_taxonomy$Domain <- kraken_taxonomy$splitting %>%
   map(function(x){
     str_extract(x,"d_.*") %>%
       discard(is.na)
-  })
+  }) %>%
+  as.character()
 
 kraken_taxonomy$Phylum <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"p_.*") %>%
       discard(is.na)
-  })
+  }) %>%
+  as.character()
 
 kraken_taxonomy$Class <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"c_.*") %>%
       discard(is.na)
-  })
+  }) %>%
+  as.character()
 
 kraken_taxonomy$Order <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"o_.*") %>%
       discard(is.na)
-  })
+  }) %>%
+  as.character()
 
 kraken_taxonomy$Family <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"f_.*") %>%
       discard(is.na)
-  })
+  }) %>%
+  as.character()
 
 kraken_taxonomy$Genus <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"g_.*") %>%
       discard(is.na)
-  })
+  }) %>%
+  as.character()
 
 kraken_taxonomy$Species <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"s_.*") %>%
       discard(is.na)
-  })
+  }) %>%
+  as.character()
 
 kraken_taxonomy <- kraken_taxonomy %>% 
   select(id,
+         Domain,
          Phylum,
          Class,
          Order,
@@ -461,27 +469,7 @@ kraken_taxonomy <- kraken_taxonomy %>%
          Genus,
          Species)
 
-# str_split(kraken_taxonomy$id, "\\|")
-
-# %>%
-#   map(function(x){
-#     Domain = str_extract_all(x, "d_.*", simplify = TRUE)
-#     Phylum = str_extract_all(x, "p_.*", simplify = TRUE)
-#     return(list(Domain, Phylum))
-#   }) 
-
-# %>%
-#   map(data.frame(Domain=Domain, Phylum=Phylum)) %>%
-#   reduce(cbind)
-  
-# setDT(kraken_taxonomy)[, c('Domain',
-#                            'Phylum',
-#                            'Class',
-#                            'Order',
-#                            'Family',
-#                            'Genus',
-#                            'Species') := tstrsplit(id, '|', type.convert = TRUE, fixed = TRUE)]
-
+kraken_taxonomy <- data.table(kraken_taxonomy)
 
 setkey(kraken_taxonomy, id)
 kraken_norm[, id :=(rownames(kraken)), ]
@@ -494,8 +482,10 @@ kraken_raw <- kraken_taxonomy[kraken_raw]  # left outer join
 
 
 # Group the kraken data by level for analysis, removing NA entries
-kraken_domain <- kraken_norm[!is.na(Domain) & Domain != 'NA', lapply(.SD, sum), by='Domain', .SDcols=!1:8]
+kraken_domain <- kraken_norm[!is.na(Domain) & Domain != "0" , lapply(.SD, sum), by='Domain', .SDcols=!1:8]
+
 kraken_domain_analytic <- newMRexperiment(counts=kraken_domain[, .SD, .SDcols=!'Domain'])
+
 rownames(kraken_domain_analytic) <- kraken_domain$Domain
 
 kraken_domain_raw <- kraken_raw[!is.na(Domain) & Domain != 'NA', lapply(.SD, sum), by='Domain', .SDcols=!1:8]

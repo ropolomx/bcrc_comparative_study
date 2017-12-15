@@ -44,5 +44,5 @@ EF_20May15_007,Soil,Nanton,20-05-15,None,East_Field,TRUE,FALSE
 WF_20May15_007,Soil,Nanton,20-05-15,None,West_Field,TRUE,FALSE
 EF_02May14_007,Soil,Nanton,02-05-14,None,East_Field,TRUE,FALSE
 WF_02May14_007,Soil,Nanton,02-05-14,None,West_Field,TRUE,FALSE
-A_CB_018,Catch_Basin,Acme,09-06-14,None,None,TRUE,TRUE
-A_CB_038,Catch_Basin,Acme,11-08-14,None,None,TRUE,TRUE
+CB_A018,Catch_Basin,Acme,09-06-14,None,None,TRUE,TRUE
+CB_A038,Catch_Basin,Acme,11-08-14,None,None,TRUE,TRUE
