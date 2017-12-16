@@ -79,7 +79,7 @@ exploratory_analyses = list(
   # Description: Location comparison within Fecal Composite type
   list(
     name = 'LocationFC',
-    subsets = list('Type == Fecal.Composite', 'NatType != Natural'),
+    subsets = list('Type == Fecal_Composite', 'NatType != Natural'),
     exploratory_var = 'Location'
   ),
   
@@ -95,7 +95,7 @@ exploratory_analyses = list(
   # Description: Location comparison within Waste Water sewage treatment type
   list(
     name = 'LocationST',
-    subsets = list('Type == Sewage.Treatment'),
+    subsets = list('Type == Sewage_Treatment'),
     exploratory_var = 'Location'
   ),
   
@@ -103,7 +103,7 @@ exploratory_analyses = list(
   # Description: Natural vs conventional Fecal Composite
   list(
     name = 'NaturalConventionalFC',
-    subsets = list('Type == Fecal.Composite', 'Location == Vegreville', 'NatType != None'),
+    subsets = list('Type == Fecal_Composite', 'Location == Vegreville', 'NatType != None'),
     exploratory_var = 'NatType'
   ),
   
@@ -111,7 +111,7 @@ exploratory_analyses = list(
   # Description: Natural vs conventional Catch Basin
   list(
     name = 'NaturalConventionalCB',
-    subsets = list('Type == Fecal.Composite', 'Location == Vegreville'),
+    subsets = list('Type == Fecal_Composite', 'Location == Vegreville'),
     exploratory_var = 'NatType'
   ),
   
@@ -139,9 +139,9 @@ statistical_analyses = list(
     name = 'TypeFixedLocationRandom',
     subsets = list('Type != Wetlands', 'NatType != Natural'),
     model_matrix = '~ 0 + Type',
-    contrasts = list('TypeFecal.Composite - TypeCatch.Basin',
-                     'TypeFecal.Composite - TypeSewage.Treatment',
-                     'TypeCatch.Basin - TypeSewage.Treatment'),
+    contrasts = list('TypeFecal_Composite - TypeCatch_Basin',
+                     'TypeFecal_Composite - TypeSewage_Treatment',
+                     'TypeCatch_Basin - TypeSewage_Treatment'),
     random_effect = 'Location'
   ),
   
@@ -174,8 +174,8 @@ statistical_analyses = list(
   list(
     name = 'NaturalConventionalFCVegreville',
     subsets = list('Type != Wetlands',
-                   'Type != Sewage.Treatment',
-                   'Type != Catch.Basin',
+                   'Type != Sewage_Treatment',
+                   'Type != Catch_Basin',
                    'NatType != None',
                    'Location == Vegreville'),
     model_matrix = '~ 0 + NatType',
@@ -183,10 +183,6 @@ statistical_analyses = list(
     random_effect = NA
   )
 )
-
-
-
-
 
 
 ####################

@@ -86,7 +86,55 @@ row.names(amrAnalytical) <- amrClassification
 
 megaBioPaths <- Sys.glob(file.path(".",
                                     "MegaBio_results",
-                                    "*",
+                                   for( v in 1:length(exploratory_analyses) ) {
+    # AMR NMDS
+    meg_ordination(data_list = AMR_analytic_data,
+                   data_names = AMR_analytic_names,
+                   metadata = metadata,
+                   sample_var = sample_column_id,
+                   hull_var = exploratory_analyses[[v]]$exploratory_var,
+                   analysis_subset=exploratory_analyses[[v]]$subsets,
+                   outdir = paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
+                                  sep='/', collapse=''),
+                   data_type = 'AMR',
+                   method = 'NMDS')
+    
+    # AMR PCA
+    meg_ordination(data_list = AMR_analytic_data,
+                   data_names = AMR_analytic_names,
+                   metadata = metadata,
+                   sample_var = sample_column_id,
+                   hull_var = exploratory_analyses[[v]]$exploratory_var,
+                   analysis_subset=exploratory_analyses[[v]]$subsets,
+                   outdir = paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
+                                  sep='/', collapse=''),
+                   data_type = 'AMR',
+                   method = 'PCA')
+    
+    # Microbiome NMDS
+    meg_ordination(data_list = kraken_analytic_data,
+                   data_names = kraken_analytic_names,
+                   metadata = metadata,
+                   sample_var = sample_column_id,
+                   hull_var = exploratory_analyses[[v]]$exploratory_var,
+                   analysis_subset=exploratory_analyses[[v]]$subsets,
+                   outdir = paste(graph_output_dir, 'Microbiome', exploratory_analyses[[v]]$name,
+                                  sep='/', collapse=''),
+                   data_type = 'Microbiome',
+                   method = 'NMDS')
+    
+    # Microbiome PCA
+    meg_ordination(data_list = kraken_analytic_data,
+                   data_names = kraken_analytic_names,
+                   metadata = metadata,
+                   sample_var = sample_column_id,
+                   hull_var = exploratory_analyses[[v]]$exploratory_var,
+                   analysis_subset=exploratory_analyses[[v]]$subsets,
+                   outdir = paste(graph_output_dir, 'Microbiome', exploratory_analyses[[v]]$name,
+                                  sep='/', collapse=''),
+                   data_type = 'Microbiome',
+                   method = 'PCA')
+ "*",
                                     '*CovSampler_parsed.tab'))
 
 megaBioNames <- list.files(path = Sys.glob("./MegaBio_results/*/"),
