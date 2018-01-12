@@ -43,12 +43,12 @@ stats_output_dir = 'stats'
 
 
 # Where is the metadata file stored on your machine?
-metadata_filepath = './aggregated_data_for_analysis/BCRC_metadata.csv'
+metadata_filepath = 'BCRC_metadata.csv'
 
 
 # Name of the megares annotation file used for this project
 
-megares_annotation_filename = './aggregated_data_for_analysis/megaresMegabioUpdated.csv'
+megares_annotation_filename = 'megaresMegabioUpdated.csv'
 
 
 # In which column of the metadata file are the sample IDs stored?
@@ -409,49 +409,49 @@ kraken_taxonomy$splitting <- str_split(string = kraken_taxonomy$id, pattern = "\
 kraken_taxonomy$Domain <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"d_.*") %>%
-      discard(is.na)
-  }) %>%
+      purrr::discard(is.na)
+    }) %>%
   as.character()
 
 kraken_taxonomy$Phylum <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"p_.*") %>%
-      discard(is.na)
-  }) %>%
+      purrr::discard(is.na)
+}) %>%
   as.character()
 
 kraken_taxonomy$Class <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"c_.*") %>%
-      discard(is.na)
+      purrr::discard(is.na)
   }) %>%
   as.character()
 
 kraken_taxonomy$Order <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"o_.*") %>%
-      discard(is.na)
+      purrr::discard(is.na)
   }) %>%
   as.character()
 
 kraken_taxonomy$Family <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"f_.*") %>%
-      discard(is.na)
+      purrr::discard(is.na)
   }) %>%
   as.character()
 
 kraken_taxonomy$Genus <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"g_.*") %>%
-      discard(is.na)
+      purrr::discard(is.na)
   }) %>%
   as.character()
 
 kraken_taxonomy$Species <- kraken_taxonomy$splitting %>% 
   map(function(x){
     str_extract(x,"s_.*") %>%
-      discard(is.na)
+      purrr::discard(is.na)
   }) %>%
   as.character()
 
@@ -464,6 +464,8 @@ kraken_taxonomy <- kraken_taxonomy %>%
          Family,
          Genus,
          Species)
+
+# Convert all character(0) instances to NA
 
 kraken_taxonomy[ kraken_taxonomy == "character(0)" ] <- NA
 
@@ -480,7 +482,7 @@ kraken_raw <- kraken_taxonomy[kraken_raw]  # left outer join
 
 
 # Group the kraken data by level for analysis, removing NA entries
-kraken_domain <- kraken_norm[!is.na(Domain) & Domain != "0" , lapply(.SD, sum), by='Domain', .SDcols=!1:8]
+kraken_domain <- kraken_norm[!is.na(Domain) & Domain != 'NA' , lapply(.SD, sum), by='Domain', .SDcols=!1:8]
 
 kraken_domain_analytic <- newMRexperiment(counts=kraken_domain[, .SD, .SDcols=!'Domain'])
 
@@ -556,8 +558,8 @@ kraken_melted_raw_analytic <- rbind(melt_dt(MRcounts(kraken_domain_raw_analytic)
                                     melt_dt(MRcounts(kraken_species_raw_analytic), 'Species'))
 
 # Ensure that the metadata entries match the factor order of the MRexperiments
-metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, sample_column_id]), ])
-setkeyv(metadata, sample_column_id)
+metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, ID]), ])
+setkeyv(metadata, "ID")
 
 
 # Vector of objects for iteration and their names
