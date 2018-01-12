@@ -558,8 +558,8 @@ kraken_melted_raw_analytic <- rbind(melt_dt(MRcounts(kraken_domain_raw_analytic)
                                     melt_dt(MRcounts(kraken_species_raw_analytic), 'Species'))
 
 # Ensure that the metadata entries match the factor order of the MRexperiments
-metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, ID]), ])
-setkeyv(metadata, "ID")
+metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, sample_column_id]), ])
+setkeyv(metadata, sample_column_id)
 
 
 # Vector of objects for iteration and their names
@@ -826,27 +826,27 @@ for( a in 1:length(statistical_analyses) ) {
 ########################
 ## Output of matrices ##
 ########################
-write.csv(make_sparse(amr_class, 'class', c('class')), '80amr_matrices/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_class, '80amr_matrices/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_class_raw, '80amr_matrices/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_class, 'amr_matrices/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_class_raw, 'amr_matrices/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
-write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), '80amr_matrices/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), 'amr_matrices/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_mech, '80amr_matrices/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_mech_raw, '80amr_matrices/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech, 'amr_matrices/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech_raw, 'amr_matrices/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
 
-write.csv(make_sparse(amr_group, 'group', c('group')), '80amr_matrices/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_group, 'group', c('group')), 'amr_matrices/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_group, '80amr_matrices/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_mech_raw, '80amr_matrices/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_group, 'amr_matrices/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech_raw, 'amr_matrices/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
 
 write.csv(make_sparse(amr_norm, 'header', c('header', 'class', 'mechanism', 'group')),
-          '80amr_matrices/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
+          'amr_matrices/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_norm, '80amr_matrices/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_raw, '80amr_matrices/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_norm, 'amr_matrices/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_raw, 'amr_matrices/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
 write.csv(make_sparse(kraken_domain, 'Domain', c('Domain')),
