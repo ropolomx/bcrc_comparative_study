@@ -43,12 +43,12 @@ stats_output_dir = 'stats'
 
 
 # Where is the metadata file stored on your machine?
-metadata_filepath = 'BCRC_metadata.csv'
+metadata_filepath = './aggregated_data_for_analysis/BCRC_metadata.csv'
 
 
 # Name of the megares annotation file used for this project
 
-megares_annotation_filename = 'megaresMegabioUpdated.csv'
+megares_annotation_filename = './aggregated_data_for_analysis/megaresMegabioUpdated.csv'
 
 
 # In which column of the metadata file are the sample IDs stored?
@@ -197,6 +197,10 @@ require(metagenomeSeq)
 require(data.table)
 require(ggplot2)
 require(vegan)
+require(stringr)
+require(purrr)
+require(dplyr)
+require(tidyr)
 
 set.seed(154)  # Seed the RNG, necessary for reproducibility
 
