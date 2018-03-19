@@ -330,6 +330,8 @@ metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
 cumNorm(kraken)
 cumNorm(amr)
 
+# Break down normalization by environment
+
 
 # Extract the normalized counts into data tables for aggregation
 kraken_norm <- data.table(MRcounts(kraken, norm=T))
