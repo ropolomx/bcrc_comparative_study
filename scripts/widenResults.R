@@ -1,35 +1,48 @@
-library(readr)
-library(stringr)
-library(purrr)
-library(dplyr)
-library(tidyr)
+
+# Load packages -----------------------------------------------------------
+
+require(readr)
+require(stringr)
+require(purrr)
+require(dplyr)
+require(tidyr)
+require(here)
 
 # Read Kraken reports with Pavian ---------------------------------------------
 
 # Obtain the filenames of all Kraken reports
 
-krakenReportPaths <- Sys.glob(file.path(".",
-                                    "post_PhiXFilter_Kraken",
-                                    '*.tabular'))
+krakenReportPaths <- Sys.glob(here("post_PhiXFilter_Kraken",'*.tabular'))
 
-krakenReportNames <- list.files(path = Sys.glob("./post_PhiXFilter_Kraken/"),
-                            pattern = "*.tabular")
+krakenReportNames <- list.files(path = here("post_PhiXFilter_Kraken"), pattern = '*.tabular')
 
-krakenReportNames <- krakenReportNames %>%
+krakenReportNames <- 
+  krakenReportNames %>%
   map(function(x) str_replace(x, "\\.tabular$", ""))
 
-krakenReportsPavian <- krakenReportPaths %>%
+krakenReportsPavian <-
+  krakenReportPaths %>%
   map(function(x) pavian::read_report(x)) %>%
-  set_names(nm=krakenReportNames)
-
-krakenReportsPavian <- krakenReportsPavian %>%
-  map(function(x) pavian::filter_taxon(report = x, filter_taxon = c("Eukaryota","Fungi"), rm_clade = TRUE))
+  set_names(nm = krakenReportNames)
+  
+krakenReportsPavian <-
+  krakenReportsPavian %>%
+  map(safely(function(x){
+    filt <- pavian::filter_taxon(
+    report = x, 
+    filter_taxon = "Eukaryota", 
+    rm_clade = TRUE, 
+    do_message = TRUE
+    )
+    filt
+}))
 
 taxa_to_remove <- c("u_unclassified", "-_root", "-_cellular organisms")
 
-krakenReportsPavianMerged <- krakenReportsPavian %>%
+krakenReportsPavianMerged <- 
+  krakenReportsPavian %>%
   map_dfr(function(x){
-    x <- x %>%
+    x <- x$result %>%
       filter(!name %in% taxa_to_remove) %>%
       filter(taxRank != "-") %>%
       mutate(taxLineage=str_replace(taxLineage, "-_root\\|-_cellular organisms\\|", "")) %>%
@@ -37,12 +50,22 @@ krakenReportsPavianMerged <- krakenReportsPavian %>%
     x
     }, .id = "Sample")
 
-krakenAnalytical <- krakenReportsPavianMerged %>%
-  select(Sample, cladeReads, taxLineage) %>%
-  spread(key = Sample, value = cladeReads, fill = 0) %>%
+makeAnalytical <- function(x, column){
+  x <- x %>%
+  select(Sample, column, taxLineage) %>%
+  spread(key = Sample, value = column, fill = 0) %>%
   rename(Lineage = taxLineage)
+  x
+}
 
-write.csv(krakenAnalytical, 'krakenAnalytical.csv', row.names = FALSE)
+tax_columns <- c("cladeReads", "taxonReads")
+  
+krakenAnalytical <- map(tax_columns, ~ makeAnalytical(krakenReportsPavianMerged, .x)) %>%
+  set_names(nm=tax_columns)
+  
+iwalk(krakenAnalytical,
+      ~ write.csv(.x, here("aggregated_data_for_analysis", paste0("krakenAnalytical", "_",.y,".csv")), row.names = FALSE))
+
 
 # Read AMR and MegaBio Coverage Sampler Results -------------------------------
 
@@ -52,14 +75,12 @@ write.csv(krakenAnalytical, 'krakenAnalytical.csv', row.names = FALSE)
 
 # Make sure the fecal composite data is present as well.
 
-amrCovSamplerPaths <- Sys.glob(file.path(".",
-                                    "AMR_CovSampler_parsed",
-                                    '*CovSampler_parsed.tab'))
+amrCovSamplerPaths <- Sys.glob(here("AMR_CovSampler_parsed", '*CovSampler_parsed.tab'))
 
-amrCovSamplerNames <- list.files(path = Sys.glob("./AMR_CovSampler_parsed/"),
-                            pattern = "*CovSampler_parsed.tab")
-
-amrCovSamplerNames <- amrCovSamplerNames %>%
+amrCovSamplerNames <- list.files(
+  path = here("./AMR_CovSampler_parsed"),
+  pattern = "*CovSampler_parsed.tab"
+  ) %>%
   map(function(x) str_replace(x, "_CovSampler_parsed\\.tab$", ""))
 
 amrCovSampler <- amrCovSamplerPaths %>%
@@ -84,63 +105,12 @@ row.names(amrAnalytical) <- amrClassification
 
 # Reading MEGABio data ----------------------------------------------------
 
-megaBioPaths <- Sys.glob(file.path(".",
-                                    "MegaBio_results",
-                                   for( v in 1:length(exploratory_analyses) ) {
-    # AMR NMDS
-    meg_ordination(data_list = AMR_analytic_data,
-                   data_names = AMR_analytic_names,
-                   metadata = metadata,
-                   sample_var = sample_column_id,
-                   hull_var = exploratory_analyses[[v]]$exploratory_var,
-                   analysis_subset=exploratory_analyses[[v]]$subsets,
-                   outdir = paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
-                                  sep='/', collapse=''),
-                   data_type = 'AMR',
-                   method = 'NMDS')
-    
-    # AMR PCA
-    meg_ordination(data_list = AMR_analytic_data,
-                   data_names = AMR_analytic_names,
-                   metadata = metadata,
-                   sample_var = sample_column_id,
-                   hull_var = exploratory_analyses[[v]]$exploratory_var,
-                   analysis_subset=exploratory_analyses[[v]]$subsets,
-                   outdir = paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
-                                  sep='/', collapse=''),
-                   data_type = 'AMR',
-                   method = 'PCA')
-    
-    # Microbiome NMDS
-    meg_ordination(data_list = kraken_analytic_data,
-                   data_names = kraken_analytic_names,
-                   metadata = metadata,
-                   sample_var = sample_column_id,
-                   hull_var = exploratory_analyses[[v]]$exploratory_var,
-                   analysis_subset=exploratory_analyses[[v]]$subsets,
-                   outdir = paste(graph_output_dir, 'Microbiome', exploratory_analyses[[v]]$name,
-                                  sep='/', collapse=''),
-                   data_type = 'Microbiome',
-                   method = 'NMDS')
-    
-    # Microbiome PCA
-    meg_ordination(data_list = kraken_analytic_data,
-                   data_names = kraken_analytic_names,
-                   metadata = metadata,
-                   sample_var = sample_column_id,
-                   hull_var = exploratory_analyses[[v]]$exploratory_var,
-                   analysis_subset=exploratory_analyses[[v]]$subsets,
-                   outdir = paste(graph_output_dir, 'Microbiome', exploratory_analyses[[v]]$name,
-                                  sep='/', collapse=''),
-                   data_type = 'Microbiome',
-                   method = 'PCA')
- "*",
-                                    '*CovSampler_parsed.tab'))
+megaBioPaths <- Sys.glob(here("MegaBio_results",'*.tabular'))
 
-megaBioNames <- list.files(path = Sys.glob("./MegaBio_results/*/"),
-                            pattern = "*CovSampler_parsed.tab")
-
-megaBioNames <- megaBioNames %>%
+megaBioNames <- list.files(
+  path = Sys.glob("./MegaBio_results/*/"),
+  pattern = "*CovSampler_parsed.tab"
+  ) %>%
   map(function(x) str_replace(x, "_MBio_CovSampler_parsed\\.tab$", ""))
 
 megaBioReports <- megaBioPaths %>%
@@ -176,7 +146,6 @@ megaBioReportsMerged <- megaBioReportsMerged %>%
   mutate(Sample = str_replace(Sample, "FC_V046_H_006", "FC_006_V046")) %>%
   mutate(Sample = str_replace(Sample, "FC_V046_H_007", "FC_007_V046")) %>%
   mutate(Sample = str_replace(Sample, "Soil_N_", ""))
-  
   
   
 

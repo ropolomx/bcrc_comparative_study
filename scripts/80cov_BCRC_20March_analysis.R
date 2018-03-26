@@ -35,20 +35,20 @@
 # setwd('/home/lakinsm/Documents/morleyBioinformatics/CanadaAnalyticData/20March2017Analysis/')
 
 # Set the output directory for graphs:
-graph_output_dir = 'graphs'
+graph_output_dir = here('graphs')
 
 
 # Set the output directory for statistics:
-stats_output_dir = 'stats'
+stats_output_dir = here('stats')
 
 
 # Where is the metadata file stored on your machine?
-metadata_filepath = 'BCRC_metadata.csv'
+metadata_filepath = here('BCRC_metadata.csv')
 
 
 # Name of the megares annotation file used for this project
 
-megares_annotation_filename = 'megaresMegabioUpdated.csv'
+megares_annotation_filename = here('aggregated_data_for_analysis', 'megaresMegabioUpdated.csv')
 
 
 # In which column of the metadata file are the sample IDs stored?
@@ -191,7 +191,7 @@ statistical_analyses = list(
 ## Modify this as necessary, though you shouldn't need to for basic use.
 
 # Source the utility functions file, which should be in the scripts folder with this file
-source('scripts/meg_utility_functions.R')
+source(here('scripts','meg_utility_functions.R'))
 
 require(metagenomeSeq)
 require(data.table)
@@ -307,8 +307,20 @@ ifelse(!dir.exists(file.path('kraken_matrices/normalized')), dir.create(file.pat
 ifelse(!dir.exists(file.path('kraken_matrices/raw')), dir.create(file.path('kraken_matrices/raw'), mode='777'), FALSE)
 
 # Load the data, MEGARes annotations, and metadata
-temp_kraken <- read.table(here('aggregated_data_for_analysis', 'krakenAnalytical.csv'),
-                          header=T, row.names=1, sep=',')
+
+kraken_analytical <- Sys.glob(here("aggregated_data_for_analysis", "krakenAnalytical_*.csv"))
+
+kraken_names <- map_chr(kraken_analytical,
+                        ~ str_replace(.x, "^.*_(.*)\\.csv", "\\1")
+)
+
+temp_kraken_list <- map(kraken_analytical,
+                        ~ read.table(.x, header = T, row.names = 1, sep = ',')
+) %>%
+  set_names(nm = kraken_names)
+
+# temp_kraken <- read.table(here('aggregated_data_for_analysis', 'krakenAnalytical.csv'),
+#                           header=T, row.names=1, sep=',')
 
 
 # Specific to BCRC analysis for phiX removal
@@ -317,8 +329,8 @@ temp_kraken <- temp_kraken[rownames(temp_kraken) !=
 
 kraken <- newMRexperiment(temp_kraken[rowSums(temp_kraken) > 0, ])
 
-amr <- newMRexperiment(read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
-                                  header=T, row.names=1, sep=','))
+amr <- read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
+                                  header=T, row.names=1, sep=',')
 
 annotations <- data.table(read.csv(megares_annotation_filename, header=T))
 setkey(annotations, header)  # Data tables are SQL objects with optional primary keys
@@ -328,17 +340,28 @@ metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
 
 # Split datasets prior to normalization
 
+by_environment <- left_join(metadata, amr)
+
+transp_amr <- function(x){
+  amr_analytic <- as.data.frame(t(x))
+  amr_analytic$ID <- row.names(amr_analytic)
+  row.names(amr_analytic) <- NULL
+  amr_analytic
+}
+
+amr_trans <- transp_amr(amr)
 
 
 # Calculate normalization factors on the analytic data.
 # We use Cumulative Sum Scaling as implemented in metagenomeSeq.
 # You will likely get a warning about this step, but it's safe to ignore
+
+
 cumNorm(kraken)
 cumNorm(amr)
 
-
-
 # Extract the normalized counts into data tables for aggregation
+
 kraken_norm <- data.table(MRcounts(kraken, norm=T))
 kraken_raw <- data.table(MRcounts(kraken, norm=F))
 amr_norm <- data.table(MRcounts(amr, norm=T))
@@ -347,6 +370,7 @@ amr_raw <- data.table(MRcounts(amr, norm=F))
 
 # Aggregate the normalized counts for AMR using the annotations data table, SQL
 # outer join, and aggregation with vectorized lapply
+
 amr_norm[, header :=( rownames(amr) ), ]
 setkey(amr_norm, header)
 amr_norm <- annotations[amr_norm]  # left outer join
@@ -838,6 +862,10 @@ for( a in 1:length(statistical_analyses) ) {
 ########################
 ## Output of matrices ##
 ########################
+
+# Attempt to include purrr functional programming approach
+
+
 write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
           row.names=T)
 write.table(amr_class, 'amr_matrices/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
