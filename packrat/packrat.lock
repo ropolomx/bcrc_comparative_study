@@ -1,12 +1,20 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.8.1
+<<<<<<< HEAD
 RVersion: 3.4.4
+=======
+RVersion: 3.4.3
+>>>>>>> e529c6d8f0c6d083ababe8241319209202452a5b
 Repos: BioCsoft=https://bioconductor.org/packages/3.5/bioc,
     BioCann=https://bioconductor.org/packages/3.5/data/annotation,
     BioCexp=https://bioconductor.org/packages/3.5/data/experiment,
     BioCextra=https://bioconductor.org/packages/3.5/extra,
+<<<<<<< HEAD
     CRAN=https://cran.rstudio.com/,
     CRANextra=https://www.stats.ox.ac.uk/pub/RWin
+=======
+    CRAN=http://cran.rstudio.com
+>>>>>>> e529c6d8f0c6d083ababe8241319209202452a5b
 
 Package: BH
 Source: CRAN
@@ -24,6 +32,15 @@ Source: Bioconductor
 Version: 0.22.1
 Hash: 83e3fe231b92b1ab079db7b4ead100fa
 
+<<<<<<< HEAD
+=======
+Package: DT
+Source: CRAN
+Version: 0.2
+Hash: 36b032203797956fedad5a25055016a9
+Requires: htmltools, htmlwidgets, magrittr
+
+>>>>>>> e529c6d8f0c6d083ababe8241319209202452a5b
 Package: R6
 Source: CRAN
 Version: 2.2.2
@@ -66,11 +83,18 @@ Version: 1.17.1
 Hash: 97cb6f6293cd18d17df77a6383cc6763
 Requires: bitops
 
+<<<<<<< HEAD
 Package: cli
 Source: CRAN
 Version: 1.0.0
 Hash: f4239f89feb7ddc65821e4514e9734ae
 Requires: assertthat, crayon
+=======
+Package: codetools
+Source: CRAN
+Version: 0.2-15
+Hash: a4268e48f71dc70ac2203aced7cdd8ea
+>>>>>>> e529c6d8f0c6d083ababe8241319209202452a5b
 
 Package: colorspace
 Source: CRAN
@@ -108,7 +132,7 @@ Package: foreach
 Source: CRAN
 Version: 1.4.3
 Hash: cd53ef4cf29dc59ce3f8c5c1af735fd1
-Requires: iterators
+Requires: codetools, iterators
 
 Package: gdata
 Source: CRAN
@@ -163,6 +187,11 @@ Package: labeling
 Source: CRAN
 Version: 0.3
 Hash: ecf589b42cd284b03a4beb9665482d3e
+
+Package: lattice
+Source: CRAN
+Version: 0.20-35
+Hash: 26b9d7f0d0cb4e1d1bbb97f867c82d89
 
 Package: lazyeval
 Source: CRAN
@@ -303,7 +332,11 @@ Package: vegan
 Source: CRAN
 Version: 2.4-4
 Hash: e2a012d726246ab12331df7b98f2677c
+<<<<<<< HEAD
 Requires: permute, mgcv
+=======
+Requires: lattice, permute
+>>>>>>> e529c6d8f0c6d083ababe8241319209202452a5b
 
 Package: viridisLite
 Source: CRAN
