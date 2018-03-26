@@ -202,6 +202,7 @@ require(stringr)
 require(purrr)
 require(dplyr)
 require(tidyr)
+require(here)
 
 set.seed(154)  # Seed the RNG, necessary for reproducibility
 
@@ -306,7 +307,8 @@ ifelse(!dir.exists(file.path('kraken_matrices/normalized')), dir.create(file.pat
 ifelse(!dir.exists(file.path('kraken_matrices/raw')), dir.create(file.path('kraken_matrices/raw'), mode='777'), FALSE)
 
 # Load the data, MEGARes annotations, and metadata
-temp_kraken <- read.table('krakenAnalytical.csv', header=T, row.names=1, sep=',')
+temp_kraken <- read.table(here('aggregated_data_for_analysis', 'krakenAnalytical.csv'),
+                          header=T, row.names=1, sep=',')
 
 
 # Specific to BCRC analysis for phiX removal
@@ -315,13 +317,17 @@ temp_kraken <- temp_kraken[rownames(temp_kraken) !=
 
 kraken <- newMRexperiment(temp_kraken[rowSums(temp_kraken) > 0, ])
 
-amr <- newMRexperiment(read.table('amrBioAnalytical.csv', header=T, row.names=1, sep=','))
+amr <- newMRexperiment(read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
+                                  header=T, row.names=1, sep=','))
 
 annotations <- data.table(read.csv(megares_annotation_filename, header=T))
 setkey(annotations, header)  # Data tables are SQL objects with optional primary keys
 
 metadata <- read.csv(metadata_filepath, header=T)
 metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
+
+# Split datasets prior to normalization
+
 
 
 # Calculate normalization factors on the analytic data.
@@ -330,7 +336,6 @@ metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
 cumNorm(kraken)
 cumNorm(amr)
 
-# Break down normalization by environment
 
 
 # Extract the normalized counts into data tables for aggregation
