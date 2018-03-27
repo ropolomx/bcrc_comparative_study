@@ -269,12 +269,12 @@ meg_heatmap <- function(melted_data,
     tile_subset <- data_subset_long(tile_subset, analysis_subset)
   }
   
-  sample_order <- unique(tile_subset[order(group_var), sample_var])
-  tile_subset <- within(tile_subset, sample_var
-                        <- factor(sample_var,
-                                  levels=sample_order,
-                                  ordered=T))
-  
+  # sample_order <- unique(tile_subset[order(group_var), sample_var])
+  # tile_subset <- within(tile_subset, sample_var
+  #                       <- factor(sample_var,
+  #                                 levels=sample_order,
+  #                                 ordered=T))
+  # 
   setkey(tile_subset, Normalized_Count)
   tile_subset <- tile_subset[, sum(Normalized_Count),
                              by=c(group_var, sample_var, 'Name')]
@@ -429,7 +429,7 @@ meg_alpha_rarefaction <- function(data_list,
   g_alphadiv <- ggplot(data=all_alphadiv, aes_string(x=group_var,
                                                      y='Value',
                                                      color=group_var)) +
-    geom_boxplot(size=1) + 
+    geom_boxplot(size=2) + 
     facet_wrap(~Level, nrow=2, scales='free_y')
   g_alphadiv <- g_alphadiv +
     ggtitle(paste('Alpha Diversity by ', group_var, ' for Rarefied data\nInverse Simpson Index',
@@ -452,7 +452,7 @@ meg_alpha_rarefaction <- function(data_list,
                        sep='', collapse=''),
         width=1024, height=768)
     g_sraw <- ggplot(data=all_species_raw, aes_string(group_var, 'Value', color=group_var)) +
-        geom_boxplot(size=1) + 
+        geom_boxplot(size=2) + 
         facet_wrap(~Level, nrow=2, scales='free_y')
     g_sraw <- g_sraw +
         ggtitle(paste('Species Richness by ', group_var, ' for Raw data\nInverse Simpson Index',
@@ -475,7 +475,7 @@ meg_alpha_rarefaction <- function(data_list,
                        sep='', collapse=''),
         width=1024, height=768)
     g_srare <- ggplot(data=all_species_rare, aes_string(group_var, 'Value', color=group_var)) +
-        geom_boxplot(size=1) + 
+        geom_boxplot(size=2) + 
         facet_wrap(~Level, nrow=2, scales='free_y')
     g_srare <- g_srare +
         ggtitle(paste('Species Richness by ', group_var, ' for Rarefied data\nInverse Simpson Index',

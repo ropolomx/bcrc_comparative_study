@@ -53,7 +53,6 @@ megares_annotation_filename = here('aggregated_data_for_analysis', 'megaresMegab
 # In which column of the metadata file are the sample IDs stored?
 sample_column_id = 'ID'
 
-
 # The following is a list of analyses based on variables in 
 # your metadata.csv file that you want
 # to use for EXPLORATORY analysis (NMDS, PCA, alpha rarefaction, barplots)
@@ -324,10 +323,13 @@ temp_kraken_list <- map(kraken_analytical,
 temp_kraken <- temp_kraken[rownames(temp_kraken) !=
                              'Viruses|NA|NA|NA|Microviridae|Microvirus|Enterobacteria phage phiX174 sensu lato', ]
 
-kraken <- newMRexperiment(temp_kraken[rowSums(temp_kraken) > 0, ])
+kraken <- newMRexperiment(temp_kraken_list$taxonReads[rowSums(temp_kraken_list$taxonReads) > 0, ])
 
-amr <- read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
+amr_df <- read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
                                   header=T, row.names=1, sep=',')
+
+amr <- newMRexperiment(read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
+                                  header=T, row.names=1, sep=','))
 
 annotations <- data.table(read.csv(megares_annotation_filename, header=T))
 setkey(annotations, header)  # Data tables are SQL objects with optional primary keys
@@ -353,7 +355,7 @@ transp_amr <- function(x){
   amr_analytic
 }
 
-amr_trans <- transp_amr(amr)
+amr_trans <- transp_amr(amr_df)
 
 amr_by_environment <- left_join(amr_trans, metadata, by = "ID") %>%
   split(.$Type)
@@ -381,7 +383,6 @@ kraken_norm <- data.table(MRcounts(kraken, norm=T))
 kraken_raw <- data.table(MRcounts(kraken, norm=F))
 amr_norm <- data.table(MRcounts(amr, norm=T))
 amr_raw <- data.table(MRcounts(amr, norm=F))
-
 
 # Aggregate the normalized counts for AMR using the annotations data table, SQL
 # outer join, and aggregation with vectorized lapply
@@ -770,7 +771,7 @@ for( v in 1:length(exploratory_analyses) ) {
                     metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
-                    level_var=AMR_analytic_names[l],
+                    level_var=AMR_analytic_names[[l]],
                     analysis_subset=exploratory_analyses[[v]]$subsets,
                     outdir=paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
                                  sep='/', collapse=''),
@@ -785,7 +786,7 @@ for( v in 1:length(exploratory_analyses) ) {
                     metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
-                    level_var=kraken_analytic_names[l],
+                    level_var=kraken_analytic_names[[l]],
                     analysis_subset=exploratory_analyses[[v]]$subsets,
                     outdir=paste(graph_output_dir, 'Microbiome', exploratory_analyses[[v]]$name,
                                  sep='/', collapse=''),
