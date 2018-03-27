@@ -22,9 +22,8 @@
 ## must match between the annotation file and the database file.
 
 
-###################
-## User Controls ##
-###################
+# User Controls -----------------------------------------------------------
+
 ## Hopefully, this section should be the only code you need to modify.
 ## However, you can look into the code in further sections if you need
 ## to change other, more subtle variables in the exploratory or
@@ -185,9 +184,8 @@ statistical_analyses = list(
 )
 
 
-####################
-## Automated Code ##
-####################
+# Automated Code ----------------------------------------------------------
+
 ## Modify this as necessary, though you shouldn't need to for basic use.
 
 # Source the utility functions file, which should be in the scripts folder with this file
@@ -264,9 +262,8 @@ snp_regex = c('ACRR',
               'TUFAB')
 
 
-##########################
-## Import & Format Data ##
-##########################
+# Import & format Data ----------------------------------------------------
+
 ## These files should be standard for all analyses, as they are
 ## the output matrices from AMR++ nextflow.  Additionally,
 ## you will need to obtain the most recent megares annotations file
@@ -338,9 +335,16 @@ setkey(annotations, header)  # Data tables are SQL objects with optional primary
 metadata <- read.csv(metadata_filepath, header=T)
 metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
 
-# Split datasets prior to normalization
 
-by_environment <- left_join(metadata, amr)
+# Split and normalize by environment type ----------------------------------
+
+# Calculate normalization factors on the analytic data.
+# We use Cumulative Sum Scaling as implemented in metagenomeSeq.
+# You will likely get a warning about this step, but it's safe to ignore
+
+# Split Kraken
+
+# Split AMR
 
 transp_amr <- function(x){
   amr_analytic <- as.data.frame(t(x))
@@ -351,11 +355,23 @@ transp_amr <- function(x){
 
 amr_trans <- transp_amr(amr)
 
+amr_by_environment <- left_join(amr_trans, metadata, by = "ID") %>%
+  split(.$Type)
 
-# Calculate normalization factors on the analytic data.
-# We use Cumulative Sum Scaling as implemented in metagenomeSeq.
-# You will likely get a warning about this step, but it's safe to ignore
+amr_by_environment_norm <-
+  amr_by_environment %>%
+  map(function(x){
+    row.names(x) <- x$ID
+    amr_retrans <- x %>%
+      select_if(is.numeric)
+    amr_retrans <- as.data.frame(t(amr_retrans))
+    amr_retrans
+  }) %>%
+  map(~ newMRexperiment(.x)) %>%
+  map(~ cumNorm(.x))
 
+
+# Unsplit Kraken and AMR
 
 cumNorm(kraken)
 cumNorm(amr)
@@ -665,9 +681,8 @@ for( l in 1:length(kraken_raw_analytic_data) ) {
 }
 
 
-#############################################
-## Exploratory Analyses: Alpha Rarefaction ##
-#############################################
+# Exploratory Analyses: Alpha Rarefaction ---------------------------------
+
 for( v in 1:length(exploratory_analyses) ) {
     # AMR
     meg_alpha_rarefaction(data_list=AMR_raw_analytic_data,
@@ -693,9 +708,8 @@ for( v in 1:length(exploratory_analyses) ) {
 }
 
 
-######################################
-## Exploratory Analyses: Ordination ##
-######################################
+# Exploratory Analyses: Ordination ----------------------------------------
+
 for( v in 1:length(exploratory_analyses) ) {
     # AMR NMDS
     meg_ordination(data_list = AMR_analytic_data,
@@ -747,9 +761,8 @@ for( v in 1:length(exploratory_analyses) ) {
 }
 
 
-####################################
-## Exploratory Analyses: Heatmaps ##
-####################################
+
+# Exploratory Analyses: Heatmaps ------------------------------------------
 
 # AMR Heatmaps for each level
 for( v in 1:length(exploratory_analyses) ) {
@@ -782,9 +795,7 @@ for( v in 1:length(exploratory_analyses) ) {
 }
 
 
-####################################
-## Exploratory Analyses: Barplots ##
-####################################
+# Exploratory Analyses: Barplots ------------------------------------------
 
 # AMR
 for( v in 1:length(exploratory_analyses) ) {
@@ -821,9 +832,8 @@ for( v in 1:length(exploratory_analyses) ) {
 }
 
 
-##########################
-## Statistical Analyses ##
-##########################
+# Statistical Analyses ----------------------------------------------------
+
 for( a in 1:length(statistical_analyses) ) {
     meg_fitZig(data_list=AMR_analytic_data,
                data_names=AMR_analytic_names,
@@ -859,9 +869,7 @@ for( a in 1:length(statistical_analyses) ) {
 }
 
 
-########################
-## Output of matrices ##
-########################
+# Output of matrices ------------------------------------------------------
 
 # Attempt to include purrr functional programming approach
 
