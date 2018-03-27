@@ -370,7 +370,6 @@ amr_by_environment_norm <-
   map(~ newMRexperiment(.x)) %>%
   map(~ cumNorm(.x))
 
-
 # Unsplit Kraken and AMR
 
 cumNorm(kraken)
