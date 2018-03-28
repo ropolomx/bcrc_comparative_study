@@ -88,7 +88,7 @@ exploratory_analyses = list(
   #     subsets = list('Type == Catch.Basin', 'NatType != Natural'),
   #     exploratory_var = 'Location'
   # ),
-  
+
   # Analysis 5
   # Description: Location comparison within Waste Water sewage treatment type
   list(
@@ -121,7 +121,6 @@ exploratory_analyses = list(
     exploratory_var = 'FieldType'
   )
 )
-
 
 # Each analyses you wish to perform should have its own list in the following
 # statistical_analyses list.  A template is provided to get you started.
@@ -187,9 +186,6 @@ statistical_analyses = list(
 
 ## Modify this as necessary, though you shouldn't need to for basic use.
 
-# Source the utility functions file, which should be in the scripts folder with this file
-source(here('scripts','meg_utility_functions.R'))
-
 require(metagenomeSeq)
 require(data.table)
 require(ggplot2)
@@ -200,6 +196,9 @@ require(purrr)
 require(dplyr)
 require(tidyr)
 require(here)
+
+# Source the utility functions file, which should be in the scripts folder with this file
+source(here('scripts','meg_utility_functions.R'))
 
 set.seed(154)  # Seed the RNG, necessary for reproducibility
 
@@ -325,6 +324,8 @@ temp_kraken <- temp_kraken[rownames(temp_kraken) !=
 
 kraken <- newMRexperiment(temp_kraken_list$taxonReads[rowSums(temp_kraken_list$taxonReads) > 0, ])
 
+kraken_clade <- newMRexperiment(temp_kraken_list$cladeReads[rowSums(temp_kraken_list$cladeReads) > 0, ])
+
 amr_df <- read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
                                   header=T, row.names=1, sep=',')
 
@@ -372,10 +373,14 @@ amr_by_environment_norm <-
   map(~ newMRexperiment(.x)) %>%
   map(~ cumNorm(.x))
 
-# Unsplit Kraken and AMR
+# Normalizing unsplit Kraken and AMR
 
 cumNorm(kraken)
 cumNorm(amr)
+
+# Normalize clade reads kraken
+
+cumNorm(kraken_clade)
 
 # Extract the normalized counts into data tables for aggregation
 
@@ -383,6 +388,9 @@ kraken_norm <- data.table(MRcounts(kraken, norm=T))
 kraken_raw <- data.table(MRcounts(kraken, norm=F))
 amr_norm <- data.table(MRcounts(amr, norm=T))
 amr_raw <- data.table(MRcounts(amr, norm=F))
+
+kraken_norm_clade <- data.table(MRcounts(kraken_clade, norm=T))
+kraken_raw_clade <- data.table(MRcounts(kraken_clade, norm=F))
 
 # Aggregate the normalized counts for AMR using the annotations data table, SQL
 # outer join, and aggregation with vectorized lapply
@@ -452,7 +460,8 @@ amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Clas
 # fills empty values with NA.  We then join that taxonomy data table with
 # the actual data and aggregate using lapply as before.
 
-kraken_taxonomy <- data.table(id=rownames(kraken))
+# kraken_taxonomy <- data.table(id=rownames(kraken))
+kraken_taxonomy <- data.table(id=rownames(kraken_clade))
 
 # Figure out a less convoluted method for splitting taxonomy lineages
 
@@ -521,17 +530,47 @@ kraken_taxonomy <- kraken_taxonomy %>%
 
 kraken_taxonomy[ kraken_taxonomy == "character(0)" ] <- NA
 
+kraken_taxonomy$lowest <- str_split(string = kraken_taxonomy$id, pattern = "\\|") %>% 
+  map_chr(~ tail(.x, n=1))
+
+# Awesome!!! Using named vector for replacing taxon name with level
+
+tax_patterns <- c(
+  "^d_.*" = "Domain",
+  "^p_.*" = "Phylum",
+  "^o_.*" = "Order",
+  "^c_.*" = "Class",
+  "^f_.*" = "Family",
+  "^g_.*" = "Genus",
+  "^s_.*" = "Species"
+)
+  
+kraken_taxonomy <-
+  kraken_taxonomy %>%
+  mutate(lowest_level = str_replace_all(lowest, tax_patterns))
+
 kraken_taxonomy <- data.table(kraken_taxonomy)
 
 setkey(kraken_taxonomy, id)
 kraken_norm[, id :=(rownames(kraken)), ]
-setkey(kraken_norm, id)
-kraken_norm <- kraken_taxonomy[kraken_norm]  # left outer join
+kraken_norm_clade[, id :=(rownames(kraken_clade)), ]
+# setkey(kraken_norm, id)
+# setkey(kraken_norm_clade, id)
+# kraken_norm <- kraken_taxonomy[kraken_norm]  # left outer join
+# kraken_norm_clade <- kraken_taxonomy[kraken_norm_clade]  # left outer joi
 
-kraken_raw[, id :=(rownames(kraken)), ]
-setkey(kraken_raw, id)
-kraken_raw <- kraken_taxonomy[kraken_raw]  # left outer join
+# getting error message
 
+kraken_norm_clade <-
+  kraken_taxonomy %>%
+  left_join(kraken_norm_clade, by = "id")
+
+# kraken_raw[, id :=(rownames(kraken)), ]
+kraken_raw_clade[, id :=(rownames(kraken_clade)), ]
+# setkey(kraken_raw, id)
+setkey(kraken_raw_clade, id)
+kraken_raw_clade <- kraken_taxonomy[kraken_raw_clade]  # left outer join
+# kraken_raw <- kraken_taxonomy[kraken_raw]  # left outer join
 
 # Group the kraken data by level for analysis, removing NA entries
 kraken_domain <- kraken_norm[!is.na(Domain) & Domain != 'NA' , lapply(.SD, sum), by='Domain', .SDcols=!1:8]
@@ -539,6 +578,10 @@ kraken_domain <- kraken_norm[!is.na(Domain) & Domain != 'NA' , lapply(.SD, sum),
 kraken_domain_analytic <- newMRexperiment(counts=kraken_domain[, .SD, .SDcols=!'Domain'])
 
 rownames(kraken_domain_analytic) <- kraken_domain$Domain
+
+kraken_norm_clade_list <-
+  kraken_norm_clade %>%
+  split(.$lowest_level)
 
 kraken_domain_raw <- kraken_raw[!is.na(Domain) & Domain != 'NA', lapply(.SD, sum), by='Domain', .SDcols=!1:8]
 kraken_domain_raw_analytic <- newMRexperiment(counts=kraken_domain_raw[, .SD, .SDcols=!'Domain'])
