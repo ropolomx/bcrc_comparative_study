@@ -22,6 +22,19 @@
 ## must match between the annotation file and the database file.
 
 
+# Loading packages --------------------------------------------------------
+
+require(metagenomeSeq)
+require(data.table)
+require(ggplot2)
+require(vegan)
+require(readr)
+require(stringr)
+require(purrr)
+require(dplyr)
+require(tidyr)
+require(here)
+
 # User Controls -----------------------------------------------------------
 
 ## Hopefully, this section should be the only code you need to modify.
@@ -186,17 +199,6 @@ statistical_analyses = list(
 
 ## Modify this as necessary, though you shouldn't need to for basic use.
 
-require(metagenomeSeq)
-require(data.table)
-require(ggplot2)
-require(vegan)
-require(readr)
-require(stringr)
-require(purrr)
-require(dplyr)
-require(tidyr)
-require(here)
-
 # Source the utility functions file, which should be in the scripts folder with this file
 source(here('scripts','meg_utility_functions.R'))
 
@@ -305,20 +307,19 @@ ifelse(!dir.exists(file.path('kraken_matrices/raw')), dir.create(file.path('krak
 
 kraken_analytical <- Sys.glob(here("aggregated_data_for_analysis", "krakenAnalytical_*.csv"))
 
-kraken_names <- map_chr(kraken_analytical,
-                        ~ str_replace(.x, "^.*_(.*)\\.csv", "\\1")
+kraken_names <- map_chr(
+  kraken_analytical,
+  ~ str_replace(.x, "^.*_(.*)\\.csv", "\\1")
 )
 
-temp_kraken_list <- map(kraken_analytical,
-                        ~ read.table(.x, header = T, row.names = 1, sep = ',')
+temp_kraken_list <- map(
+  kraken_analytical,
+  ~ read.table(.x, header = T, row.names = 1, sep = ",")
 ) %>%
   set_names(nm = kraken_names)
 
-# temp_kraken <- read.table(here('aggregated_data_for_analysis', 'krakenAnalytical.csv'),
-#                           header=T, row.names=1, sep=',')
-
-
 # Specific to BCRC analysis for phiX removal
+
 temp_kraken <- temp_kraken[rownames(temp_kraken) !=
                              'Viruses|NA|NA|NA|Microviridae|Microvirus|Enterobacteria phage phiX174 sensu lato', ]
 
@@ -524,7 +525,8 @@ kraken_taxonomy <- kraken_taxonomy %>%
          Order,
          Family,
          Genus,
-         Species)
+         Species
+    )
 
 # Convert all character(0) instances to NA
 
@@ -802,7 +804,6 @@ for( v in 1:length(exploratory_analyses) ) {
                    data_type = 'Microbiome',
                    method = 'PCA')
 }
-
 
 
 # Exploratory Analyses: Heatmaps ------------------------------------------
