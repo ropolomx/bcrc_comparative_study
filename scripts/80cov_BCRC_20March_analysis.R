@@ -1,6 +1,11 @@
 ## R script template for the production of basic qualitative
 ## statistics on the AMR and kraken output from AMR++
 
+## Analysis of resistome and microbiome
+## Analysis of microbiome with two approaches:
+## taxReads: using taxon-specific read counts
+## cladeReads: using clade read counts
+
 ## Original author: Steven Lakin (Colorado State University)
 ## Modified by: Rodrigo Ortega Polo (University of Lethbridge)
 
@@ -24,16 +29,20 @@
 
 # Loading packages --------------------------------------------------------
 
-require(metagenomeSeq)
-require(data.table)
-require(ggplot2)
-require(vegan)
-require(readr)
-require(stringr)
-require(purrr)
-require(dplyr)
-require(tidyr)
-require(here)
+all_packages <- c(
+  "readr",
+  "stringr",
+  "dplyr",
+  "tidyr",
+  "purrr",
+  "data.table",
+  "vegan",
+  "metagenomeSeq",
+  "ggplot2",
+  "here"
+)
+
+lapply(all_packages, require, character.only = TRUE)
 
 # User Controls -----------------------------------------------------------
 
@@ -259,7 +268,8 @@ snp_regex = c('ACRR',
               'tetR',
               'TETR',
               'TLYA',
-              'TUFAB')
+              'TUFAB'
+  )
 
 
 # Import & format Data ----------------------------------------------------
