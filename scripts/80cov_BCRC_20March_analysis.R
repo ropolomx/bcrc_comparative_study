@@ -3,6 +3,10 @@
 
 ## Analysis of resistome and microbiome
 ## Analysis of microbiome with two approaches:
+
+## Normalization of Kraken results: all samples together
+## Two methods used:
+
 ## taxReads: using taxon-specific read counts
 ## cladeReads: using clade read counts
 
@@ -39,7 +43,8 @@ all_packages <- c(
   "vegan",
   "metagenomeSeq",
   "ggplot2",
-  "here"
+  "here",
+  "drake"
 )
 
 lapply(all_packages, require, character.only = TRUE)
@@ -55,17 +60,17 @@ lapply(all_packages, require, character.only = TRUE)
 # Already set in project
 # setwd('/home/lakinsm/Documents/morleyBioinformatics/CanadaAnalyticData/20March2017Analysis/')
 
+
 # Set the output directory for graphs:
-graph_output_dir = here('graphs')
+graph_output_dir = 'graphs'
 
 
 # Set the output directory for statistics:
-stats_output_dir = here('stats')
+stats_output_dir = 'stats'
 
 
 # Where is the metadata file stored on your machine?
 metadata_filepath = here('BCRC_metadata.csv')
-
 
 # Name of the megares annotation file used for this project
 
@@ -279,12 +284,11 @@ snp_regex = c('ACRR',
 ## you will need to obtain the most recent megares annotations file
 ## from megares.meglab.org
 
-
 # If subdirs for stats and exploratory variables don't exist, create them
 ifelse(!dir.exists(file.path(graph_output_dir)), dir.create(file.path(graph_output_dir), mode='777'), FALSE)
 ifelse(!dir.exists(file.path(stats_output_dir)), dir.create(file.path(stats_output_dir), mode='777'), FALSE)
 
-for( dtype in c('AMR', 'Microbiome') ) {
+for( dtype in c('AMR', 'Microbiome_taxonReads', 'Microbiome_cladeReads') ) {
   ifelse(!dir.exists(file.path(graph_output_dir, dtype)),
          dir.create(file.path(graph_output_dir, dtype), mode='777'), FALSE)
   
@@ -309,11 +313,17 @@ ifelse(!dir.exists(file.path('amr_matrices/sparse_normalized')), dir.create(file
 ifelse(!dir.exists(file.path('amr_matrices/normalized')), dir.create(file.path('amr_matrices/normalized'), mode='777'), FALSE)
 ifelse(!dir.exists(file.path('amr_matrices/raw')), dir.create(file.path('amr_matrices/raw'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('kraken_matrices/sparse_normalized')), dir.create(file.path('kraken_matrices/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_matrices/normalized')), dir.create(file.path('kraken_matrices/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_matrices/raw')), dir.create(file.path('kraken_matrices/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonReads_matrices/sparse_normalized')), dir.create(file.path('kraken_matrices/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonReads_matrices/normalized')), dir.create(file.path('kraken_matrices/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonReads_matrices/raw')), dir.create(file.path('kraken_matrices/raw'), mode='777'), FALSE)
 
-# Load the data, MEGARes annotations, and metadata
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices/sparse_normalized')), dir.create(file.path('kraken_matrices/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices/normalized')), dir.create(file.path('kraken_matrices/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices/raw')), dir.create(file.path('kraken_matrices/raw'), mode='777'), FALSE)
+
+# Load the Kraken data, MEGARes annotations, and metadata
+
+# Load post-PhiX filtered Kraken reports
 
 kraken_analytical <- Sys.glob(here("aggregated_data_for_analysis", "krakenAnalytical_*.csv"))
 
@@ -328,17 +338,9 @@ temp_kraken_list <- map(
 ) %>%
   set_names(nm = kraken_names)
 
-# Specific to BCRC analysis for phiX removal
-
-temp_kraken <- temp_kraken[rownames(temp_kraken) !=
-                             'Viruses|NA|NA|NA|Microviridae|Microvirus|Enterobacteria phage phiX174 sensu lato', ]
-
-kraken <- newMRexperiment(temp_kraken_list$taxonReads[rowSums(temp_kraken_list$taxonReads) > 0, ])
-
-kraken_clade <- newMRexperiment(temp_kraken_list$cladeReads[rowSums(temp_kraken_list$cladeReads) > 0, ])
-
-amr_df <- read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
-                                  header=T, row.names=1, sep=',')
+kraken_new_mr <-
+  temp_kraken_list %>%
+  map( ~ newMRexperiment(.x[rowSums(.x) > 0, ]))
 
 amr <- newMRexperiment(read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
                                   header=T, row.names=1, sep=','))
@@ -349,59 +351,28 @@ setkey(annotations, header)  # Data tables are SQL objects with optional primary
 metadata <- read.csv(metadata_filepath, header=T)
 metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
 
-
-# Split and normalize by environment type ----------------------------------
-
-# Calculate normalization factors on the analytic data.
-# We use Cumulative Sum Scaling as implemented in metagenomeSeq.
-# You will likely get a warning about this step, but it's safe to ignore
-
-# Split Kraken
-
-# Split AMR
-
-transp_amr <- function(x){
-  amr_analytic <- as.data.frame(t(x))
-  amr_analytic$ID <- row.names(amr_analytic)
-  row.names(amr_analytic) <- NULL
-  amr_analytic
-}
-
-amr_trans <- transp_amr(amr_df)
-
-amr_by_environment <- left_join(amr_trans, metadata, by = "ID") %>%
-  split(.$Type)
-
-amr_by_environment_norm <-
-  amr_by_environment %>%
-  map(function(x){
-    row.names(x) <- x$ID
-    amr_retrans <- x %>%
-      select_if(is.numeric)
-    amr_retrans <- as.data.frame(t(amr_retrans))
-    amr_retrans
-  }) %>%
-  map(~ newMRexperiment(.x)) %>%
-  map(~ cumNorm(.x))
-
 # Normalizing unsplit Kraken and AMR
 
-cumNorm(kraken)
+kraken_css <- 
+  kraken_new_mr %>%
+  map(~ cumNorm(.x))
+
 cumNorm(amr)
 
 # Normalize clade reads kraken
 
-cumNorm(kraken_clade)
-
 # Extract the normalized counts into data tables for aggregation
 
-kraken_norm <- data.table(MRcounts(kraken, norm=T))
-kraken_raw <- data.table(MRcounts(kraken, norm=F))
+kraken_norm <- 
+  kraken_css %>%
+  map(~ data.table(MRcounts(.x, norm=T)))
+  
+kraken_raw <- 
+  kraken_css %>%
+  map(~ data.table(MRcounts(.x, norm=F)))
+
 amr_norm <- data.table(MRcounts(amr, norm=T))
 amr_raw <- data.table(MRcounts(amr, norm=F))
-
-kraken_norm_clade <- data.table(MRcounts(kraken_clade, norm=T))
-kraken_raw_clade <- data.table(MRcounts(kraken_clade, norm=F))
 
 # Aggregate the normalized counts for AMR using the annotations data table, SQL
 # outer join, and aggregation with vectorized lapply
@@ -472,96 +443,94 @@ amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Clas
 # the actual data and aggregate using lapply as before.
 
 # kraken_taxonomy <- data.table(id=rownames(kraken))
-kraken_taxonomy <- data.table(id=rownames(kraken_clade))
+kraken_taxonomy <- 
+  temp_kraken_list %>%
+  map(~ data.table(id=rownames(.x)))
 
 # Figure out a less convoluted method for splitting taxonomy lineages
 
-kraken_taxonomy$splitting <- str_split(string = kraken_taxonomy$id, pattern = "\\|")
+kraken_taxonomy <- 
+  kraken_taxonomy %>%
+  map(~ mutate(.x, splitting = str_split(string = id, pattern = "\\|")))
 
-kraken_taxonomy$Domain <- kraken_taxonomy$splitting %>% 
-  map(function(x){
-    str_extract(x,"d_.*") %>%
+mutate_tax <- function(lineage, tax_pattern){
+  split_lin <- map(
+    lineage,
+    ~ str_extract(.x, tax_pattern) %>%
       purrr::discard(is.na)
-    }) %>%
-  as.character()
-
-kraken_taxonomy$Phylum <- kraken_taxonomy$splitting %>% 
-  map(function(x){
-    str_extract(x,"p_.*") %>%
-      purrr::discard(is.na)
-}) %>%
-  as.character()
-
-kraken_taxonomy$Class <- kraken_taxonomy$splitting %>% 
-  map(function(x){
-    str_extract(x,"c_.*") %>%
-      purrr::discard(is.na)
-  }) %>%
-  as.character()
-
-kraken_taxonomy$Order <- kraken_taxonomy$splitting %>% 
-  map(function(x){
-    str_extract(x,"o_.*") %>%
-      purrr::discard(is.na)
-  }) %>%
-  as.character()
-
-kraken_taxonomy$Family <- kraken_taxonomy$splitting %>% 
-  map(function(x){
-    str_extract(x,"f_.*") %>%
-      purrr::discard(is.na)
-  }) %>%
-  as.character()
-
-kraken_taxonomy$Genus <- kraken_taxonomy$splitting %>% 
-  map(function(x){
-    str_extract(x,"g_.*") %>%
-      purrr::discard(is.na)
-  }) %>%
-  as.character()
-
-kraken_taxonomy$Species <- kraken_taxonomy$splitting %>% 
-  map(function(x){
-    str_extract(x,"s_.*") %>%
-      purrr::discard(is.na)
-  }) %>%
-  as.character()
-
-kraken_taxonomy <- kraken_taxonomy %>% 
-  select(id,
-         Domain,
-         Phylum,
-         Class,
-         Order,
-         Family,
-         Genus,
-         Species
     )
+  split_lin <- split_lin %>% as.character()
+} 
+
+
+
+kraken_taxonomy_split <- 
+  kraken_taxonomy %>% 
+  map(function(x){
+    split_tax <- x %>%
+      mutate(Domain = mutate_tax(splitting, "^d_.*")) %>% 
+      mutate(Phylum = mutate_tax(splitting, "^p_.*")) %>% 
+      mutate(Order = mutate_tax(splitting, "^o_.*")) %>%
+      mutate(Class = mutate_tax(splitting, "^c_.*")) %>%
+      mutate(Family = mutate_tax(splitting, "^f_.*")) %>%
+      mutate(Genus = mutate_tax(splitting, "^g_.*")) %>%
+      mutate(Species = mutate_tax(splitting, "^s_.*"))
+    split_tax
+  })
+
+kraken_taxonomy_split <- 
+  kraken_taxonomy_split %>%
+  map(~ select(.x, -splitting))
 
 # Convert all character(0) instances to NA
 
-kraken_taxonomy[ kraken_taxonomy == "character(0)" ] <- NA
+kraken_taxonomy_split <- 
+  kraken_taxonomy_split %>% 
+  map(function(x){
+    df <- na_if(select(x, everything()), "character(0)")
+    df
+})
 
-kraken_taxonomy$lowest <- str_split(string = kraken_taxonomy$id, pattern = "\\|") %>% 
-  map_chr(~ tail(.x, n=1))
+kraken_taxonomy_split <- 
+  kraken_taxonomy_split %>%
+  map(function(x){
+    add_lowest <- x %>%
+      mutate(lowest = str_split(string = id, pattern = "\\|") %>% 
+          map_chr(~ tail(.x, n=1)))
+    add_lowest
+  })
 
-# Awesome!!! Using named vector for replacing taxon name with level
+# Use tax patterns named vector to replace lowest taxon name
+# for taxonomy level
 
-tax_patterns <- c(
-  "^d_.*" = "Domain",
-  "^p_.*" = "Phylum",
-  "^o_.*" = "Order",
-  "^c_.*" = "Class",
-  "^f_.*" = "Family",
-  "^g_.*" = "Genus",
-  "^s_.*" = "Species"
+tax_levels <- c(
+  "Domain",
+  "Phylum",
+  "Order",
+  "Class",
+  "Family",
+  "Genus",
+  "Species"
 )
-  
-kraken_taxonomy <-
-  kraken_taxonomy %>%
-  mutate(lowest_level = str_replace_all(lowest, tax_patterns))
 
-kraken_taxonomy <- data.table(kraken_taxonomy)
+tax_regex <- c(
+  "^d_.*",
+  "^p_.*", 
+  "^o_.*", 
+  "^c_.*", 
+  "^f_.*", 
+  "^g_.*", 
+  "^s_.*" 
+)
+
+tax_patterns <- tax_levels
+names(tax_patterns) <- tax_regex
+
+kraken_taxonomy_split <-
+  kraken_taxonomy_split %>%
+  map(~ mutate(.x, lowest_level = str_replace_all(lowest, tax_patterns)))
+
+kraken_taxonomy_split <- map(kraken_taxonomy_split, ~ data.table(.x))
 
 setkey(kraken_taxonomy, id)
 kraken_norm[, id :=(rownames(kraken)), ]
@@ -569,7 +538,7 @@ kraken_norm_clade[, id :=(rownames(kraken_clade)), ]
 # setkey(kraken_norm, id)
 # setkey(kraken_norm_clade, id)
 # kraken_norm <- kraken_taxonomy[kraken_norm]  # left outer join
-# kraken_norm_clade <- kraken_taxonomy[kraken_norm_clade]  # left outer joi
+# kraken_norm_clade <- kraken_taxonomy[kraken_norm_clade]  # left outer join
 
 # getting error message
 
