@@ -594,13 +594,13 @@ make_analytic <- function(x,y){
   analytic
 }
 
-kraken_taxon_norm_analytic <-map2(
+kraken_taxon_norm_analytic <- map2(
   kraken_taxon_norm_summarised,
   tax_levels,
   safely(~ make_analytic(.x, .y))
 )
 
-kraken_taxon_raw_analytic <-map2(
+kraken_taxon_raw_analytic <- map2(
   kraken_taxon_raw_summarised,
   tax_levels,
   safely(~ make_analytic(.x, .y))
@@ -609,7 +609,6 @@ kraken_taxon_raw_analytic <-map2(
 kraken_species_raw <- kraken_raw[!is.na(Species) & Species != 'NA', lapply(.SD, sum), by='Species', .SDcols=!1:8]
 kraken_species_raw_analytic <- newMRexperiment(counts=kraken_species_raw[, .SD, .SDcols=!'Species'])
 rownames(kraken_species_raw_analytic) <- kraken_species_raw$Species
-
 
 # Processing kraken cladeReads data
 
@@ -635,6 +634,7 @@ setkeyv(metadata, sample_column_id)
 
 
 # Vector of objects for iteration and their names
+
 AMR_analytic_data <- c(amr_class_analytic,
                        amr_mech_analytic,
                        amr_group_analytic,
@@ -645,6 +645,7 @@ AMR_raw_analytic_data <- c(amr_class_raw_analytic,
                            amr_group_raw_analytic,
                            amr_gene_raw_analytic)
 AMR_raw_analytic_names <- c('Class', 'Mechanism', 'Group', 'Gene')
+
 kraken_analytic_data <- c(kraken_domain_analytic,
                           kraken_phylum_analytic,
                           kraken_class_analytic,
@@ -702,7 +703,6 @@ for( l in 1:length(kraken_raw_analytic_data) ) {
     fData(kraken_raw_analytic_data[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_raw_analytic_data[[l]])))
     rownames(fData(kraken_raw_analytic_data[[l]])) <- rownames(MRcounts(kraken_raw_analytic_data[[l]]))
 }
-
 
 # Exploratory Analyses: Alpha Rarefaction ---------------------------------
 
