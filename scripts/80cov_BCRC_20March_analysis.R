@@ -574,58 +574,38 @@ kraken_raw <- map2(
 
 # Group the kraken taxonReads data by level for analysis, removing NA entries
 
-kraken_domain <- kraken_norm[!is.na(Domain) & Domain != 'NA' , lapply(.SD, sum), by='Domain', .SDcols=!1:8]
-kraken_domain_analytic <- newMRexperiment(counts=kraken_domain[, .SD, .SDcols=!'Domain'])
-rownames(kraken_domain_analytic) <- kraken_domain$Domain
+kraken_taxon_norm_summarised <- 
+  tax_levels %>%
+  map(
+    ~ kraken_norm$taxonReads[!is.na(eval(as.name(.x))) & eval(as.name(.x)) != 'NA' , lapply(.SD, sum), by=.x, .SDcols=!1:10]
+  ) %>% 
+  set_names(nm=tax_levels)
 
-kraken_domain_raw <- kraken_raw[!is.na(Domain) & Domain != 'NA', lapply(.SD, sum), by='Domain', .SDcols=!1:8]
-kraken_domain_raw_analytic <- newMRexperiment(counts=kraken_domain_raw[, .SD, .SDcols=!'Domain'])
-rownames(kraken_domain_raw_analytic) <- kraken_domain_raw$Domain
+kraken_taxon_raw_summarised <- 
+  tax_levels %>%
+  map(
+    ~ kraken_raw$taxonReads[!is.na(eval(as.name(.x))) & eval(as.name(.x)) != 'NA' , lapply(.SD, sum), by=.x, .SDcols=!1:10]
+  ) %>% 
+  set_names(nm=tax_levels)
 
-kraken_phylum <- kraken_norm[!is.na(Phylum) & Phylum != 'NA', lapply(.SD, sum), by='Phylum', .SDcols=!1:8]
-kraken_phylum_analytic <- newMRexperiment(counts=kraken_phylum[, .SD, .SDcols=!'Phylum'])
-rownames(kraken_phylum_analytic) <- kraken_phylum$Phylum
+make_analytic <- function(x,y){
+  analytic <- newMRexperiment(counts=x[, .SD, .SDcols=!y])
+  rownames(analytic) <- x[,eval(as.name(y))]
+  analytic
+}
 
-kraken_phylum_raw <- kraken_raw[!is.na(Phylum) & Phylum != 'NA', lapply(.SD, sum), by='Phylum', .SDcols=!1:8]
-kraken_phylum_raw_analytic <- newMRexperiment(counts=kraken_phylum_raw[, .SD, .SDcols=!'Phylum'])
-rownames(kraken_phylum_raw_analytic) <- kraken_phylum_raw$Phylum
+kraken_taxon_norm_analytic <-map2(
+  kraken_taxon_norm_summarised,
+  tax_levels,
+  safely(~ make_analytic(.x, .y))
+)
 
-kraken_class <- kraken_norm[!is.na(Class) & Class != 'NA', lapply(.SD, sum), by='Class', .SDcols=!1:8]
-kraken_class_analytic <- newMRexperiment(counts=kraken_class[, .SD, .SDcols=!'Class'])
-rownames(kraken_class_analytic) <- kraken_class$Class
-
-kraken_class_raw <- kraken_raw[!is.na(Class) & Class != 'NA', lapply(.SD, sum), by='Class', .SDcols=!1:8]
-kraken_class_raw_analytic <- newMRexperiment(counts=kraken_class_raw[, .SD, .SDcols=!'Class'])
-rownames(kraken_class_raw_analytic) <- kraken_class_raw$Class
-
-kraken_order <- kraken_norm[!is.na(Order) & Order != 'NA', lapply(.SD, sum), by='Order', .SDcols=!1:8]
-kraken_order_analytic <- newMRexperiment(counts=kraken_order[, .SD, .SDcols=!'Order'])
-rownames(kraken_order_analytic) <- kraken_order$Order
-
-kraken_order_raw <- kraken_raw[!is.na(Order) & Order != 'NA', lapply(.SD, sum), by='Order', .SDcols=!1:8]
-kraken_order_raw_analytic <- newMRexperiment(counts=kraken_order_raw[, .SD, .SDcols=!'Order'])
-rownames(kraken_order_raw_analytic) <- kraken_order_raw$Order
-
-kraken_family <- kraken_norm[!is.na(Family) & Family != 'NA', lapply(.SD, sum), by='Family', .SDcols=!1:8]
-kraken_family_analytic <- newMRexperiment(counts=kraken_family[, .SD, .SDcols=!'Family'])
-rownames(kraken_family_analytic) <- kraken_family$Family
-
-kraken_family_raw <- kraken_raw[!is.na(Family) & Family != 'NA', lapply(.SD, sum), by='Family', .SDcols=!1:8]
-kraken_family_raw_analytic <- newMRexperiment(counts=kraken_family_raw[, .SD, .SDcols=!'Family'])
-rownames(kraken_family_raw_analytic) <- kraken_family_raw$Family
-
-kraken_genus <- kraken_norm[!is.na(Genus) & Genus != 'NA', lapply(.SD, sum), by='Genus', .SDcols=!1:8]
-kraken_genus_analytic <- newMRexperiment(counts=kraken_genus[, .SD, .SDcols=!'Genus'])
-rownames(kraken_genus_analytic) <- kraken_genus$Genus
-
-kraken_genus_raw <- kraken_raw[!is.na(Genus) & Genus != 'NA', lapply(.SD, sum), by='Genus', .SDcols=!1:8]
-kraken_genus_raw_analytic <- newMRexperiment(counts=kraken_genus_raw[, .SD, .SDcols=!'Genus'])
-rownames(kraken_genus_raw_analytic) <- kraken_genus_raw$Genus
-
-kraken_species <- kraken_norm[!is.na(Species) & Species != 'NA', lapply(.SD, sum), by='Species', .SDcols=!1:8]
-kraken_species_analytic <- newMRexperiment(counts=kraken_species[, .SD, .SDcols=!'Species'])
-rownames(kraken_species_analytic) <- kraken_species$Species
-
+kraken_taxon_raw_analytic <-map2(
+  kraken_taxon_raw_summarised,
+  tax_levels,
+  safely(~ make_analytic(.x, .y))
+)
+  
 kraken_species_raw <- kraken_raw[!is.na(Species) & Species != 'NA', lapply(.SD, sum), by='Species', .SDcols=!1:8]
 kraken_species_raw_analytic <- newMRexperiment(counts=kraken_species_raw[, .SD, .SDcols=!'Species'])
 rownames(kraken_species_raw_analytic) <- kraken_species_raw$Species
@@ -634,25 +614,20 @@ rownames(kraken_species_raw_analytic) <- kraken_species_raw$Species
 # Processing kraken cladeReads data
 
 kraken_norm_clade_list <-
-  kraken_norm_clade %>%
+  kraken_norm$cladeReads%>%
   split(.$lowest_level)
 
 # Make long data frame for plotting with ggplot2
-kraken_melted_analytic <- rbind(melt_dt(MRcounts(kraken_domain_analytic), 'Domain'),
-                                melt_dt(MRcounts(kraken_phylum_analytic), 'Phylum'),
-                                melt_dt(MRcounts(kraken_class_analytic), 'Class'),
-                                melt_dt(MRcounts(kraken_order_analytic), 'Order'),
-                                melt_dt(MRcounts(kraken_family_analytic), 'Family'),
-                                melt_dt(MRcounts(kraken_genus_analytic), 'Genus'),
-                                melt_dt(MRcounts(kraken_species_analytic), 'Species'))
 
-kraken_melted_raw_analytic <- rbind(melt_dt(MRcounts(kraken_domain_raw_analytic), 'Domain'),
-                                    melt_dt(MRcounts(kraken_phylum_raw_analytic), 'Phylum'),
-                                    melt_dt(MRcounts(kraken_class_raw_analytic), 'Class'),
-                                    melt_dt(MRcounts(kraken_order_raw_analytic), 'Order'),
-                                    melt_dt(MRcounts(kraken_family_raw_analytic), 'Family'),
-                                    melt_dt(MRcounts(kraken_genus_raw_analytic), 'Genus'),
-                                    melt_dt(MRcounts(kraken_species_raw_analytic), 'Species'))
+kraken_taxon_norm_melted <- imap_dfr(
+  kraken_taxon_norm_analytic,
+  ~ melt_dt(MRcounts(.x$result), .y)
+)
+
+kraken_taxon_raw_melted <- imap_dfr(
+  kraken_taxon_raw_analytic,
+  ~ melt_dt(MRcounts(.x$result), .y)
+)
 
 # Ensure that the metadata entries match the factor order of the MRexperiments
 metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, sample_column_id]), ])
@@ -677,7 +652,9 @@ kraken_analytic_data <- c(kraken_domain_analytic,
                           kraken_family_analytic,
                           kraken_genus_analytic,
                           kraken_species_analytic)
+
 kraken_analytic_names <- c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species')
+
 kraken_raw_analytic_data <- c(kraken_domain_raw_analytic,
                               kraken_phylum_raw_analytic,
                               kraken_class_raw_analytic,
@@ -685,6 +662,7 @@ kraken_raw_analytic_data <- c(kraken_domain_raw_analytic,
                               kraken_family_raw_analytic,
                               kraken_genus_raw_analytic,
                               kraken_species_raw_analytic)
+
 kraken_raw_analytic_names <- c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species')
 
 
