@@ -462,7 +462,7 @@ mutate_tax <- function(lineage, tax_pattern){
   split_lin <- split_lin %>% as.character()
 } 
 
-
+# Goal: make the step below more like functional programming
 
 kraken_taxonomy_split <- 
   kraken_taxonomy %>% 
@@ -532,37 +532,51 @@ kraken_taxonomy_split <-
 
 kraken_taxonomy_split <- map(kraken_taxonomy_split, ~ data.table(.x))
 
-setkey(kraken_taxonomy, id)
-kraken_norm[, id :=(rownames(kraken)), ]
-kraken_norm_clade[, id :=(rownames(kraken_clade)), ]
-# setkey(kraken_norm, id)
-# setkey(kraken_norm_clade, id)
-# kraken_norm <- kraken_taxonomy[kraken_norm]  # left outer join
-# kraken_norm_clade <- kraken_taxonomy[kraken_norm_clade]  # left outer join
+kraken_taxonomy_split <- map(kraken_taxonomy_split, ~ setkey(.x, id))
 
-# getting error message
+kraken_norm <- map2(
+  kraken_norm,
+  kraken_css,
+  ~ .x[, id :=(rownames(.y)), ]
+)
+
+kraken_norm <- map(
+  kraken_norm,
+  ~ setkey(.x, id)
+)
+
+kraken_norm <- map2(
+  kraken_norm,
+  kraken_taxonomy_split,
+  ~ .y[.x] # left outer join
+)
 
 kraken_norm_clade <-
   kraken_taxonomy %>%
   left_join(kraken_norm_clade, by = "id")
 
-# kraken_raw[, id :=(rownames(kraken)), ]
-kraken_raw_clade[, id :=(rownames(kraken_clade)), ]
-# setkey(kraken_raw, id)
-setkey(kraken_raw_clade, id)
-kraken_raw_clade <- kraken_taxonomy[kraken_raw_clade]  # left outer join
-# kraken_raw <- kraken_taxonomy[kraken_raw]  # left outer join
+kraken_raw <- map2(
+  kraken_raw,
+  kraken_css,
+  ~ .x[, id :=(rownames(.y)), ]
+)
 
-# Group the kraken data by level for analysis, removing NA entries
+kraken_raw <- map(
+  kraken_raw,
+  ~ setkey(.x, id)
+)
+ 
+kraken_raw <- map2(
+  kraken_raw,
+  kraken_taxonomy_split,
+  ~ .y[.x] # left outer join
+) 
+
+# Group the kraken taxonReads data by level for analysis, removing NA entries
+
 kraken_domain <- kraken_norm[!is.na(Domain) & Domain != 'NA' , lapply(.SD, sum), by='Domain', .SDcols=!1:8]
-
 kraken_domain_analytic <- newMRexperiment(counts=kraken_domain[, .SD, .SDcols=!'Domain'])
-
 rownames(kraken_domain_analytic) <- kraken_domain$Domain
-
-kraken_norm_clade_list <-
-  kraken_norm_clade %>%
-  split(.$lowest_level)
 
 kraken_domain_raw <- kraken_raw[!is.na(Domain) & Domain != 'NA', lapply(.SD, sum), by='Domain', .SDcols=!1:8]
 kraken_domain_raw_analytic <- newMRexperiment(counts=kraken_domain_raw[, .SD, .SDcols=!'Domain'])
@@ -617,6 +631,12 @@ kraken_species_raw_analytic <- newMRexperiment(counts=kraken_species_raw[, .SD, 
 rownames(kraken_species_raw_analytic) <- kraken_species_raw$Species
 
 
+# Processing kraken cladeReads data
+
+kraken_norm_clade_list <-
+  kraken_norm_clade %>%
+  split(.$lowest_level)
+
 # Make long data frame for plotting with ggplot2
 kraken_melted_analytic <- rbind(melt_dt(MRcounts(kraken_domain_analytic), 'Domain'),
                                 melt_dt(MRcounts(kraken_phylum_analytic), 'Phylum'),
@@ -625,6 +645,7 @@ kraken_melted_analytic <- rbind(melt_dt(MRcounts(kraken_domain_analytic), 'Domai
                                 melt_dt(MRcounts(kraken_family_analytic), 'Family'),
                                 melt_dt(MRcounts(kraken_genus_analytic), 'Genus'),
                                 melt_dt(MRcounts(kraken_species_analytic), 'Species'))
+
 kraken_melted_raw_analytic <- rbind(melt_dt(MRcounts(kraken_domain_raw_analytic), 'Domain'),
                                     melt_dt(MRcounts(kraken_phylum_raw_analytic), 'Phylum'),
                                     melt_dt(MRcounts(kraken_class_raw_analytic), 'Class'),
