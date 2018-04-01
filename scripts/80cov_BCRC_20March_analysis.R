@@ -605,16 +605,45 @@ kraken_taxon_raw_analytic <- map2(
   tax_levels,
   safely(~ make_analytic(.x, .y))
 )
-  
-kraken_species_raw <- kraken_raw[!is.na(Species) & Species != 'NA', lapply(.SD, sum), by='Species', .SDcols=!1:8]
-kraken_species_raw_analytic <- newMRexperiment(counts=kraken_species_raw[, .SD, .SDcols=!'Species'])
-rownames(kraken_species_raw_analytic) <- kraken_species_raw$Species
+
+# Examples for further reference  
+# kraken_species_raw <- kraken_raw[!is.na(Species) & Species != 'NA', lapply(.SD, sum), by='Species', .SDcols=!1:8]
+# kraken_species_raw_analytic <- newMRexperiment(counts=kraken_species_raw[, .SD, .SDcols=!'Species'])
+# rownames(kraken_species_raw_analytic) <- kraken_species_raw$Species
 
 # Processing kraken cladeReads data
 
-kraken_norm_clade_list <-
-  kraken_norm$cladeReads%>%
-  split(.$lowest_level)
+kraken_clade_norm_list <-
+  kraken_norm$cladeReads %>%
+  split(.$lowest_level) %>%
+  map(
+    ~ .x %>%
+      select(-c(id:Species,lowest_level))
+  )
+
+kraken_clade_raw_list <-
+  kraken_raw$cladeReads %>%
+  split(.$lowest_level) %>%
+  map(
+    ~ .x %>%
+      select(-c(id:Species,lowest_level))
+  )
+
+make_analytic_clade <- function(x){
+  analytic <- newMRexperiment(counts=x[, .SD, .SDcols=!'lowest'])
+  rownames(analytic) <- x$lowest
+  analytic
+}
+
+kraken_clade_norm_analytic <- map(
+  kraken_clade_norm_list,
+  safely(~ make_analytic_clade(.x))
+)
+
+kraken_clade_raw_analytic <- map(
+  kraken_clade_raw_list,
+  safely(~ make_analytic_clade(.x))
+)
 
 # Make long data frame for plotting with ggplot2
 
@@ -625,6 +654,11 @@ kraken_taxon_norm_melted <- imap_dfr(
 
 kraken_taxon_raw_melted <- imap_dfr(
   kraken_taxon_raw_analytic,
+  ~ melt_dt(MRcounts(.x$result), .y)
+)
+
+kraken_clade_raw_melted <- imap_dfr(
+  kraken_clade_raw_analytic,
   ~ melt_dt(MRcounts(.x$result), .y)
 )
 
@@ -639,6 +673,7 @@ AMR_analytic_data <- c(amr_class_analytic,
                        amr_mech_analytic,
                        amr_group_analytic,
                        amr_gene_analytic)
+
 AMR_analytic_names <- c('Class', 'Mechanism', 'Group', 'Gene')
 AMR_raw_analytic_data <- c(amr_class_raw_analytic,
                            amr_mech_raw_analytic,
@@ -685,23 +720,30 @@ for( l in 1:length(AMR_raw_analytic_data) ) {
     rownames(fData(AMR_raw_analytic_data[[l]])) <- rownames(MRcounts(AMR_raw_analytic_data[[l]]))
 }
 
-
-for( l in 1:length(kraken_analytic_data) ) {
-    sample_idx <- match(colnames(MRcounts(kraken_analytic_data[[l]])), metadata[[sample_column_id]])
-    pData(kraken_analytic_data[[l]]) <- data.frame(
-        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
-    rownames(pData(kraken_analytic_data[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-    fData(kraken_analytic_data[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_analytic_data[[l]])))
-    rownames(fData(kraken_analytic_data[[l]])) <- rownames(MRcounts(kraken_analytic_data[[l]]))
+match_metadata <- function(x){
+  sample_idx <- match(colnames(MRcounts(x)), metadata[[sample_column_id]])
+  pData(x) <- data.frame(
+    metadata[sample_idx, .SD, .SDcols=!sample_column_id]
+    )
+  rownames(pData(x)) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+  fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
+  rownames(fData(x)) <- rownames(MRcounts(x))
 }
 
-for( l in 1:length(kraken_raw_analytic_data) ) {
-    sample_idx <- match(colnames(MRcounts(kraken_raw_analytic_data[[l]])), metadata[[sample_column_id]])
-    pData(kraken_raw_analytic_data[[l]]) <- data.frame(
+kraken_clade_norm_analytic <- 
+  kraken_clade_norm_analytic %>%
+  map(
+    ~ match_metadata(.x$result)
+  )
+
+
+for( l in 1:length(kraken_clade_norm_analytic) ) {
+    sample_idx <- match(colnames(MRcounts(kraken_clade_norm_analytic[[l]]$result)), metadata[[sample_column_id]])
+    pData(kraken_clade_norm_analytic[[l]]$result) <- data.frame(
         metadata[sample_idx, .SD, .SDcols=!sample_column_id])
-    rownames(pData(kraken_raw_analytic_data[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-    fData(kraken_raw_analytic_data[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_raw_analytic_data[[l]])))
-    rownames(fData(kraken_raw_analytic_data[[l]])) <- rownames(MRcounts(kraken_raw_analytic_data[[l]]))
+    rownames(pData(kraken_clade_norm_analytic[[l]]$result)) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+    fData(kraken_clade_norm_analytic[[l]]$result) <- data.frame(Feature=rownames(MRcounts(kraken_clade_norm_analytic[[l]]$result)))
+    rownames(fData(kraken_clade_norm_analytic[[l]]$result)) <- rownames(MRcounts(kraken_clade_norm_analytic[[l]]$result))
 }
 
 # Exploratory Analyses: Alpha Rarefaction ---------------------------------
