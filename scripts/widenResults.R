@@ -50,7 +50,7 @@ krakenReportsPavianMerged <-
     x
     }, .id = "Sample")
 
-makeAnalytical <- function(x, column){
+make_kraken_analytical <- function(x, column){
   x <- x %>%
   select(Sample, column, taxLineage) %>%
   spread(key = Sample, value = column, fill = 0) %>%
@@ -60,7 +60,7 @@ makeAnalytical <- function(x, column){
 
 tax_columns <- c("cladeReads", "taxonReads")
   
-krakenAnalytical <- map(tax_columns, ~ makeAnalytical(krakenReportsPavianMerged, .x)) %>%
+krakenAnalytical <- map(tax_columns, ~ make_kraken_analytical(krakenReportsPavianMerged, .x)) %>%
   set_names(nm=tax_columns)
   
 iwalk(krakenAnalytical,
@@ -105,7 +105,7 @@ row.names(amrAnalytical) <- amrClassification
 
 # Reading MEGABio data ----------------------------------------------------
 
-megaBioPaths <- Sys.glob(here("MegaBio_results",'*.tabular'))
+megaBioPaths <- Sys.glob(here("MegaBio_results", '*','*.tabular'))
 
 megaBioNames <- list.files(
   path = Sys.glob("./MegaBio_results/*/"),
@@ -113,12 +113,14 @@ megaBioNames <- list.files(
   ) %>%
   map(function(x) str_replace(x, "_MBio_CovSampler_parsed\\.tab$", ""))
 
-megaBioReports <- megaBioPaths %>%
-  map(function(x) read_tsv(x)) %>% 
+megaBioReports <- 
+  megaBioPaths %>%
+  map(~ read_tsv(.x)) %>% 
       set_names(nm=megaBioNames)
 
 megaBioReportsMerged <- megaBioReports %>%
-  map_dfr(function(x) x, .id="Sample")
+  map_dfr(function(x) x, .id="Sample") %>%
+  rename(Header = `Gene Id`)
 
 # Change sample names to reflect names in metadata files
 
@@ -144,12 +146,14 @@ megaBioReportsMerged <- megaBioReportsMerged %>%
   mutate(Sample = str_replace(Sample, "FC_V053_H_007", "FC_007_V053")) %>%
   mutate(Sample = str_replace(Sample, "FC_V055", "FC_Con_V055")) %>%
   mutate(Sample = str_replace(Sample, "FC_V046_H_006", "FC_006_V046")) %>%
-  mutate(Sample = str_replace(Sample, "FC_V046_H_007", "FC_007_V046")) %>%
-  mutate(Sample = str_replace(Sample, "Soil_N_", ""))
-  
+  mutate(Sample = str_replace(Sample, "FC_V046_H_007", "FC_007_V046"))
   
 
 # Concatenate MEGARes and MEGABio data ------------------------------------
+
+amrReportsMerged <- 
+  amrReportsMerged %>%
+  select(-c(Class, Mechanism, Group))
 
 amrBioConcat <- rbind(amrReportsMerged, megaBioReportsMerged)
 
@@ -165,7 +169,7 @@ amrBioAnalytical <- amrBioAnalytical %>%
 
 row.names(amrBioAnalytical) <- amrBioClassification
 
-write.csv(amrBioAnalytical, 'amrBioAnalytical.csv')
+write.csv(amrBioAnalytical, here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'))
 
 # Update annotations file with new MEGABio annotations ---------------------
 
@@ -178,4 +182,4 @@ megaresAMR <- megaresMegabioCSU %>%
 
 megaresMegabioUpdated <- rbind(megaresAMR, megaBioAAFC)
 
-write.csv(megaresMegabioUpdated, 'megaresMegabioUpdated.csv', row.names = FALSE)
+write.csv(megaresMegabioUpdated, here('aggregated_data_for_analysis', 'megaresMegabioUpdated.csv'), row.names = FALSE)

@@ -149,7 +149,7 @@ meg_ordination <- function(data_list,
     
     if( method == 'NMDS' ) {
       # Set parallel to whatever your computer can support in terms of CPU count
-      ord.res <- metaMDS(t_data, autotransform=F, parallel=7, trymax=49)
+      ord.res <- metaMDS(t_data, autotransform=F, parallel=3, trymax=49)
       ord_points <- data.table(ord.res$points)
       names(ord_points) <- c('Ord1', 'Ord2')
       ord_points[, ID :=( rownames(ord.res$points) )]
@@ -262,7 +262,7 @@ meg_heatmap <- function(melted_data,
   colnames(tile_subset)[colnames(tile_subset) == 'ID'] <- sample_var
   setkeyv(tile_subset, sample_var)
   
-  tile_subset <- metadata[tile_subset]
+  tile_subset <- as.data.table(left_join(tile_subset, metadata, by="ID"))
   tile_subset <- tile_subset[!is.na(tile_subset[[group_var]]), ]
   
   if(length(analysis_subset) > 0) {
