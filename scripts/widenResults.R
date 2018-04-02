@@ -178,7 +178,7 @@ megaresMegabioCSU <- read.csv('megares_annotations_v1.01.csv')
 megaBioAAFC <- read.csv('megabio_AAFC_v0.2_annotation.csv')
 
 megaresAMR <- megaresMegabioCSU %>%
-  slice(1:3824)
+  slice(1:3824) # row at which AMR ends. Biometal/biociode starts in next row
 
 megaresMegabioUpdated <- rbind(megaresAMR, megaBioAAFC)
 

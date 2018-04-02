@@ -3,16 +3,11 @@
 
 ## Analysis of resistome and microbiome
 ## Analysis of microbiome with two approaches:
-
-## Normalization of Kraken results: all samples together
-## Two methods used:
-
 ## taxReads: using taxon-specific read counts
 ## cladeReads: using clade read counts
 
 ## Original author: Steven Lakin (Colorado State University)
 ## Modified by: Rodrigo Ortega Polo (University of Lethbridge)
-
 
 ## The files you want to use for input to this (for the MEG group analyses)
 ## are the AMR_analytic_matrix.csv and kraken_analytic_matrix.csv.  The AMR
@@ -20,8 +15,8 @@
 ## matrix is not due to the way that reads get classified using each of
 ## these methods.
 
-## So you should have pulled these files from the output of the nextflow pipeline
-## and you are now performing this analysis on your local machine.  We will assume
+## So you should have pulled these files from the output of the Galaxy pipeline
+## and you are now performing this analysis on your local machine. We will assume
 ## that you've set your working directory to where these files are located on your
 ## local machine and that you have installed the metagenomeSeq package.
 
@@ -29,7 +24,6 @@
 ## file from the MEGARes website; the annotation file must be from the same version
 ## of the database as the file you used in the AmrPlusPlus pipeline, i.e. the headers
 ## must match between the annotation file and the database file.
-
 
 # Loading packages --------------------------------------------------------
 
@@ -112,7 +106,7 @@ exploratory_analyses = list(
   # # Description: Location comparison within Catch Basin type
   # list(
   #     name = 'LocationCB',
-  #     subsets = list('Type == Catch.Basin', 'NatType != Natural'),
+  #     subsets = list('Type == Catch_Basin', 'NatType != Natural'),
   #     exploratory_var = 'Location'
   # ),
 
@@ -136,7 +130,7 @@ exploratory_analyses = list(
   # Description: Natural vs conventional Catch Basin
   list(
     name = 'NaturalConventionalCB',
-    subsets = list('Type == Fecal_Composite', 'Location == Vegreville'),
+    subsets = list('Type == Catch_Basin', 'Location == Vegreville'),
     exploratory_var = 'NatType'
   ),
   
@@ -280,7 +274,7 @@ snp_regex = c('ACRR',
 # Import & format Data ----------------------------------------------------
 
 ## These files should be standard for all analyses, as they are
-## the output matrices from AMR++ nextflow.  Additionally,
+## the output matrices from AMR++ nextflow. Additionally,
 ## you will need to obtain the most recent megares annotations file
 ## from megares.meglab.org
 
@@ -433,6 +427,7 @@ amr_melted_analytic <- rbind(melt_dt(MRcounts(amr_class_analytic), 'Class'),
                              melt_dt(MRcounts(amr_mech_analytic), 'Mechanism'),
                              melt_dt(MRcounts(amr_group_analytic), 'Group'),
                              melt_dt(MRcounts(amr_gene_analytic), 'Gene'))
+
 amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Class'),
                                  melt_dt(MRcounts(amr_mech_raw_analytic), 'Mechanism'),
                                  melt_dt(MRcounts(amr_group_raw_analytic), 'Group'),
@@ -571,7 +566,6 @@ kraken_raw <- map2(
   ~ .y[.x] # left outer join
 ) 
 
-
 # Kraken taxon analytic matrices ------------------------------------------
 
 # Group the kraken taxonReads data by level for analysis, removing NA entries
@@ -673,7 +667,7 @@ kraken_clade_raw_melted <- imap_dfr(
 # Match metadata ----------------------------------------------------------
 
 # Ensure that the metadata entries match the factor order of the MRexperiments
-metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, ID]), ])
+metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, "ID"]), ])
 setkeyv(metadata, sample_column_id)
 
 
@@ -809,10 +803,8 @@ for( v in 1:length(exploratory_analyses) ) {
     
 }    
 
-
-kraken_clade_rarefaction <-
-  exploratory_analyses %>%
-  map( ~ meg_alpha_rarefaction(
+exploratory_analyses %>%
+  walk(safely(~ meg_alpha_rarefaction(
       data_list=kraken_clade_raw_analytic,
       data_names=kraken_clade_names,
       metadata=metadata,
@@ -822,21 +814,7 @@ kraken_clade_rarefaction <-
       outdir=paste(graph_output_dir, 'Microbiome_cladeReads', .x$name,
         sep='/', collapse=''),
       data_type='Microbiome_cladeReads')
-  )
-
-
-for (v in seq_along(exploratory_analyses)) {
-  meg_alpha_rarefaction(
-    data_list=kraken_clade_raw_analytic,
-    data_names=kraken_clade_names,
-    metadata=metadata,
-    sample_var=sample_column_id,
-    group_var=exploratory_analyses[[v]]$exploratory_var,
-    analysis_subset=exploratory_analyses[[v]]$subsets,
-    outdir=paste(graph_output_dir, 'Microbiome_cladeReads', exploratory_analyses[[v]]$name,
-      sep='/', collapse=''),
-    data_type='Microbiome_cladeReads')
-}
+  ))
 
 
 # Exploratory Analyses: Ordination ----------------------------------------
@@ -868,14 +846,13 @@ for( v in 1:length(exploratory_analyses) ) {
     
 }
     
-    # Microbiome NMDS
+    # Microbiome NMDS (taxon reads)
 
-kraken_taxon_nmds <-
-  exploratory_analyses %>%
-  map(
+exploratory_analyses %>%
+  walk(
     safely(
     ~ meg_ordination(
-      data_list = kraken_taxon_raw_analytic,
+      data_list = kraken_taxon_norm_analytic,
       data_names = kraken_taxon_names,
       metadata = metadata,
       sample_var = sample_column_id,
@@ -884,23 +861,54 @@ kraken_taxon_nmds <-
       outdir = paste(graph_output_dir, 'Microbiome_taxonReads', .x$name, sep='/', collapse=''),
       data_type = 'Microbiome',
       method = 'NMDS')
-    )
-  )
+    ))
     
-kraken_taxon_nmds %>%
     # Microbiome PCA
-  map(
-    meg_ordination(data_list = kraken_taxon_norm_analytic,
+exploratory_analyses %>%
+  walk(
+    safely(
+    ~ meg_ordination(data_list = kraken_taxon_norm_analytic,
                    data_names = kraken_taxon_names,
                    metadata = metadata,
                    sample_var = sample_column_id,
-                   hull_var = exploratory_analyses[[v]]$exploratory_var,
-                   analysis_subset=exploratory_analyses[[v]]$subsets,
-                   outdir = paste(graph_output_dir, 'Microbiome_taxonReads', exploratory_analyses[[v]]$name,
-                                  sep='/', collapse=''),
+                   hull_var = .x$exploratory_var,
+                   analysis_subset=.x$subsets,
+                   outdir = paste(graph_output_dir, 'Microbiome_taxonReads', .x$name, sep='/', collapse=''),
                    data_type = 'Microbiome_taxonReads',
                    method = 'PCA')
-  )
+  ))
+
+# Microbiome NMDS (clade Reads)
+
+exploratory_analyses %>%
+  walk(
+    safely(
+    ~ meg_ordination(
+      data_list = kraken_clade_norm_analytic,
+      data_names = kraken_clade_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      hull_var = .x$exploratory_var,
+      analysis_subset=.x$subsets,
+      outdir = paste(graph_output_dir, 'Microbiome_cladeReads', .x$name, sep='/', collapse=''),
+      data_type = 'Microbiome',
+      method = 'NMDS')
+    ))
+    
+    # Microbiome PCA
+exploratory_analyses %>%
+  walk(
+    safely(
+    ~ meg_ordination(data_list = kraken_clade_norm_analytic,
+                   data_names = kraken_clade_names,
+                   metadata = metadata,
+                   sample_var = sample_column_id,
+                   hull_var = .x$exploratory_var,
+                   analysis_subset=.x$subsets,
+                   outdir = paste(graph_output_dir, 'Microbiome_cladeReads', .x$name, sep='/', collapse=''),
+                   data_type = 'Microbiome_cladeReads',
+                   method = 'PCA')
+  ))
 
 # Exploratory Analyses: Heatmaps ------------------------------------------
 
@@ -919,14 +927,14 @@ for( v in 1:length(exploratory_analyses) ) {
     }
 }
 
-# Microbiome
+# Microbiome (taxon reads)
 for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_taxon_names) ) {
         meg_heatmap(melted_data=kraken_taxon_norm_melted,
                     metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
-                    level_var=kraken_analytic_names[[l]],
+                    level_var=kraken_taxon_names[[l]],
                     analysis_subset=exploratory_analyses[[v]]$subsets,
                     outdir=paste(graph_output_dir, 'Microbiome_taxonReads', exploratory_analyses[[v]]$name,
                                  sep='/', collapse=''),
@@ -934,6 +942,20 @@ for( v in 1:length(exploratory_analyses) ) {
     }
 }
 
+# Microbiome (clade reads)
+for( v in 1:length(exploratory_analyses) ) {
+    for( l in 1:length(kraken_clade_names) ) {
+        meg_heatmap(melted_data=kraken_clade_norm_melted,
+                    metadata=metadata,
+                    sample_var=sample_column_id,
+                    group_var=exploratory_analyses[[v]]$exploratory_var,
+                    level_var=kraken_clade_names[[l]],
+                    analysis_subset=exploratory_analyses[[v]]$subsets,
+                    outdir=paste(graph_output_dir, 'Microbiome_cladeReads', exploratory_analyses[[v]]$name,
+                                 sep='/', collapse=''),
+                    data_type='Microbiome_cladeReads')
+    }
+}
 
 # Exploratory Analyses: Barplots ------------------------------------------
 
@@ -954,23 +976,40 @@ for( v in 1:length(exploratory_analyses) ) {
     }
 }
 
-# Microbiome
+# Microbiome (taxon reads)
 for( v in 1:length(exploratory_analyses) ) {
-    for( l in 1:length(kraken_analytic_names) ) {
+    for( l in 1:length(kraken_taxon_names) ) {
         suppressWarnings(
-            meg_barplot(melted_data=kraken_melted_analytic,
+            meg_barplot(melted_data=kraken_taxon_norm_melted,
                     metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
-                    level_var=kraken_analytic_names[l],
+                    level_var=kraken_taxon_names[[l]],
                     analysis_subset=exploratory_analyses[[v]]$subsets,
-                    outdir=paste(graph_output_dir, 'Microbiome', exploratory_analyses[[v]]$name,
+                    outdir=paste(graph_output_dir, 'Microbiome_taxonReads', exploratory_analyses[[v]]$name,
                                  sep='/', collapse=''),
-                    data_type='Microbiome')
+                    data_type='Microbiome_taxonReads')
         )
     }
 }
 
+# Microbiome (clade reads)
+
+for( v in 1:length(exploratory_analyses) ) {
+    for( l in 1:length(kraken_clade_names) ) {
+        suppressWarnings(
+            meg_barplot(melted_data=kraken_clade_norm_melted,
+                    metadata=metadata,
+                    sample_var=sample_column_id,
+                    group_var=exploratory_analyses[[v]]$exploratory_var,
+                    level_var=kraken_taxon_names[[l]],
+                    analysis_subset=exploratory_analyses[[v]]$subsets,
+                    outdir=paste(graph_output_dir, 'Microbiome_cladeReads', exploratory_analyses[[v]]$name,
+                                 sep='/', collapse=''),
+                    data_type='Microbiome_cladeReads')
+        )
+    }
+}
 
 # Statistical Analyses ----------------------------------------------------
 
@@ -993,23 +1032,39 @@ for( a in 1:length(statistical_analyses) ) {
 }
 
 for (a in 1:length(statistical_analyses)){
-  for (k in 1:length(kraken_css)){
     meg_fitZig(data_list=kraken_taxon_norm_analytic,
                data_names=kraken_taxon_names,
                metadata=metadata,
-               zero_mod=model.matrix(~1 + log(libSize(kraken_css[[k]]))),
+               zero_mod=model.matrix(~1 + log(libSize(kraken_css$taxonReads))),
                data_mod=statistical_analyses[[a]]$model_matrix,
                filter_min_threshold=0.15,
                contrast_list=statistical_analyses[[a]]$contrasts,
                random_effect_var=statistical_analyses[[a]]$random_effect,
-               outdir=paste(stats_output_dir, 'Microbiome', statistical_analyses[[a]]$name,
+               outdir=paste(stats_output_dir, 'Microbiome_taxonReads', statistical_analyses[[a]]$name,
                             sep='/', collapse=''),
                analysis_name=statistical_analyses[[a]]$name,
                analysis_subset=statistical_analyses[[a]]$subsets,
-               data_type='Microbiome',
+               data_type='Microbiome_taxonReads',
                pval=0.1,
                top_hits=1000)
-  }
+}
+
+for (a in 1:length(statistical_analyses)){
+    meg_fitZig(data_list=kraken_clade_norm_analytic,
+               data_names=kraken_clade_names,
+               metadata=metadata,
+               zero_mod=model.matrix(~1 + log(libSize(kraken_css$cladeReads))),
+               data_mod=statistical_analyses[[a]]$model_matrix,
+               filter_min_threshold=0.15,
+               contrast_list=statistical_analyses[[a]]$contrasts,
+               random_effect_var=statistical_analyses[[a]]$random_effect,
+               outdir=paste(stats_output_dir, 'Microbiome_cladeReads', statistical_analyses[[a]]$name,
+                            sep='/', collapse=''),
+               analysis_name=statistical_analyses[[a]]$name,
+               analysis_subset=statistical_analyses[[a]]$subsets,
+               data_type='Microbiome_cladeReads',
+               pval=0.1,
+               top_hits=1000)
 }
 
 
@@ -1041,48 +1096,64 @@ write.table(amr_norm, 'amr_matrices/normalized/AMR_Gene_Normalized.csv', sep=','
 write.table(amr_raw, 'amr_matrices/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
-write.csv(make_sparse(kraken_domain, 'Domain', c('Domain')),
-          'kraken_matrices/sparse_normalized/kraken_Domain_Sparse_Normalized.csv',
-          row.names=T)
-write.table(kraken_domain, 'kraken_matrices/normalized/kraken_Domain_Normalized.csv', sep=',', row.names=F, col.names=T)
-write.table(kraken_domain_raw, 'kraken_matrices/raw/kraken_Domain_Raw.csv', sep=',', row.names=F, col.names=T)
+kraken_taxon_norm_summarised %>%
+  iwalk(
+    ~ write.csv(
+      make_sparse(.x, .y, c(.y)), 
+      here('kraken_taxonReads_matrices', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
+      row.names = T)
+    )
 
-write.csv(make_sparse(kraken_phylum, 'Phylum', c('Phylum')),
-          'kraken_matrices/sparse_normalized/kraken_Phylum_Sparse_Normalized.csv',
-          row.names=T)
-write.table(kraken_phylum, 'kraken_matrices/normalized/kraken_Phylum_Normalized.csv', sep=',', row.names=F, col.names=T)
-write.table(kraken_phylum_raw, 'kraken_matrices/raw/kraken_Phylum_Raw.csv', sep=',', row.names=F, col.names=T)
+kraken_taxon_norm_summarised %>%
+  iwalk(
+    ~ write.csv(
+      .x, 
+      here('kraken_taxonReads_matrices', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
+      row.names = T)
+  )
 
-write.csv(make_sparse(kraken_class, 'Class', c('Class')),
-          'kraken_matrices/sparse_normalized/kraken_Class_Sparse_Normalized.csv',
-          row.names=T)
-write.table(kraken_class, 'kraken_matrices/normalized/kraken_Class_Normalized.csv', sep=',', row.names=F, col.names=T)
-write.table(kraken_class_raw, 'kraken_matrices/raw/kraken_Class_Raw.csv', sep=',', row.names=F, col.names=T)
-
-write.csv(make_sparse(kraken_order, 'Order', c('Order')),
-          'kraken_matrices/sparse_normalized/kraken_Order_Sparse_Normalized.csv',
-          row.names=T)
-write.table(kraken_order, 'kraken_matrices/normalized/kraken_Order_Normalized.csv', sep=',', row.names=F, col.names=T)
-write.table(kraken_order_raw, 'kraken_matrices/raw/kraken_Order_Raw.csv', sep=',', row.names=F, col.names=T)
-
-write.csv(make_sparse(kraken_family, 'Family', c('Family')),
-          'kraken_matrices/sparse_normalized/kraken_Family_Sparse_Normalized.csv',
-          row.names=T)
-write.table(kraken_family, 'kraken_matrices/normalized/kraken_Family_Normalized.csv', sep=',', row.names=F, col.names=T)
-write.table(kraken_family_raw, 'kraken_matrices/raw/kraken_Family_Raw.csv', sep=',', row.names=F, col.names=T)
-
-write.csv(make_sparse(kraken_genus, 'Genus', c('Genus')),
-          'kraken_matrices/sparse_normalized/kraken_Genus_Sparse_Normalized.csv',
-          row.names=T)
-write.table(kraken_genus, 'kraken_matrices/normalized/kraken_Genus_Normalized.csv', sep=',', row.names=F, col.names=T)
-write.table(kraken_genus_raw, 'kraken_matrices/raw/kraken_Genus_Raw.csv', sep=',', row.names=F, col.names=T)
-
-write.csv(make_sparse(kraken_species, 'Species', c('Species')),
-          'kraken_matrices/sparse_normalized/kraken_Species_Sparse_Normalized.csv',
-          row.names=T)
-write.table(kraken_species, 'kraken_matrices/normalized/kraken_Species_Normalized.csv', sep=',', row.names=F, col.names=T)
-write.table(kraken_species_raw, 'kraken_matrices/raw/kraken_Species_Raw.csv', sep=',', row.names=F, col.names=T)
+kraken_taxon_raw_summarised %>%
+  iwalk(
+    ~ write.csv(
+      .x,
+      here('kraken_taxonReads_matrices', 'raw', paste0('kraken_',.y,'_Raw.csv')),
+      row.names = T)
+    )
 
 
+# Kraken clade reads
 
+kraken_clade_norm_list <-
+  kraken_clade_norm_list %>%
+  imap(
+    ~ rename(.x, !!.y := lowest) # quosure notation; tip from SO https://stackoverflow.com/questions/46616591/rename-multiple-dataframe-columns-using-purrr
+  )
 
+kraken_clade_raw_list <-
+  kraken_clade_raw_list %>%
+  imap(
+    ~ rename(.x, !!.y := lowest)
+  )
+
+kraken_clade_norm_list %>%
+  iwalk(~ write.csv(
+    make_sparse(.x, .y, c(.y)), 
+    here('kraken_cladeReads_matrices', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
+    row.names = T)
+  )
+
+kraken_clade_norm_list %>%
+  iwalk(
+    ~ write.csv(
+      .x,
+      here('kraken_cladeReads_matrices', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
+      row.names = T)
+    )
+
+kraken_clade_raw_list %>%
+  iwalk(
+    ~ write.csv(
+      .x,
+      here('kraken_cladeReads_matrices', 'raw', paste0('kraken_',.y,'_Raw_Normalized.csv')),
+      row.names = T)
+  )

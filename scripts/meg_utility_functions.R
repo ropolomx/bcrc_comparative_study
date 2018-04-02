@@ -429,7 +429,7 @@ meg_alpha_rarefaction <- function(data_list,
   g_alphadiv <- ggplot(data=all_alphadiv, aes_string(x=group_var,
                                                      y='Value',
                                                      color=group_var)) +
-    geom_boxplot(size=2) + 
+    geom_boxplot(width=0.8, lwd=0.8) + 
     facet_wrap(~Level, nrow=2, scales='free_y')
   g_alphadiv <- g_alphadiv +
     ggtitle(paste('Alpha Diversity by ', group_var, ' for Rarefied data\nInverse Simpson Index',
@@ -440,6 +440,7 @@ meg_alpha_rarefaction <- function(data_list,
           axis.text.y=element_text(size=20),
           axis.text.x=element_blank(),
           axis.title.x=element_text(size=26),
+      
           axis.title.y=element_text(size=26, vjust=1),
           #legend.position="right",
           legend.title=element_text(size=24, vjust=1),
@@ -452,7 +453,7 @@ meg_alpha_rarefaction <- function(data_list,
                        sep='', collapse=''),
         width=1024, height=768)
     g_sraw <- ggplot(data=all_species_raw, aes_string(group_var, 'Value', color=group_var)) +
-        geom_boxplot(size=2) + 
+        geom_boxplot(width=0.8,lwd=0.8) + 
         facet_wrap(~Level, nrow=2, scales='free_y')
     g_sraw <- g_sraw +
         ggtitle(paste('Species Richness by ', group_var, ' for Raw data\nInverse Simpson Index',
@@ -475,7 +476,7 @@ meg_alpha_rarefaction <- function(data_list,
                        sep='', collapse=''),
         width=1024, height=768)
     g_srare <- ggplot(data=all_species_rare, aes_string(group_var, 'Value', color=group_var)) +
-        geom_boxplot(size=2) + 
+        geom_boxplot(width=0.8,lwd=0.8) + 
         facet_wrap(~Level, nrow=2, scales='free_y')
     g_srare <- g_srare +
         ggtitle(paste('Species Richness by ', group_var, ' for Rarefied data\nInverse Simpson Index',
