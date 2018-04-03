@@ -14,24 +14,26 @@ transp_df <- function(x){
 }
 
 split_by_environment <- function(x){
-  merge_meta <- left_join(amr_trans, metadata, by = "ID")
-  split_meta <- split(merge_meta$Type)
-  return(split_meta)
-}
+  merge_meta <- left_join(x, metadata, by = "ID")
+  split_meta <- split(merge_meta, merge_meta$Type)
+  split_meta
+  }
 
 df_retrans <- function(x){
   row.names(x) <- x$ID
   retrans <- x %>%
     select_if(is.numeric)
-  retrans <- as.data.frame(t(amr_retrans))
+  retrans <- as.data.frame(t(retrans))
   retrans
 }
 
-normalize_split <- function(split_df){
-  normalized <- split_df %>%
-    map(~ df_retrans(.x)) %>%
-    map(~ newMRexperiment(.x)) %>%
-    map(~ cumNorm(.x))
+normalize_split <- function(df){
+  normalized <- 
+    df %>%
+    df_retrans(.) %>% 
+    newMRexperiment(.) %>%
+    cumNorm(.)
+  normalized
 }
    
 # Drake plan for normalization of AMR data by environment -----------------
@@ -43,28 +45,81 @@ amr_df <- read.csv(file = amr_filepath, header = TRUE, row.names = 1)
 
 kraken_df <- temp_kraken_list
 
-by_environment_plan <- drake_plan(
-  transpose_analytic = {
-    transp_df(df)
+kraken_taxon_df <- kraken_df$taxonReads
+kraken_clade_df <- kraken_df$cladeReads
+
+by_env_plan <- drake_plan(
+  transpose_analytic_amr = {
+    transp_df(amr_df)
     },
-  analytic_by_environment = {
-    split_by_environment(transposed)
-    },
-  normalize_by_environment = {
-    normalize_split(analytic_by_environment)
-    },
-  extract_norm = {
+  transpose_analytic_kraken = {
     map(
-      normalize_by_environment,
+      kraken_df, 
+      ~ transp_df(.x)
+    )
+    },
+  analytic_by_environment_amr = {
+    split_by_environment(transpose_analytic_amr)
+    },
+  analytic_by_environment_kraken = {
+    map(
+      transpose_analytic_kraken,
+      ~ split_by_environment(.x)
+    )
+    },
+  normalize_by_environment_amr = {
+    map(
+      analytic_by_environment_amr,
+      ~ normalize_split(.x)
+    )
+    },
+  normalize_by_environment_kraken = {
+    modify_depth(
+      analytic_by_environment_kraken,
+      .depth = 2,
+      ~ normalize_split(.x)
+    )
+    },
+  extract_norm_amr = {
+    map(
+      normalize_by_environment_amr,
       ~ data.table(MRcounts(.x, norm = TRUE)))
   },
-  extract_raw = {
+  extract_norm_kraken = {
+    modify_depth(
+      normalize_by_environment_kraken,
+      .depth = 2,
+      ~ data.table(MRcounts(.x, norm = TRUE))
+    )
+  },
+  extract_raw_amr = {
     map(
-      normalize_by_environment,
+      normalize_by_environment_amr,
       ~ data.table(MRcounts(.x, norm = FALSE)))
-  } 
+  },
+  extract_raw_kraken = {
+    modify_depth(
+      normalize_by_environment_kraken,
+      .depth = 2,
+      ~ data.table(MRcounts(.x, norm = FALSE)))
+    } 
 )
 
-by_env_config <- drake_config(by_environment_plan)
-vis_drake_graph(by_env_config, targets_only = TRUE, font_size = 12)
-make(by_environment_plan)
+# by_environment_eval <- evaluate_plan(
+#   by_environment_plan, 
+#   rules = list(df = c(amr_df, kraken_taxon_df, kraken_clade_df)), 
+#   expand = TRUE
+#   )
+
+check_plan(by_env_plan)
+
+by_env_config <- drake_config(by_env_plan)
+
+vis_drake_graph(
+  by_env_config, 
+  from=c("kraken_df", "amr_df"), 
+  to=c("extract_raw_kraken"), 
+  font_size = 12
+  )
+
+make(by_env_plan, jobs = 2)
