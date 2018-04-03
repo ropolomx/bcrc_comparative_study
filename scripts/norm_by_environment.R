@@ -4,44 +4,67 @@
 # We use Cumulative Sum Scaling as implemented in metagenomeSeq.
 # You will likely get a warning about this step, but it's safe to ignore
 
-# Split AMR
+# Split analytic data frames
 
-transp_amr <- function(x){
-  amr_analytic <- as.data.frame(t(x))
-  amr_analytic$ID <- row.names(amr_analytic)
-  row.names(amr_analytic) <- NULL
-  amr_analytic
+transp_df <- function(x){
+  analytic <- as.data.frame(t(x))
+  analytic$ID <- row.names(analytic)
+  row.names(analytic) <- NULL
+  analytic
 }
 
-amr_df <- read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
-                                  header=T, row.names=1, sep=',')
-
-amr_trans <- transp_amr(amr_df)
-
-amr_by_environment <- left_join(amr_trans, metadata, by = "ID") %>%
-  split(.$Type)
+split_by_environment <- function(x){
+  merge_meta <- left_join(amr_trans, metadata, by = "ID")
+  split_meta <- split(merge_meta$Type)
+  return(split_meta)
+}
 
 df_retrans <- function(x){
   row.names(x) <- x$ID
-  amr_retrans <- x %>%
+  retrans <- x %>%
     select_if(is.numeric)
-  amr_retrans <- as.data.frame(t(amr_retrans))
-  amr_retrans
+  retrans <- as.data.frame(t(amr_retrans))
+  retrans
 }
 
-amr_by_environment_norm <-
-  amr_by_environment %>%
-  map() %>%
-  map(~ newMRexperiment(.x)) %>%
-  map(~ cumNorm(.x))
-
-
+normalize_split <- function(split_df){
+  normalized <- split_df %>%
+    map(~ df_retrans(.x)) %>%
+    map(~ newMRexperiment(.x)) %>%
+    map(~ cumNorm(.x))
+}
+   
 # Drake plan for normalization of AMR data by environment -----------------
 
-by_environment_plan <- drake::drake_plan(
-  amr_by_environment_norm = {
-    map(amr_by_environment, ~ df_retrans(.x)) %>%
-      map(~ newMRexperiment(.x)) %>%
-      map(~ cumNorm(.x))
-    }
+# AMR files
+
+amr_filepath <- here('aggregated_data_for_analysis', 'amrBioAnalytical.csv')
+amr_df <- read.csv(file = amr_filepath, header = TRUE, row.names = 1)
+
+kraken_df <- temp_kraken_list
+
+by_environment_plan <- drake_plan(
+  transpose_analytic = {
+    transp_df(df)
+    },
+  analytic_by_environment = {
+    split_by_environment(transposed)
+    },
+  normalize_by_environment = {
+    normalize_split(analytic_by_environment)
+    },
+  extract_norm = {
+    map(
+      normalize_by_environment,
+      ~ data.table(MRcounts(.x, norm = TRUE)))
+  },
+  extract_raw = {
+    map(
+      normalize_by_environment,
+      ~ data.table(MRcounts(.x, norm = FALSE)))
+  } 
 )
+
+by_env_config <- drake_config(by_environment_plan)
+vis_drake_graph(by_env_config, targets_only = TRUE, font_size = 12)
+make(by_environment_plan)

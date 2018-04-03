@@ -607,7 +607,6 @@ kraken_taxon_raw_analytic <- map2(
 # kraken_species_raw_analytic <- newMRexperiment(counts=kraken_species_raw[, .SD, .SDcols=!'Species'])
 # rownames(kraken_species_raw_analytic) <- kraken_species_raw$Species
 
-
 # Kraken clade analytic matrices ------------------------------------------
 
 kraken_clade_norm_list <-
