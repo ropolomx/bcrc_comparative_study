@@ -866,7 +866,7 @@ kraken_taxon_norm_diversity <-
 
 amr_observed_species <- function(amr_df){
   alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Observed_Richness, color=Type)) +
-    geom_boxplot(lwd = 0.5, size=5)+ 
+    geom_boxplot(lwd = 0.5, aes(size=5))+ 
     theme(strip.text.x=element_text(size=25),
       axis.text.y=element_text(size=30),
       axis.text.x=element_text(size=25, angle=90),
