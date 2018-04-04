@@ -36,7 +36,8 @@ normalize_split <- function(df){
   normalized
 }
    
-# Drake plan for normalization of AMR data by environment -----------------
+
+# Drake plan for normalization by environment -----------------------------
 
 # AMR files
 

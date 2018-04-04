@@ -62,7 +62,6 @@ graph_output_dir = 'graphs'
 # Set the output directory for statistics:
 stats_output_dir = 'stats'
 
-
 # Where is the metadata file stored on your machine?
 metadata_filepath = here('BCRC_metadata.csv')
 
@@ -521,6 +520,7 @@ tax_regex <- c(
   "^s_.*" 
 )
 
+# Zip tax levels and tax regex into named vector
 tax_patterns <- tax_levels
 names(tax_patterns) <- tax_regex
 
@@ -750,25 +750,25 @@ for( l in 1:length(kraken_clade_raw_analytic) ) {
 #
 #kraken_taxon_norm_analytic <- 
 #  as.vector(kraken_taxon_norm_analytic) %>%
-#  map(
+#  walk(
 #    ~ match_metadata(.x)
 #  )
 #
 #kraken_clade_norm_analytic <- 
 #  as.vector(kraken_clade_norm_analytic) %>%
-#  map(
+#  walk(
 #    ~ match_metadata(.x)
 #  )
 #
 #kraken_taxon_raw_analytic <- 
 #  as.vector(kraken_taxon_raw_analytic) %>%
-#  map(
+#  walk(
 #    ~ match_metadata(.x)
 #  )
 #
 #kraken_clade_raw_analytic <- 
 #  as.vector(kraken_clade_raw_analytic) %>%
-#  map(
+#  walk(
 #    ~ match_metadata(.x)
 #  )
 
@@ -815,6 +815,75 @@ exploratory_analyses %>%
       data_type='Microbiome_cladeReads')
   ))
 
+
+# Exploratory Analyses: Alpha Normalized ----------------------------------
+
+amrNormDivMat <- lapply(amrNormAgg, function(x){
+  amrNormWide <- spread(x, key=categoryNames, value=normCountsSum, fill=0)
+  row.names(amrNormWide) <- amrNormWide$samples
+  amrNormWide <- amrNormWide %>%
+    select(2:ncol(amrNormWide))
+  return(amrNormWide)
+})
+
+calc_diversity_df <- function(x){
+  observed_richness <- specnumber(x, MARGIN=2)
+  invsimpson <- diversity(x, index="invsimpson", MARGIN=2)
+  simpson <- diversity(x, index="simpson", MARGIN=2)
+  shannon <- diversity(x, index="shannon", MARGIN=2)
+  evenness <- shannon/log(observed_richness)
+  div_df <- data.frame(
+    ID = names(observed_richness),
+    Observed_Richness = observed_richness,
+    Inv_Simspon = invsimpson,
+    Simpson = simpson,
+    Shannon = shannon,
+    Evenness = evenness
+  )
+  div_df
+}
+
+amr_norm_diversity <- 
+  AMR_analytic_data %>%
+  set_names(nm = AMR_analytic_names) %>%
+  map_dfr(
+    ~ calc_diversity_df(MRcounts(.x)) %>%
+        left_join(., metadata, by = "ID"),
+    .id = "Level"
+  )
+
+kraken_clade_norm_diversity <- 
+  kraken_clade_norm_analytic %>%
+  map(
+    ~ calc_diversity_df(MRcounts(.x))
+  )
+
+kraken_taxon_norm_diversity <- 
+  kraken_taxon_norm_analytic %>%
+  map(
+    ~ calc_diversity_df(MRcounts(.x))
+  )
+
+amr_observed_species <- function(amr_df){
+  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Observed_Richness, color=Type)) +
+    geom_boxplot(lwd = 0.5, size=5)+ 
+    theme(strip.text.x=element_text(size=25),
+      axis.text.y=element_text(size=30),
+      axis.text.x=element_text(size=25, angle=90),
+      axis.title.x=element_text(size=32),
+      axis.title.y=element_text(size=32),
+      legend.position="none",
+      #legend.title=element_text(size=36),
+      #legend.text=element_text(size=36, vjust=0.5),
+      plot.title=element_text(size=50, hjust=0.5)) +
+    xlab("Depth") +
+    ylab("Number of Unique\nAMR Categories\n") +
+    #ggtitle('AMR Category Richness by Depth for Raw Data') +
+    # scale_color_manual(values=rev(cbPalette)) +
+    facet_wrap(~ Level, nrow=2, scales = "free_y")
+}
+
+amr_norm_boxplots <- amr_observed_species(amr_norm_diversity)
 
 # Exploratory Analyses: Ordination ----------------------------------------
 
