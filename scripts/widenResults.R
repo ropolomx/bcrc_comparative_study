@@ -8,6 +8,18 @@ require(dplyr)
 require(tidyr)
 require(here)
 
+
+
+# Create directory for aggregated data ------------------------------------
+
+aggregated_dir <- here("aggregated_data_for_analysis")
+
+ifelse(
+  !dir.exists(aggregated_dir), 
+  dir.create((aggregated_dir), mode='777'), 
+FALSE
+)
+
 # Read Kraken reports with Pavian ---------------------------------------------
 
 # Obtain the filenames of all Kraken reports
