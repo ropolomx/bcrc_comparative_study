@@ -44,6 +44,8 @@ normalize_split <- function(df){
 amr_filepath <- here('aggregated_data_for_analysis', 'amrBioAnalytical.csv')
 amr_df <- read.csv(file = amr_filepath, header = TRUE, row.names = 1)
 
+# List of Kraken files 
+
 kraken_df <- temp_kraken_list
 
 kraken_taxon_df <- kraken_df$taxonReads
