@@ -341,6 +341,8 @@ amr <- newMRexperiment(read.table(here('aggregated_data_for_analysis', 'amrBioAn
                                   header=T, row.names=1, sep=','))
 
 annotations <- data.table(read.csv(megares_annotation_filename, header=T))
+annotations$class <- str_replace(annotations$class, "betalactams", "Betalactams")
+  
 setkey(annotations, header)  # Data tables are SQL objects with optional primary keys
 
 metadata <- read.csv(metadata_filepath, header=T)
@@ -702,75 +704,75 @@ for( l in 1:length(AMR_raw_analytic_data) ) {
     rownames(fData(AMR_raw_analytic_data[[l]])) <- rownames(MRcounts(AMR_raw_analytic_data[[l]]))
 }
 
-for( l in 1:length(kraken_taxon_norm_analytic) ) {
-    sample_idx <- match(colnames(MRcounts(kraken_taxon_norm_analytic[[l]])), metadata[[sample_column_id]])
-    pData(kraken_taxon_norm_analytic[[l]]) <- data.frame(
-        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
-    rownames(pData(kraken_taxon_norm_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-    fData(kraken_taxon_norm_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_taxon_norm_analytic[[l]])))
-    rownames(fData(kraken_taxon_norm_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_norm_analytic[[l]]))
+# for( l in 1:length(kraken_taxon_norm_analytic) ) {
+#     sample_idx <- match(colnames(MRcounts(kraken_taxon_norm_analytic[[l]])), metadata[[sample_column_id]])
+#     pData(kraken_taxon_norm_analytic[[l]]) <- data.frame(
+#         metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+#     rownames(pData(kraken_taxon_norm_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+#     fData(kraken_taxon_norm_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_taxon_norm_analytic[[l]])))
+#     rownames(fData(kraken_taxon_norm_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_norm_analytic[[l]]))
+# }
+# 
+# for( l in 1:length(kraken_taxon_raw_analytic) ) {
+#     sample_idx <- match(colnames(MRcounts(kraken_taxon_raw_analytic[[l]])), metadata[[sample_column_id]])
+#     pData(kraken_taxon_raw_analytic[[l]]) <- data.frame(
+#         metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+#     rownames(pData(kraken_taxon_raw_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+#     fData(kraken_taxon_raw_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_taxon_raw_analytic[[l]])))
+#     rownames(fData(kraken_taxon_raw_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_raw_analytic[[l]]))
+# }
+# 
+# for( l in 1:length(kraken_clade_norm_analytic) ) {
+#     sample_idx <- match(colnames(MRcounts(kraken_clade_norm_analytic[[l]])), metadata[[sample_column_id]])
+#     pData(kraken_clade_norm_analytic[[l]]) <- data.frame(
+#         metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+#     rownames(pData(kraken_clade_norm_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+#     fData(kraken_clade_norm_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_clade_norm_analytic[[l]])))
+#     rownames(fData(kraken_clade_norm_analytic[[l]])) <- rownames(MRcounts(kraken_clade_norm_analytic[[l]]))
+# }
+# 
+# for( l in 1:length(kraken_clade_raw_analytic) ) {
+#     sample_idx <- match(colnames(MRcounts(kraken_clade_raw_analytic[[l]])), metadata[[sample_column_id]])
+#     pData(kraken_clade_raw_analytic[[l]]) <- data.frame(
+#         metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+#     rownames(pData(kraken_clade_raw_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+#     fData(kraken_clade_raw_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_clade_raw_analytic[[l]])))
+#     rownames(fData(kraken_clade_raw_analytic[[l]])) <- rownames(MRcounts(kraken_clade_raw_analytic[[l]]))
+# }
+
+match_metadata <- function(x){
+ sample_idx <- match(colnames(MRcounts(x)), metadata[[sample_column_id]])
+ pData(x) <- data.frame(
+   metadata[sample_idx, .SD, .SDcols=!sample_column_id]
+   )
+ rownames(pData(x)) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+ fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
+ rownames(fData(x)) <- rownames(MRcounts(x))
 }
 
-for( l in 1:length(kraken_taxon_raw_analytic) ) {
-    sample_idx <- match(colnames(MRcounts(kraken_taxon_raw_analytic[[l]])), metadata[[sample_column_id]])
-    pData(kraken_taxon_raw_analytic[[l]]) <- data.frame(
-        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
-    rownames(pData(kraken_taxon_raw_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-    fData(kraken_taxon_raw_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_taxon_raw_analytic[[l]])))
-    rownames(fData(kraken_taxon_raw_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_raw_analytic[[l]]))
-}
+# Normalized Kraken analytic matrices
 
-for( l in 1:length(kraken_clade_norm_analytic) ) {
-    sample_idx <- match(colnames(MRcounts(kraken_clade_norm_analytic[[l]])), metadata[[sample_column_id]])
-    pData(kraken_clade_norm_analytic[[l]]) <- data.frame(
-        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
-    rownames(pData(kraken_clade_norm_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-    fData(kraken_clade_norm_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_clade_norm_analytic[[l]])))
-    rownames(fData(kraken_clade_norm_analytic[[l]])) <- rownames(MRcounts(kraken_clade_norm_analytic[[l]]))
-}
+as.vector(kraken_taxon_norm_analytic) %>%
+  walk(
+    ~ match_metadata(.x)
+  )
 
-for( l in 1:length(kraken_clade_raw_analytic) ) {
-    sample_idx <- match(colnames(MRcounts(kraken_clade_raw_analytic[[l]])), metadata[[sample_column_id]])
-    pData(kraken_clade_raw_analytic[[l]]) <- data.frame(
-        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
-    rownames(pData(kraken_clade_raw_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-    fData(kraken_clade_raw_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_clade_raw_analytic[[l]])))
-    rownames(fData(kraken_clade_raw_analytic[[l]])) <- rownames(MRcounts(kraken_clade_raw_analytic[[l]]))
-}
+as.vector(kraken_clade_norm_analytic) %>%
+  walk(
+    ~ match_metadata(.x)
+  )
 
-#match_metadata <- function(x){
-#  sample_idx <- match(colnames(MRcounts(x)), metadata[[sample_column_id]])
-#  pData(x) <- data.frame(
-#    metadata[sample_idx, .SD, .SDcols=!sample_column_id]
-#    )
-#  rownames(pData(x)) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-#  fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
-#  rownames(fData(x)) <- rownames(MRcounts(x))
-#}
-#
-#kraken_taxon_norm_analytic <- 
-#  as.vector(kraken_taxon_norm_analytic) %>%
-#  walk(
-#    ~ match_metadata(.x)
-#  )
-#
-#kraken_clade_norm_analytic <- 
-#  as.vector(kraken_clade_norm_analytic) %>%
-#  walk(
-#    ~ match_metadata(.x)
-#  )
-#
-#kraken_taxon_raw_analytic <- 
-#  as.vector(kraken_taxon_raw_analytic) %>%
-#  walk(
-#    ~ match_metadata(.x)
-#  )
-#
-#kraken_clade_raw_analytic <- 
-#  as.vector(kraken_clade_raw_analytic) %>%
-#  walk(
-#    ~ match_metadata(.x)
-#  )
+# Raw Kraken analytic matrices
+
+as.vector(kraken_taxon_raw_analytic) %>%
+  walk(
+    ~ match_metadata(.x)
+  )
+
+as.vector(kraken_clade_raw_analytic) %>%
+  walk(
+    ~ match_metadata(.x)
+  )
 
 kraken_taxon_names <- names(kraken_taxon_raw_analytic)
 kraken_clade_names <- names(kraken_clade_raw_analytic)
@@ -818,13 +820,15 @@ exploratory_analyses %>%
 
 # Exploratory Analyses: Alpha Normalized ----------------------------------
 
-amrNormDivMat <- lapply(amrNormAgg, function(x){
-  amrNormWide <- spread(x, key=categoryNames, value=normCountsSum, fill=0)
-  row.names(amrNormWide) <- amrNormWide$samples
+widen_amr <- function(x){
+  amr_norm_wide <- spread(x, key=categoryNames, value=normCountsSum, fill=0)
+  row.names(amr_norm_wide) <- amr_norm_wide$samples
   amrNormWide <- amrNormWide %>%
     select(2:ncol(amrNormWide))
   return(amrNormWide)
-})
+}
+
+amr_norm_div_mat <- widen_amr(AMR_analytic_data)
 
 calc_diversity_df <- function(x){
   observed_richness <- specnumber(x, MARGIN=2)
@@ -835,7 +839,7 @@ calc_diversity_df <- function(x){
   div_df <- data.frame(
     ID = names(observed_richness),
     Observed_Richness = observed_richness,
-    Inv_Simspon = invsimpson,
+    Inv_Simpson = invsimpson,
     Simpson = simpson,
     Shannon = shannon,
     Evenness = evenness
@@ -876,14 +880,91 @@ amr_observed_species <- function(amr_df){
       #legend.title=element_text(size=36),
       #legend.text=element_text(size=36, vjust=0.5),
       plot.title=element_text(size=50, hjust=0.5)) +
-    xlab("Depth") +
+    xlab("Type") +
     ylab("Number of Unique\nAMR Categories\n") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
     facet_wrap(~ Level, nrow=2, scales = "free_y")
 }
 
-amr_norm_boxplots <- amr_observed_species(amr_norm_diversity)
+amr_norm_rich_boxplots <- amr_observed_species(amr_norm_diversity)
+
+amr_inv_simpson <- function(amr_df){
+  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Inv_Simpson, color=Type)) +
+    geom_boxplot(lwd = 0.5, aes(size=5))+ 
+    theme(strip.text.x=element_text(size=25),
+      axis.text.y=element_text(size=30),
+      axis.text.x=element_text(size=25, angle=90),
+      axis.title.x=element_text(size=32),
+      axis.title.y=element_text(size=32),
+      legend.position="none",
+      #legend.title=element_text(size=36),
+      #legend.text=element_text(size=36, vjust=0.5),
+      plot.title=element_text(size=50, hjust=0.5)) +
+    xlab("Type") +
+    ylab("Inverse Simpson Index") +
+    #ggtitle('AMR Category Richness by Depth for Raw Data') +
+    # scale_color_manual(values=rev(cbPalette)) +
+    facet_wrap(~ Level, nrow=2, scales = "free_y")
+}
+
+amr_norm_inv_simpson_box <- amr_inv_simpson(amr_norm_diversity)
+
+amr_simpson <- function(amr_df){
+  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Simpson, color=Type)) +
+    geom_boxplot(lwd = 0.5, aes(size=5))+ 
+    theme(strip.text.x=element_text(size=25),
+      axis.text.y=element_text(size=30),
+      axis.text.x=element_text(size=25, angle=90),
+      axis.title.x=element_text(size=32),
+      axis.title.y=element_text(size=32),
+      legend.position="none",
+      #legend.title=element_text(size=36),
+      #legend.text=element_text(size=36, vjust=0.5),
+      plot.title=element_text(size=50, hjust=0.5)) +
+    xlab("Type") +
+    ylab("Inverse Simpson Index") +
+    #ggtitle('AMR Category Richness by Depth for Raw Data') +
+    # scale_color_manual(values=rev(cbPalette)) +
+    facet_wrap(~ Level, nrow=2, scales = "free_y")
+}
+
+amr_norm_simpson_box <- amr_simpson(amr_norm_diversity)
+
+amr_shannon <- function(amr_df){
+  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Shannon, color=Type)) +
+    geom_boxplot(lwd = 0.5, aes(size=5))+ 
+    theme(strip.text.x=element_text(size=25),
+      axis.text.y=element_text(size=30),
+      axis.text.x=element_text(size=25, angle=90),
+      axis.title.x=element_text(size=32),
+      axis.title.y=element_text(size=32),
+      legend.position="none",
+      #legend.title=element_text(size=36),
+      #legend.text=element_text(size=36, vjust=0.5),
+      plot.title=element_text(size=50, hjust=0.5)) +
+    xlab("Type") +
+    ylab("Inverse Simpson Index") +
+    #ggtitle('AMR Category Richness by Depth for Raw Data') +
+    # scale_color_manual(values=rev(cbPalette)) +
+    facet_wrap(~ Level, nrow=2, scales = "free_y")
+}
+
+amr_norm_shannon_box <- amr_shannon(amr_norm_diversity)
+
+exploratory_analyses %>%
+  walk(safely(~ meg_alpha_rarefaction(
+      data_list=kraken_clade_raw_analytic,
+      data_names=kraken_clade_names,
+      metadata=metadata,
+      sample_var=sample_column_id,
+      group_var=.x$exploratory_var,
+      analysis_subset=.x$subsets,
+      outdir=paste(graph_output_dir, 'Microbiome_cladeReads', .x$name,
+        sep='/', collapse=''),
+      data_type='Microbiome_cladeReads')
+  ))
+
 
 # Exploratory Analyses: Ordination ----------------------------------------
 
@@ -916,9 +997,13 @@ for( v in 1:length(exploratory_analyses) ) {
     
     # Microbiome NMDS (taxon reads)
 
-exploratory_analyses %>%
-  walk(
-    safely(
+# Mapping quietly allows to capture output on procrustes and stress
+# It also allows to store warnings
+# Consider using walk with capture.output to store the procrustes information
+
+micro_taxon_nmds <- exploratory_analyses %>%
+  map(
+    quietly(
     ~ meg_ordination(
       data_list = kraken_taxon_norm_analytic,
       data_names = kraken_taxon_names,
@@ -930,6 +1015,8 @@ exploratory_analyses %>%
       data_type = 'Microbiome',
       method = 'NMDS')
     ))
+
+# dev.off() ?
     
     # Microbiome PCA
 exploratory_analyses %>%

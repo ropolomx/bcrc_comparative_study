@@ -8,40 +8,43 @@ library(stringr)
 
 metadata <- read.csv('BCRC_metadata.csv')
 
-annotations <- read.csv('megares_annotations_v1.01.csv')
+# annotations <- read.csv('megares_annotations_v1.01.csv')
 
-amr80Norm <- read.csv('80amr_matrices/normalized/AMR_Group_Normalized.csv')
+amr_group_norm <- read_csv('amr_matrices/normalized/AMR_Group_Normalized.csv')
 
 krakenNorm <- read.csv('kraken_matrices/normalized/kraken_Genus_Normalized.csv')
 
-krakenParsed <- read.csv('kraken_analytic_parsed.csv')
+# krakenParsed <- read.csv('kraken_analytic_parsed.csv')
 
 # Tidy the normalized data
 
-amr80NormTidy <- gather(amr80Norm, ID, counts, 2:ncol(amr80Norm))
+amr_group_tidy <- tidyr::gather(amr_group_norm, ID, counts, 2:ncol(amr_group_norm))
 
-amr80NormMerge <- merge(amr80NormTidy, annotations, by ="group")
+amr_group_merge <- merge(amr_group_tidy, annotations, by ="group")
 
-amr80NormMerge <- merge(amr80NormMerge, metadata)
+amr_group_merge <- merge(amr_group_merge, metadata)
 
-amr80NormMerge <- amr80NormMerge[amr80NormMerge$Type != "Wetlands",]
+amr_group_merge <- amr_group_merge[amr_group_merge$Type != "Wetlands",]
 
-amr80NormMerge <- amr80NormMerge %>% group_by(class) %>% arrange(class)
+amr_group_merge <- 
+  amr_group_merge %>% 
+  group_by(class) %>% 
+  arrange(class)
 
-names(amr80NormMerge) <- str_replace(names(amr80NormMerge), "group", "Group")
-names(amr80NormMerge) <- str_replace(names(amr80NormMerge), "counts", "Normalized_Counts")
+names(amr_group_merge) <- str_replace(names(amr_group_merge), "group", "Group")
+names(amr_group_merge) <- str_replace(names(amr_group_merge), "counts", "Normalized_Counts")
 
-names(amr80NormMerge) <- str_replace(names(amr80NormMerge), "class", "Class")
+names(amr_group_merge) <- str_replace(names(amr_group_merge), "class", "Class")
 
-amr80NormMerge$Sample_Type <- interaction(amr80NormMerge$ID, amr80NormMerge$Type)
+amr_group_merge$Sample_Type <- interaction(amr_group_merge$ID, amr_group_merge$Type)
 
 # Plot the tidy data
 
 # Re-order factors of Type column
 
-amr80NormReMerge$Type <- str_replace(amr80NormMerge$Type, "\\.", " ")
+amr_group_merge$Type <- str_replace(amr_group_merge$Type, "\\_", " ")
 
-amr80NormReMerge$Type <- factor(amr80NormMerge$Type, levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Treatment'))
+amr_group_merge$Type <- factor(amr_group_merge$Type, levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Treatment'))
 
 # Generating heatmap of subset of top X groups by sum of counts across Types
 # 1. Create another dataframe grouping data by AMR Group
@@ -49,21 +52,22 @@ amr80NormReMerge$Type <- factor(amr80NormMerge$Type, levels = c('Fecal Composite
 # 3. Pick top X groups
 # 3. Cross-reference top groups vs. merge database
 
-amr80NormTop <- amr80NormMerge %>% 
+amr_group_top <- 
+  amr_group_merge %>% 
   group_by(Group) %>%
   summarise(Count_sum=sum(Normalized_Counts)) %>% 
   arrange(-Count_sum) %>%
   slice(1:100)
 
-amr80NormSubset <- amr80NormMerge[amr80NormMerge$Group %in% amr80NormTop$Group,]
+amr_group_subset <-amr_group_merge[amr_group_merge$Group %in% amr_group_top$Group,]
 
-amr80NormSubset$Type <- str_replace(amr80NormSubset$Type, "\\.", " ")
+# amr_group_subset$Type <- str_replace(amr_group_subset$Type, "\\.", " ")
 
-amr80NormSubset$Type <- factor(amr80NormSubset$Type, levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Treatment'))
+amr_group_subset$Type <- factor(amr_group_subset$Type, levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Treatment'))
 
 #meg_heatmap <- ggplot(amr80NormMerge, aes(x=ID, y=Group)) + 
   
-meg_heatmap_amr <- ggplot(amr80NormSubset, aes(x=ID, y=Group)) + 
+amr_group_by_class_hm <- ggplot(amr_group_subset, aes(x=ID, y=Group)) + 
   geom_tile(aes(fill=log2(Normalized_Counts+1))) +
   facet_grid(Class ~ Type, scales='free', switch = 'x', drop=TRUE, space = 'free_y') +
   #facet_wrap(~ Type, scales ='free_x', strip.position = 'bottom', nrow = 1) +
@@ -72,7 +76,7 @@ meg_heatmap_amr <- ggplot(amr80NormSubset, aes(x=ID, y=Group)) +
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
               strip.text.x=element_text(size=15),
-              strip.text.y=element_text(size=10, angle = 0),
+              strip.text.y=element_text(size=11, angle = 0),
               #strip.text.y=element_blank(),
               #strip.background= element_rect(fill = amr80NormMerge$Class),
               #axis.text.y=element_text(size=3),
@@ -90,10 +94,19 @@ meg_heatmap_amr <- ggplot(amr80NormSubset, aes(x=ID, y=Group)) +
         xlab(paste('Samples by ', 'Feedlot Type', sep='', collapse='')) +
         scale_fill_gradient(low="black", high="cyan") +
         labs(fill= 'Log2 Normalized Count') + 
-        ggtitle(paste('AMR', ' ', 'Group', ' Normalized Counts by ', 'Type', ' and', ' Class', '\n',
+        ggtitle(paste('Normalized AMR Group Counts', ' by Class', '\n',
                       sep='', collapse=''))
 
-meg_heatmap_amr
+amr_group_by_class_hm
+
+ggsave(
+  here('graphs','AMR', 'amr_top_group_by_class_heatmap.png'),
+  amr_group_by_class_hm,
+  width = 18,
+  height = 14.5,
+  units = "in",
+  dpi = 320
+)
 
 krakenTax <- krakenParsed[,-(2:49)]
 

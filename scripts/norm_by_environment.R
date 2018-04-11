@@ -125,4 +125,4 @@ vis_drake_graph(
   font_size = 12
   )
 
-make(by_env_plan, jobs = 2)
+make(by_env_plan, jobs = 2, verbose = 2)
