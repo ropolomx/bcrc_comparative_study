@@ -91,7 +91,7 @@ amr_group_by_class_hm <- ggplot(amr_group_subset, aes(x=ID, y=Group)) +
               panel.spacing.y = unit(0.06, "lines"),
               plot.title=element_text(size=24, hjust=0.5),
               plot.margin=unit(c(0,0,0,0), "cm")) +
-        xlab(paste('Samples by ', 'Feedlot Type', sep='', collapse='')) +
+        xlab(paste('Samples by ', 'Type', sep='', collapse='')) +
         scale_fill_gradient(low="black", high="cyan") +
         labs(fill= 'Log2 Normalized Count') + 
         ggtitle(paste('Normalized AMR Group Counts', ' by Class', '\n',
@@ -168,7 +168,7 @@ meg_heatmap_kraken <- function(df,
               panel.spacing.y = unit(0.02, "lines"),
               plot.title=element_text(size=24, hjust=0.5),
               plot.margin=unit(c(0,0,0,0), "cm")) +
-        xlab(paste('Samples by ', 'Feedlot Type', sep='', collapse='')) +
+        xlab(paste('Samples by ', 'Type', sep='', collapse='')) +
         scale_fill_gradient(low="black", high="cyan") +
         labs(fill= 'Log2 Normalized Count') + 
         ggtitle(paste('Microbiome ', taxon, ' Normalized Counts by ', '\n', facet1, ', ', facet2a, ', and ', facet2b, '\n',
