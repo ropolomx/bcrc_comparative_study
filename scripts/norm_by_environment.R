@@ -105,7 +105,26 @@ by_env_plan <- drake_plan(
       normalize_by_environment_kraken,
       .depth = 2,
       ~ data.table(MRcounts(.x, norm = FALSE)))
-    } 
+    },
+  generate_analytic = {
+    map(
+      extract_norm_amr,
+      ~ .x[, lapply(.SD, sum), by=.x$class, .SDcols=!c(.x$header, .x$mechanism, .x$group)]
+    )
+  },
+  untidy_norm_amr = {
+    map(
+      generate_analytic,
+      ~ widen_amr(.x)
+    )
+  },
+  diversity_norm_amr = {
+    map(
+      untidy_norm_amr,
+      ~ calc_diversity_df(.x)
+    )
+  },
+  strings_in_dots = "literals"
 )
 
 # by_environment_eval <- evaluate_plan(
@@ -121,7 +140,7 @@ by_env_config <- drake_config(by_env_plan)
 vis_drake_graph(
   by_env_config, 
   from=c("kraken_df", "amr_df"), 
-  to=c("extract_raw_kraken"), 
+  to=c("diversity_norm_amr"), 
   font_size = 12
   )
 
