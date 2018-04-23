@@ -1,4 +1,5 @@
-# Split and normalize by environment type ----------------------------------
+
+# Functions for splitting and normalizing microbiome and resistome --------
 
 # Calculate normalization factors on the analytic data.
 # We use Cumulative Sum Scaling as implemented in metagenomeSeq.
@@ -36,7 +37,6 @@ normalize_split <- function(df){
   normalized
 }
    
-
 # Drake plan for normalization by environment -----------------------------
 
 # AMR files
