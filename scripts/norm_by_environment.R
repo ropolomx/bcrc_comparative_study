@@ -18,7 +18,7 @@ split_by_environment <- function(x){
   merge_meta <- left_join(x, metadata, by = "ID")
   split_meta <- split(merge_meta, merge_meta$Type)
   split_meta
-  }
+}
 
 df_retrans <- function(x){
   row.names(x) <- x$ID
