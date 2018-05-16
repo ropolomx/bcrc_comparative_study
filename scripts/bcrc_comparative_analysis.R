@@ -7,7 +7,7 @@
 ## cladeReads: using clade read counts
 
 ## Original author: Steven Lakin (Colorado State University)
-## Modified by: Rodrigo Ortega Polo (University of Lethbridge)
+## Modified for BCRC comparative analysis by: Rodrigo Ortega Polo (University of Lethbridge)
 
 ## The files you want to use for input to this (for the MEG group analyses)
 ## are the AMR_analytic_matrix.csv and kraken_analytic_matrix.csv.  The AMR
@@ -28,7 +28,7 @@
 # Loading packages --------------------------------------------------------
 
 all_packages <- c(
-  "readr",
+  "readr", # consider installing and calling tidyverse instead
   "stringr",
   "dplyr",
   "tidyr",
