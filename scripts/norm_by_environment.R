@@ -37,10 +37,10 @@ normalize_split <- function(df){
 }
 
 merge_amr <- function(amr_norm){
-  amr_norm[, header :=( rownames(amr_df) ), ]
-  setkey(amr_norm, header)
-  amr_norm <- annotations[amr_norm]  # left outer join
+  amr_norm$header <- row.names(amr_df)
+  amr_norm <- left_join(annotations, amr_norm) # left outer join
   amr_norm
+  
 }
 
 # Drake plan for normalization by environment -----------------------------
@@ -83,8 +83,9 @@ by_env_plan <- drake_plan(
     )
   },
   retranspose_kraken = {
-    map(
+    modify_depth(
       analytic_by_environment_kraken,
+      .depth = 2,
       ~ df_retrans(.x)
     )
   },
@@ -128,18 +129,6 @@ by_env_plan <- drake_plan(
     map(
       extract_norm_amr,
       ~ merge_amr(.x)
-    )
-  },
-  untidy_norm_amr = {
-    map(
-      generate_analytic_norm_amr,
-      ~ widen_amr(.x)
-    )
-  },
-  diversity_norm_amr = {
-    map(
-      untidy_norm_amr,
-      ~ calc_diversity_df(.x)
     )
   },
   strings_in_dots = "literals"
