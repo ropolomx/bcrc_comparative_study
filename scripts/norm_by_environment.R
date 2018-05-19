@@ -18,7 +18,7 @@ split_by_environment <- function(x){
   merge_meta <- left_join(x, metadata, by = "ID")
   split_meta <- split(merge_meta, merge_meta$Type)
   split_meta
-}
+  }
 
 df_retrans <- function(x){
   row.names(x) <- x$ID
@@ -31,12 +31,18 @@ df_retrans <- function(x){
 normalize_split <- function(df){
   normalized <- 
     df %>%
-    df_retrans(.) %>% 
     newMRexperiment(.) %>%
     cumNorm(.)
   normalized
 }
-   
+
+merge_amr <- function(amr_norm){
+  amr_norm[, header :=( rownames(amr_df) ), ]
+  setkey(amr_norm, header)
+  amr_norm <- annotations[amr_norm]  # left outer join
+  amr_norm
+}
+
 # Drake plan for normalization by environment -----------------------------
 
 # AMR files
@@ -70,15 +76,27 @@ by_env_plan <- drake_plan(
       ~ split_by_environment(.x)
     )
     },
-  normalize_by_environment_amr = {
+  retranspose_amr = {
     map(
       analytic_by_environment_amr,
+      ~ df_retrans(.x)
+    )
+  },
+  retranspose_kraken = {
+    map(
+      analytic_by_environment_kraken,
+      ~ df_retrans(.x)
+    )
+  },
+  normalize_by_environment_amr = {
+    map(
+      retranspose_amr,
       ~ normalize_split(.x)
     )
     },
   normalize_by_environment_kraken = {
     modify_depth(
-      analytic_by_environment_kraken,
+      retranspose_kraken,
       .depth = 2,
       ~ normalize_split(.x)
     )
@@ -106,15 +124,15 @@ by_env_plan <- drake_plan(
       .depth = 2,
       ~ data.table(MRcounts(.x, norm = FALSE)))
     },
-  generate_analytic = {
+  generate_analytic_norm_amr = {
     map(
       extract_norm_amr,
-      ~ .x[, lapply(.SD, sum), by=.x$class, .SDcols=!c(.x$header, .x$mechanism, .x$group)]
+      ~ merge_amr(.x)
     )
   },
   untidy_norm_amr = {
     map(
-      generate_analytic,
+      generate_analytic_norm_amr,
       ~ widen_amr(.x)
     )
   },
