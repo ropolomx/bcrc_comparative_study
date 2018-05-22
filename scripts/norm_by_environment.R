@@ -38,10 +38,18 @@ normalize_split <- function(df){
 
 merge_amr <- function(amr_norm){
   amr_norm$header <- row.names(amr_df)
-  amr_norm <- left_join(annotations, amr_norm) # left outer join
+  amr_norm <- left_join(annotations, amr_norm) # left outer join with dplyr
   amr_norm
-  
 }
+
+group_by_amr_level <- function(amr_analytic){
+  amr_analytic <- as.data.table(amr_analytic)
+  amr_class <- amr_analytic[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group')]
+  amr_class_analytic <- newMRexperiment(counts=amr_class[, .SD, .SDcols=!'class'])
+  rownames(amr_class_analytic) <- amr_class$class
+  amr_class_analytic
+}
+
 
 # Drake plan for normalization by environment -----------------------------
 
@@ -131,8 +139,34 @@ by_env_plan <- drake_plan(
       ~ merge_amr(.x)
     )
   },
+  generate_analytic_raw_amr = {
+    map(
+      extract_raw_amr,
+      ~ merge_amr(.x)
+    )
+  },
+  remove_wild_type_norm = {
+    map(
+      generate_analytic_norm_amr,
+      ~ .x[!(.x$group %in% snp_regex), ]
+    )
+  },
+  remove_wild_type_raw = {
+    map(
+      generate_analytic_raw_amr,
+      ~ .x[!(.x$group %in% snp_regex),] # Hack: need to work with different notation than data table's
+    )
+  },
+  group_by_class_norm = {
+    map(
+      remove_wild_type_norm,
+      ~ group_by_amr_level(.x)
+    )
+  },
   strings_in_dots = "literals"
 )
+
+# amr_raw <- amr_raw[!(group %in% snp_regex), ]
 
 # by_environment_eval <- evaluate_plan(
 #   by_environment_plan, 
@@ -146,9 +180,9 @@ by_env_config <- drake_config(by_env_plan)
 
 vis_drake_graph(
   by_env_config, 
-  from=c("kraken_df", "amr_df"), 
-  to=c("diversity_norm_amr"), 
+  from=c("kraken_df", "amr_df"),
+  # to=c("remove_wild_type_raw"), 
   font_size = 12
   )
 
-make(by_env_plan, jobs = 2, verbose = 2)
+make(by_env_plan, jobs = 2, verbose = 1)
