@@ -524,9 +524,9 @@ meg_barplot <- function(melted_data,
                                                               'Normalized_Count')])
     setkeyv(bar_subset, sample_var)
     bar_subset <- metadata[bar_subset]
-    # bar_subset[[sample_var]] <- factor(bar_subset[[sample_var]],
-                                          # levels=unique(bar_subset[[sample_var]][order(bar_subset[[group_var]])]),
-                                          # ordered=T)
+    bar_subset[[sample_var]] <- factor(bar_subset[[sample_var]],
+                                          levels=unique(bar_subset[[sample_var]][order(bar_subset[[group_var]])]),
+                                          ordered=F)
     
     setkey(bar_subset, Normalized_Count)
     bar_subset[, sample_number:=(length(unique(bar_subset[[sample_var]]))), by=c(group_var, 'Name')]
@@ -548,10 +548,10 @@ meg_barplot <- function(melted_data,
     names(bar_subset)[length(names(bar_subset))] <- 'Normalized_Count'
     source_sums <- tapply(bar_subset[['Normalized_Count']],
                           bar_subset[[group_var]], sum)
-    # source_labels <- names(source_sums)[order(source_sums, decreasing=T)]
-    # bar_subset[[group_var]] <- factor(bar_subset[[group_var]],
-    #                                       levels=source_labels, ordered=T)
-    # 
+    source_labels <- names(source_sums)[order(source_sums, decreasing=T)]
+    bar_subset[[group_var]] <- factor(bar_subset[[group_var]],
+                                          levels=source_labels, ordered=F)
+
     
     meg_bar <- ggplot(bar_subset, aes_string(x=group_var, y='Normalized_Count', fill='Name')) +
         geom_bar(stat='identity') + 
