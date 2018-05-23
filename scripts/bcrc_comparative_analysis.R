@@ -900,15 +900,15 @@ exploratory_analyses %>%
 
 # Exploratory Analyses: Alpha Normalized ----------------------------------
 
-widen_amr <- function(x){
-  amr_norm_wide <- spread(x, key=categoryNames, value=normCountsSum, fill=0)
-  row.names(amr_norm_wide) <- amr_norm_wide$samples
-  amrNormWide <- amrNormWide %>%
-    select(2:ncol(amrNormWide))
-  return(amrNormWide)
-}
+# widen_amr <- function(x){
+#   amr_norm_wide <- spread(x, key=categoryNames, value=normCountsSum, fill=0)
+#   row.names(amr_norm_wide) <- amr_norm_wide$samples
+#   amrNormWide <- amrNormWide %>%
+#     select(2:ncol(amrNormWide))
+#   return(amrNormWide)
+# }
 
-amr_norm_div_mat <- map(AMR_analytic_data, ~ widen_amr(pData(.x)))
+# amr_norm_div_mat <- map(AMR_analytic_data, ~ widen_amr(MRcounts(.x)))
 
 calc_diversity_df <- function(x){
   observed_richness <- specnumber(x, MARGIN=2)
@@ -948,101 +948,118 @@ kraken_taxon_norm_diversity <-
     ~ calc_diversity_df(MRcounts(.x))
   )
 
-amr_observed_species <- function(amr_df){
-  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Observed_Richness, color=Type)) +
-    geom_boxplot(lwd = 0.5, aes(size=5))+ 
-    theme(strip.text.x=element_text(size=25),
-      axis.text.y=element_text(size=30),
-      axis.text.x=element_text(size=25, angle=90),
-      axis.title.x=element_text(size=32),
-      axis.title.y=element_text(size=32),
-      legend.position="none",
-      legend.title=element_text(size=36),
-      legend.text=element_text(size=36, vjust=0.5),
-      plot.title=element_text(size=50, hjust=0.5)) +
+amr_observed_species <- function(amr_df) {
+  alphaDivBoxPlot <-
+    ggplot(amr_df, aes(Type, Observed_Richness, color = Type)) +
+    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    theme(
+      strip.text.x = element_text(size = 25),
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 25, angle = 90),
+      axis.title.x = element_text(size = 32),
+      axis.title.y = element_text(size = 32),
+      legend.position = "none",
+      legend.title = element_text(size = 36),
+      legend.text = element_text(size = 36, vjust = 0.5),
+      plot.title = element_text(size = 50, hjust = 0.5)
+    ) +
     xlab("Type") +
     ylab("Number of Unique\nAMR Categories\n") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap(~ Level, nrow=2, scales = "free_y")
+    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
 }
 
 amr_norm_rich_boxplots <- amr_observed_species(amr_norm_diversity)
 
-amr_inv_simpson <- function(amr_df){
-  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Inv_Simpson, color=Type)) +
-    geom_boxplot(lwd = 0.5, aes(size=5))+ 
-    theme(strip.text.x=element_text(size=25),
-      axis.text.y=element_text(size=30),
-      axis.text.x=element_text(size=25, angle=90),
-      axis.title.x=element_text(size=32),
-      axis.title.y=element_text(size=32),
-      legend.position="none",
+amr_inv_simpson <- function(amr_df) {
+  alphaDivBoxPlot <-
+    ggplot(amr_df, aes(Type, Inv_Simpson, color = Type)) +
+    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    theme(
+      strip.text.x = element_text(size = 25),
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 25, angle = 90),
+      axis.title.x = element_text(size = 32),
+      axis.title.y = element_text(size = 32),
+      legend.position = "none",
       #legend.title=element_text(size=36),
       #legend.text=element_text(size=36, vjust=0.5),
-      plot.title=element_text(size=50, hjust=0.5)) +
+      plot.title = element_text(size = 50, hjust = 0.5)
+    ) +
     xlab("Type") +
     ylab("Inverse Simpson Index") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap(~ Level, nrow=2, scales = "free_y")
+    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
 }
 
 amr_norm_inv_simpson_box <- amr_inv_simpson(amr_norm_diversity)
 
-amr_simpson <- function(amr_df){
-  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Simpson, color=Type)) +
-    geom_boxplot(lwd = 0.5, aes(size=5))+ 
-    theme(strip.text.x=element_text(size=25),
-      axis.text.y=element_text(size=30),
-      axis.text.x=element_text(size=25, angle=90),
-      axis.title.x=element_text(size=32),
-      axis.title.y=element_text(size=32),
-      legend.position="none",
+amr_simpson <- function(amr_df) {
+  alphaDivBoxPlot <- ggplot(amr_df, aes(Type, Simpson, color = Type)) +
+    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    theme(
+      strip.text.x = element_text(size = 25),
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 25, angle = 90),
+      axis.title.x = element_text(size = 32),
+      axis.title.y = element_text(size = 32),
+      legend.position = "none",
       #legend.title=element_text(size=36),
       #legend.text=element_text(size=36, vjust=0.5),
-      plot.title=element_text(size=50, hjust=0.5)) +
+      plot.title = element_text(size = 50, hjust = 0.5)
+    ) +
     xlab("Type") +
     ylab("Inverse Simpson Index") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap(~ Level, nrow=2, scales = "free_y")
+    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
 }
 
 amr_norm_simpson_box <- amr_simpson(amr_norm_diversity)
 
-amr_shannon <- function(amr_df){
-  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Shannon, color=Type)) +
-    geom_boxplot(lwd = 0.5, aes(size=5))+ 
-    theme(strip.text.x=element_text(size=25),
-      axis.text.y=element_text(size=30),
-      axis.text.x=element_text(size=25, angle=90),
-      axis.title.x=element_text(size=32),
-      axis.title.y=element_text(size=32),
-      legend.position="none",
+amr_shannon <- function(amr_df) {
+  alphaDivBoxPlot <- ggplot(amr_df, aes(Type, Shannon, color = Type)) +
+    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    theme(
+      strip.text.x = element_text(size = 25),
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 25, angle = 90),
+      axis.title.x = element_text(size = 32),
+      axis.title.y = element_text(size = 32),
+      legend.position = "none",
       #legend.title=element_text(size=36),
       #legend.text=element_text(size=36, vjust=0.5),
-      plot.title=element_text(size=50, hjust=0.5)) +
+      plot.title = element_text(size = 50, hjust = 0.5)
+    ) +
     xlab("Type") +
-    ylab("Inverse Simpson Index") +
+    ylab("Shannon Index") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap(~ Level, nrow=2, scales = "free_y")
+    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
 }
 
 amr_norm_shannon_box <- amr_shannon(amr_norm_diversity)
 
 exploratory_analyses %>%
-  walk(safely(~ meg_alpha_rarefaction(
-      data_list=kraken_clade_raw_analytic,
-      data_names=kraken_clade_names,
-      metadata=metadata,
-      sample_var=sample_column_id,
-      group_var=.x$exploratory_var,
-      analysis_subset=.x$subsets,
-      outdir=paste(graph_output_dir, 'Microbiome_cladeReads', .x$name,
-        sep='/', collapse=''),
-      data_type='Microbiome_cladeReads')
+  walk(safely(
+    ~ meg_alpha_rarefaction(
+      data_list = kraken_clade_raw_analytic,
+      data_names = kraken_clade_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      group_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'Microbiome_cladeReads',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'Microbiome_cladeReads'
+    )
   ))
 
 
