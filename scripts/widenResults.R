@@ -1,12 +1,9 @@
 
 # Load packages -----------------------------------------------------------
 
-require(readr)
-require(stringr)
-require(purrr)
-require(dplyr)
-require(tidyr)
-require(here)
+library(tidyverse)
+library(pavian)
+library(here)
 
 
 
