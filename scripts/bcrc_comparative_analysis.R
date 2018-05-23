@@ -37,8 +37,8 @@ all_packages <- c(
   "vegan",
   "metagenomeSeq",
   "ggplot2",
-  "here",
-  "drake"
+  "here"
+  # "drake"
 )
 
 lapply(all_packages, require, character.only = TRUE)
@@ -604,12 +604,32 @@ kraken_taxon_raw_analytic <- map2(
   ~ make_analytic(.x, .y)
 )
 
+
 # Examples for further reference  
 # kraken_species_raw <- kraken_raw[!is.na(Species) & Species != 'NA', lapply(.SD, sum), by='Species', .SDcols=!1:8]
 # kraken_species_raw_analytic <- newMRexperiment(counts=kraken_species_raw[, .SD, .SDcols=!'Species'])
 # rownames(kraken_species_raw_analytic) <- kraken_species_raw$Species
 
 # Kraken clade analytic matrices ------------------------------------------
+
+reorder_tax_ranks <- function(level_id){
+  level_id <- factor(level_id,
+                     levels = c(
+                       "Domain",
+                       "Phylum",
+                       "Class",
+                       "Order",
+                       "Family",
+                       "Genus",
+                       "Species"
+                     )
+  )
+}
+
+
+
+kraken_norm$cladeReads$lowest_level <- reorder_tax_ranks(kraken_norm$cladeReads$lowest_level)
+kraken_raw$cladeReads$lowest_level <- reorder_tax_ranks(kraken_raw$cladeReads$lowest_level)
 
 kraken_clade_norm_list <-
   kraken_norm$cladeReads %>%
@@ -665,11 +685,31 @@ kraken_clade_raw_melted <- imap_dfr(
   ~ melt_dt(MRcounts(.x), .y)
 ) # getting warning: binding character and factor vector, coercing into character vector
 
+
+kraken_taxon_norm_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_norm_melted$Level_ID)
+kraken_taxon_raw_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_raw_melted$Level_ID)
+kraken_clade_norm_melted$Level_ID <- reorder_tax_ranks(kraken_clade_norm_melted$Level_ID)
+kraken_clade_raw_melted$Level_ID <- reorder_tax_ranks(kraken_clade_raw_melted$Level_ID)
+
+
 # Match metadata ----------------------------------------------------------
 
 # Ensure that the metadata entries match the factor order of the MRexperiments
 metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, "ID"]), ])
 setkeyv(metadata, sample_column_id)
+
+reorder_environments <- function(env_column){
+  env_column <- factor(env_column,
+                     levels = c(
+                       "Fecal_Composite",
+                       "Catch_Basin",
+                       "Soil",
+                       "Sewage_Treatment"
+                      )
+  )
+}
+
+metadata$Type <- reorder_environments(metadata$Type)
 
 
 # Vector of objects for iteration and their names
@@ -704,24 +744,58 @@ for( l in 1:length(AMR_raw_analytic_data) ) {
     rownames(fData(AMR_raw_analytic_data[[l]])) <- rownames(MRcounts(AMR_raw_analytic_data[[l]]))
 }
 
-# for( l in 1:length(kraken_taxon_norm_analytic) ) {
-#     sample_idx <- match(colnames(MRcounts(kraken_taxon_norm_analytic[[l]])), metadata[[sample_column_id]])
-#     pData(kraken_taxon_norm_analytic[[l]]) <- data.frame(
-#         metadata[sample_idx, .SD, .SDcols=!sample_column_id])
-#     rownames(pData(kraken_taxon_norm_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-#     fData(kraken_taxon_norm_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_taxon_norm_analytic[[l]])))
-#     rownames(fData(kraken_taxon_norm_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_norm_analytic[[l]]))
-# }
+names(AMR_analytic_data) <- AMR_analytic_names
+names(AMR_raw_analytic_data) <- AMR_raw_analytic_names
+
+for( l in 1:length(kraken_taxon_norm_analytic) ) {
+    sample_idx <- match(colnames(MRcounts(kraken_taxon_norm_analytic[[l]])), metadata[[sample_column_id]])
+    pData(kraken_taxon_norm_analytic[[l]]) <- data.frame(
+        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+    rownames(pData(kraken_taxon_norm_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+    fData(kraken_taxon_norm_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_taxon_norm_analytic[[l]])))
+    rownames(fData(kraken_taxon_norm_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_norm_analytic[[l]]))
+}
 # 
-# for( l in 1:length(kraken_taxon_raw_analytic) ) {
-#     sample_idx <- match(colnames(MRcounts(kraken_taxon_raw_analytic[[l]])), metadata[[sample_column_id]])
-#     pData(kraken_taxon_raw_analytic[[l]]) <- data.frame(
-#         metadata[sample_idx, .SD, .SDcols=!sample_column_id])
-#     rownames(pData(kraken_taxon_raw_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
-#     fData(kraken_taxon_raw_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_taxon_raw_analytic[[l]])))
-#     rownames(fData(kraken_taxon_raw_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_raw_analytic[[l]]))
-# }
-# 
+for( l in 1:length(kraken_taxon_raw_analytic) ) {
+    sample_idx <- match(colnames(MRcounts(kraken_taxon_raw_analytic[[l]])), metadata[[sample_column_id]])
+    pData(kraken_taxon_raw_analytic[[l]]) <- data.frame(
+        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+    rownames(pData(kraken_taxon_raw_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+    fData(kraken_taxon_raw_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_taxon_raw_analytic[[l]])))
+    rownames(fData(kraken_taxon_raw_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_raw_analytic[[l]]))
+}
+
+kraken_taxon_norm_analytic <-
+  kraken_taxon_norm_analytic %>%
+  map(function(x){
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]])
+    x
+  }
+)
+
+kraken_taxon_raw_analytic <-
+  kraken_taxon_raw_analytic %>%
+  map(function(x){
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]])
+    x
+  }
+)
+
+kraken_clade_norm_analytic <-
+  kraken_clade_norm_analytic %>%
+  map(function(x){
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]])
+    x
+  }
+)
+
+kraken_clade_raw_analytic <-
+  kraken_clade_raw_analytic %>%
+  map(function(x){
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]])
+    x
+  }
+)
 # for( l in 1:length(kraken_clade_norm_analytic) ) {
 #     sample_idx <- match(colnames(MRcounts(kraken_clade_norm_analytic[[l]])), metadata[[sample_column_id]])
 #     pData(kraken_clade_norm_analytic[[l]]) <- data.frame(
@@ -748,34 +822,41 @@ match_metadata <- function(x){
  rownames(pData(x)) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
  fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
  rownames(fData(x)) <- rownames(MRcounts(x))
+ x
 }
 
 # Normalized Kraken analytic matrices
 
-as.vector(kraken_taxon_norm_analytic) %>%
-  walk(
+kraken_taxon_norm_analytic <- 
+  as.vector(kraken_taxon_norm_analytic) %>%
+  map(
     ~ match_metadata(.x)
-  )
+)
 
+kraken_clade_norm_analytic <- 
 as.vector(kraken_clade_norm_analytic) %>%
-  walk(
+  map(
     ~ match_metadata(.x)
   )
 
 # Raw Kraken analytic matrices
 
-as.vector(kraken_taxon_raw_analytic) %>%
-  walk(
+kraken_taxon_raw_analytic <- 
+  as.vector(kraken_taxon_raw_analytic) %>%
+  map(
     ~ match_metadata(.x)
   )
 
-as.vector(kraken_clade_raw_analytic) %>%
-  walk(
+kraken_clade_raw_analytic <- 
+  as.vector(kraken_clade_raw_analytic) %>%
+  map(
     ~ match_metadata(.x)
   )
 
 kraken_taxon_names <- names(kraken_taxon_raw_analytic)
 kraken_clade_names <- names(kraken_clade_raw_analytic)
+
+
 
 # Exploratory Analyses: Alpha Rarefaction ---------------------------------
 
@@ -828,7 +909,7 @@ widen_amr <- function(x){
   return(amrNormWide)
 }
 
-amr_norm_div_mat <- widen_amr(AMR_analytic_data)
+amr_norm_div_mat <- map(AMR_analytic_data, ~ widen_amr(pData(.x)))
 
 calc_diversity_df <- function(x){
   observed_richness <- specnumber(x, MARGIN=2)
@@ -877,8 +958,8 @@ amr_observed_species <- function(amr_df){
       axis.title.x=element_text(size=32),
       axis.title.y=element_text(size=32),
       legend.position="none",
-      #legend.title=element_text(size=36),
-      #legend.text=element_text(size=36, vjust=0.5),
+      legend.title=element_text(size=36),
+      legend.text=element_text(size=36, vjust=0.5),
       plot.title=element_text(size=50, hjust=0.5)) +
     xlab("Type") +
     ylab("Number of Unique\nAMR Categories\n") +

@@ -120,8 +120,8 @@ row.names(amrAnalytical) <- amrClassification
 megaBioPaths <- Sys.glob(here("MegaBio_results", '*','*.tabular'))
 
 megaBioNames <- list.files(
-  path = Sys.glob("./MegaBio_results/*/"),
-  pattern = "*CovSampler_parsed.tab"
+  path = Sys.glob("./MegaBio_results/*"),
+  pattern = "*CovSampler_parsed\\.tab$"
   ) %>%
   map(function(x) str_replace(x, "_MBio_CovSampler_parsed\\.tab$", ""))
 

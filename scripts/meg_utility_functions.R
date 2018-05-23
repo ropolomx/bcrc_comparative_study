@@ -404,24 +404,24 @@ meg_alpha_rarefaction <- function(data_list,
   all_species_raw <- all_species_raw[!is.na(all_species_raw[[group_var]]), ]
   all_species_rare <- all_species_rare[!is.na(all_species_rare[[group_var]]), ]
   
-  alphadiv_type_sums <- all_alphadiv[Level==data_names[2], median(Value), by=group_var]
-  alphadiv_value_labels <- as.character(alphadiv_type_sums[[group_var]][order(alphadiv_type_sums$V1, decreasing=T)])
-  
-  species_raw_type_sums <- all_species_raw[Level==data_names[2], median(Value), by=group_var]
-  species_raw_value_labels <- as.character(species_raw_type_sums[[group_var]][order(species_raw_type_sums$V1,
-                                                                                    decreasing=T)])
-  species_rare_type_sums <- all_species_rare[Level==data_names[2], median(Value), by=group_var]
-  species_rare_value_labels <- as.character(species_rare_type_sums[[group_var]][order(species_rare_type_sums$V1,
-                                                                                      decreasing=T)])
-  
-  all_alphadiv[[group_var]] <- factor(all_alphadiv[[group_var]],
-                                      levels=alphadiv_value_labels, ordered=T)
-  
-  all_species_raw[[group_var]] <- factor(all_species_raw[[group_var]],
-                                         levels=species_raw_value_labels, ordered=T)
-  
-  all_species_rare[[group_var]] <- factor(all_species_rare[[group_var]],
-                                          levels=species_rare_value_labels, ordered=T)
+  # alphadiv_type_sums <- all_alphadiv[Level==data_names[2], median(Value), by=group_var]
+  # alphadiv_value_labels <- as.character(alphadiv_type_sums[[group_var]][order(alphadiv_type_sums$V1, decreasing=T)])
+  # 
+  # species_raw_type_sums <- all_species_raw[Level==data_names[2], median(Value), by=group_var]
+  # species_raw_value_labels <- as.character(species_raw_type_sums[[group_var]][order(species_raw_type_sums$V1,
+  #                                                                                   decreasing=T)])
+  # species_rare_type_sums <- all_species_rare[Level==data_names[2], median(Value), by=group_var]
+  # species_rare_value_labels <- as.character(species_rare_type_sums[[group_var]][order(species_rare_type_sums$V1,
+  #                                                                                     decreasing=T)])
+  # 
+  # all_alphadiv[[group_var]] <- factor(all_alphadiv[[group_var]],
+  #                                     levels=alphadiv_value_labels, ordered=T)
+  # 
+  # all_species_raw[[group_var]] <- factor(all_species_raw[[group_var]],
+  #                                        levels=species_raw_value_labels, ordered=T)
+  # 
+  # all_species_rare[[group_var]] <- factor(all_species_rare[[group_var]],
+  #                                         levels=species_rare_value_labels, ordered=T)
   
   png(filename=paste(outdir, '/', data_type, '_alphadiversity_by_', group_var, '.png',
                      sep='', collapse=''),
@@ -524,9 +524,9 @@ meg_barplot <- function(melted_data,
                                                               'Normalized_Count')])
     setkeyv(bar_subset, sample_var)
     bar_subset <- metadata[bar_subset]
-    bar_subset[[sample_var]] <- factor(bar_subset[[sample_var]],
-                                          levels=unique(bar_subset[[sample_var]][order(bar_subset[[group_var]])]),
-                                          ordered=T)
+    # bar_subset[[sample_var]] <- factor(bar_subset[[sample_var]],
+                                          # levels=unique(bar_subset[[sample_var]][order(bar_subset[[group_var]])]),
+                                          # ordered=T)
     
     setkey(bar_subset, Normalized_Count)
     bar_subset[, sample_number:=(length(unique(bar_subset[[sample_var]]))), by=c(group_var, 'Name')]
@@ -548,10 +548,10 @@ meg_barplot <- function(melted_data,
     names(bar_subset)[length(names(bar_subset))] <- 'Normalized_Count'
     source_sums <- tapply(bar_subset[['Normalized_Count']],
                           bar_subset[[group_var]], sum)
-    source_labels <- names(source_sums)[order(source_sums, decreasing=T)]
-    bar_subset[[group_var]] <- factor(bar_subset[[group_var]],
-                                          levels=source_labels, ordered=T)
-    
+    # source_labels <- names(source_sums)[order(source_sums, decreasing=T)]
+    # bar_subset[[group_var]] <- factor(bar_subset[[group_var]],
+    #                                       levels=source_labels, ordered=T)
+    # 
     
     meg_bar <- ggplot(bar_subset, aes_string(x=group_var, y='Normalized_Count', fill='Name')) +
         geom_bar(stat='identity') + 
