@@ -413,7 +413,7 @@ meg_alpha_rarefaction <- function(data_list,
   # species_rare_type_sums <- all_species_rare[Level==data_names[2], median(Value), by=group_var]
   # species_rare_value_labels <- as.character(species_rare_type_sums[[group_var]][order(species_rare_type_sums$V1,
   #                                                                                     decreasing=T)])
-  # 
+
   # all_alphadiv[[group_var]] <- factor(all_alphadiv[[group_var]],
   #                                     levels=alphadiv_value_labels, ordered=T)
   # 
@@ -456,7 +456,7 @@ meg_alpha_rarefaction <- function(data_list,
         geom_boxplot(width=0.8,lwd=0.8) + 
         facet_wrap(~Level, nrow=2, scales='free_y')
     g_sraw <- g_sraw +
-        ggtitle(paste('Species Richness by ', group_var, ' for Raw data\nInverse Simpson Index',
+        ggtitle(paste('Species Richness by ', group_var, ' for Raw data\nObserved Richness',
                       sep='', collapse='')) +
         ylab('Unique Species\n') +
         xlab(paste('\n', group_var, sep='', collapse='')) +
@@ -479,7 +479,7 @@ meg_alpha_rarefaction <- function(data_list,
         geom_boxplot(width=0.8,lwd=0.8) + 
         facet_wrap(~Level, nrow=2, scales='free_y')
     g_srare <- g_srare +
-        ggtitle(paste('Species Richness by ', group_var, ' for Rarefied data\nInverse Simpson Index',
+        ggtitle(paste('Species Richness by ', group_var, ' for Rarefied data\nObserved Richness',
                       sep='', collapse='')) +
         ylab('Unique Species\n') +
         xlab(paste('\n', group_var, sep='', collapse='')) +

@@ -55,8 +55,13 @@ group_by_amr_level <- function(amr_analytic){
 
 # AMR files
 
-amr_filepath <- here('aggregated_data_for_analysis', 'amrBioAnalytical.csv')
-amr_df <- read.csv(file = amr_filepath, header = TRUE, row.names = 1)
+amr_filepath <-
+  here('aggregated_data_for_analysis', 'amrBioAnalytical.csv')
+
+amr_df <-
+  read.csv(file = amr_filepath,
+    header = TRUE,
+    row.names = 1)
 
 # List of Kraken files 
 
@@ -154,7 +159,7 @@ by_env_plan <- drake_plan(
   remove_wild_type_raw = {
     map(
       generate_analytic_raw_amr,
-      ~ .x[!(.x$group %in% snp_regex),] # Hack: need to work with different notation than data table's
+      ~ .x[!(.x$group %in% snp_regex),] # Hack: needed to work with different notation than data table's
     )
   },
   group_by_class_norm = {
@@ -178,11 +183,9 @@ check_plan(by_env_plan)
 
 by_env_config <- drake_config(by_env_plan)
 
-vis_drake_graph(
-  by_env_config, 
-  from=c("kraken_df", "amr_df"),
-  # to=c("remove_wild_type_raw"), 
-  font_size = 12
-  )
+vis_drake_graph(by_env_config,
+  from = c("kraken_df", "amr_df"),
+  # to=c("remove_wild_type_raw"),
+  font_size = 12)
 
 make(by_env_plan, jobs = 2, verbose = 1)

@@ -7,7 +7,7 @@
 ## cladeReads: using clade read counts
 
 ## Original author: Steven Lakin (Colorado State University)
-## Modified for BCRC comparative analysis by: Rodrigo Ortega Polo (University of Lethbridge)
+## Modified and adapted for BCRC comparative analysis by: Rodrigo Ortega Polo (University of Lethbridge)
 
 ## The files you want to use for input to this (for the MEG group analyses)
 ## are the AMR_analytic_matrix.csv and kraken_analytic_matrix.csv.  The AMR
@@ -28,11 +28,7 @@
 # Loading packages --------------------------------------------------------
 
 all_packages <- c(
-  "readr", # consider installing and calling tidyverse instead
-  "stringr",
-  "dplyr",
-  "tidyr",
-  "purrr",
+  "tidyverse",
   "data.table",
   "vegan",
   "metagenomeSeq",
@@ -469,8 +465,8 @@ kraken_taxonomy_split <-
     split_tax <- x %>%
       mutate(Domain = mutate_tax(splitting, "^d_.*")) %>% 
       mutate(Phylum = mutate_tax(splitting, "^p_.*")) %>% 
-      mutate(Order = mutate_tax(splitting, "^o_.*")) %>%
       mutate(Class = mutate_tax(splitting, "^c_.*")) %>%
+      mutate(Order = mutate_tax(splitting, "^o_.*")) %>%
       mutate(Family = mutate_tax(splitting, "^f_.*")) %>%
       mutate(Genus = mutate_tax(splitting, "^g_.*")) %>%
       mutate(Species = mutate_tax(splitting, "^s_.*"))
@@ -505,8 +501,8 @@ kraken_taxonomy_split <-
 tax_levels <- c(
   "Domain",
   "Phylum",
-  "Order",
   "Class",
+  "Order",
   "Family",
   "Genus",
   "Species"
@@ -515,8 +511,8 @@ tax_levels <- c(
 tax_regex <- c(
   "^d_.*",
   "^p_.*", 
-  "^o_.*", 
   "^c_.*", 
+  "^o_.*", 
   "^f_.*", 
   "^g_.*", 
   "^s_.*" 
@@ -624,12 +620,15 @@ reorder_tax_ranks <- function(level_id){
                        "Species"
                      )
   )
+  level_id
 }
 
 
 
 kraken_norm$cladeReads$lowest_level <- reorder_tax_ranks(kraken_norm$cladeReads$lowest_level)
 kraken_raw$cladeReads$lowest_level <- reorder_tax_ranks(kraken_raw$cladeReads$lowest_level)
+kraken_norm$taxonReads$lowest_level <- reorder_tax_ranks(kraken_norm$taxonReads$lowest_level)
+kraken_raw$taxonReads$lowest_level <- reorder_tax_ranks(kraken_raw$taxonReads$lowest_level)
 
 kraken_clade_norm_list <-
   kraken_norm$cladeReads %>%
@@ -686,10 +685,10 @@ kraken_clade_raw_melted <- imap_dfr(
 ) # getting warning: binding character and factor vector, coercing into character vector
 
 
-kraken_taxon_norm_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_norm_melted$Level_ID)
-kraken_taxon_raw_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_raw_melted$Level_ID)
-kraken_clade_norm_melted$Level_ID <- reorder_tax_ranks(kraken_clade_norm_melted$Level_ID)
-kraken_clade_raw_melted$Level_ID <- reorder_tax_ranks(kraken_clade_raw_melted$Level_ID)
+# kraken_taxon_norm_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_norm_melted$Level_ID)
+# kraken_taxon_raw_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_raw_melted$Level_ID)
+# kraken_clade_norm_melted$Level_ID <- reorder_tax_ranks(kraken_clade_norm_melted$Level_ID)
+# kraken_clade_raw_melted$Level_ID <- reorder_tax_ranks(kraken_clade_raw_melted$Level_ID)
 
 
 # Match metadata ----------------------------------------------------------
@@ -901,15 +900,15 @@ exploratory_analyses %>%
 
 # Exploratory Analyses: Alpha Normalized ----------------------------------
 
-widen_amr <- function(x){
-  amr_norm_wide <- spread(x, key=categoryNames, value=normCountsSum, fill=0)
-  row.names(amr_norm_wide) <- amr_norm_wide$samples
-  amrNormWide <- amrNormWide %>%
-    select(2:ncol(amrNormWide))
-  return(amrNormWide)
-}
+# widen_amr <- function(x){
+#   amr_norm_wide <- spread(x, key=categoryNames, value=normCountsSum, fill=0)
+#   row.names(amr_norm_wide) <- amr_norm_wide$samples
+#   amrNormWide <- amrNormWide %>%
+#     select(2:ncol(amrNormWide))
+#   return(amrNormWide)
+# }
 
-amr_norm_div_mat <- map(AMR_analytic_data, ~ widen_amr(pData(.x)))
+# amr_norm_div_mat <- map(AMR_analytic_data, ~ widen_amr(MRcounts(.x)))
 
 calc_diversity_df <- function(x){
   observed_richness <- specnumber(x, MARGIN=2)
@@ -949,101 +948,118 @@ kraken_taxon_norm_diversity <-
     ~ calc_diversity_df(MRcounts(.x))
   )
 
-amr_observed_species <- function(amr_df){
-  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Observed_Richness, color=Type)) +
-    geom_boxplot(lwd = 0.5, aes(size=5))+ 
-    theme(strip.text.x=element_text(size=25),
-      axis.text.y=element_text(size=30),
-      axis.text.x=element_text(size=25, angle=90),
-      axis.title.x=element_text(size=32),
-      axis.title.y=element_text(size=32),
-      legend.position="none",
-      legend.title=element_text(size=36),
-      legend.text=element_text(size=36, vjust=0.5),
-      plot.title=element_text(size=50, hjust=0.5)) +
+amr_observed_species <- function(amr_df) {
+  alphaDivBoxPlot <-
+    ggplot(amr_df, aes(Type, Observed_Richness, color = Type)) +
+    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    theme(
+      strip.text.x = element_text(size = 25),
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 25, angle = 90),
+      axis.title.x = element_text(size = 32),
+      axis.title.y = element_text(size = 32),
+      legend.position = "none",
+      legend.title = element_text(size = 36),
+      legend.text = element_text(size = 36, vjust = 0.5),
+      plot.title = element_text(size = 50, hjust = 0.5)
+    ) +
     xlab("Type") +
     ylab("Number of Unique\nAMR Categories\n") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap(~ Level, nrow=2, scales = "free_y")
+    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
 }
 
 amr_norm_rich_boxplots <- amr_observed_species(amr_norm_diversity)
 
-amr_inv_simpson <- function(amr_df){
-  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Inv_Simpson, color=Type)) +
-    geom_boxplot(lwd = 0.5, aes(size=5))+ 
-    theme(strip.text.x=element_text(size=25),
-      axis.text.y=element_text(size=30),
-      axis.text.x=element_text(size=25, angle=90),
-      axis.title.x=element_text(size=32),
-      axis.title.y=element_text(size=32),
-      legend.position="none",
+amr_inv_simpson <- function(amr_df) {
+  alphaDivBoxPlot <-
+    ggplot(amr_df, aes(Type, Inv_Simpson, color = Type)) +
+    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    theme(
+      strip.text.x = element_text(size = 25),
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 25, angle = 90),
+      axis.title.x = element_text(size = 32),
+      axis.title.y = element_text(size = 32),
+      legend.position = "none",
       #legend.title=element_text(size=36),
       #legend.text=element_text(size=36, vjust=0.5),
-      plot.title=element_text(size=50, hjust=0.5)) +
+      plot.title = element_text(size = 50, hjust = 0.5)
+    ) +
     xlab("Type") +
     ylab("Inverse Simpson Index") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap(~ Level, nrow=2, scales = "free_y")
+    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
 }
 
 amr_norm_inv_simpson_box <- amr_inv_simpson(amr_norm_diversity)
 
-amr_simpson <- function(amr_df){
-  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Simpson, color=Type)) +
-    geom_boxplot(lwd = 0.5, aes(size=5))+ 
-    theme(strip.text.x=element_text(size=25),
-      axis.text.y=element_text(size=30),
-      axis.text.x=element_text(size=25, angle=90),
-      axis.title.x=element_text(size=32),
-      axis.title.y=element_text(size=32),
-      legend.position="none",
+amr_simpson <- function(amr_df) {
+  alphaDivBoxPlot <- ggplot(amr_df, aes(Type, Simpson, color = Type)) +
+    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    theme(
+      strip.text.x = element_text(size = 25),
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 25, angle = 90),
+      axis.title.x = element_text(size = 32),
+      axis.title.y = element_text(size = 32),
+      legend.position = "none",
       #legend.title=element_text(size=36),
       #legend.text=element_text(size=36, vjust=0.5),
-      plot.title=element_text(size=50, hjust=0.5)) +
+      plot.title = element_text(size = 50, hjust = 0.5)
+    ) +
     xlab("Type") +
     ylab("Inverse Simpson Index") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap(~ Level, nrow=2, scales = "free_y")
+    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
 }
 
 amr_norm_simpson_box <- amr_simpson(amr_norm_diversity)
 
-amr_shannon <- function(amr_df){
-  alphaDivBoxPlot<- ggplot(amr_df, aes(Type, Shannon, color=Type)) +
-    geom_boxplot(lwd = 0.5, aes(size=5))+ 
-    theme(strip.text.x=element_text(size=25),
-      axis.text.y=element_text(size=30),
-      axis.text.x=element_text(size=25, angle=90),
-      axis.title.x=element_text(size=32),
-      axis.title.y=element_text(size=32),
-      legend.position="none",
+amr_shannon <- function(amr_df) {
+  alphaDivBoxPlot <- ggplot(amr_df, aes(Type, Shannon, color = Type)) +
+    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    theme(
+      strip.text.x = element_text(size = 25),
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 25, angle = 90),
+      axis.title.x = element_text(size = 32),
+      axis.title.y = element_text(size = 32),
+      legend.position = "none",
       #legend.title=element_text(size=36),
       #legend.text=element_text(size=36, vjust=0.5),
-      plot.title=element_text(size=50, hjust=0.5)) +
+      plot.title = element_text(size = 50, hjust = 0.5)
+    ) +
     xlab("Type") +
-    ylab("Inverse Simpson Index") +
+    ylab("Shannon Index") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap(~ Level, nrow=2, scales = "free_y")
+    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
 }
 
 amr_norm_shannon_box <- amr_shannon(amr_norm_diversity)
 
 exploratory_analyses %>%
-  walk(safely(~ meg_alpha_rarefaction(
-      data_list=kraken_clade_raw_analytic,
-      data_names=kraken_clade_names,
-      metadata=metadata,
-      sample_var=sample_column_id,
-      group_var=.x$exploratory_var,
-      analysis_subset=.x$subsets,
-      outdir=paste(graph_output_dir, 'Microbiome_cladeReads', .x$name,
-        sep='/', collapse=''),
-      data_type='Microbiome_cladeReads')
+  walk(safely(
+    ~ meg_alpha_rarefaction(
+      data_list = kraken_clade_raw_analytic,
+      data_names = kraken_clade_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      group_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'Microbiome_cladeReads',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'Microbiome_cladeReads'
+    )
   ))
 
 
