@@ -28,11 +28,7 @@
 # Loading packages --------------------------------------------------------
 
 all_packages <- c(
-  "readr", # consider installing and calling tidyverse instead
-  "stringr",
-  "dplyr",
-  "tidyr",
-  "purrr",
+  "tidyverse",
   "data.table",
   "vegan",
   "metagenomeSeq",
@@ -505,8 +501,8 @@ kraken_taxonomy_split <-
 tax_levels <- c(
   "Domain",
   "Phylum",
-  "Order",
   "Class",
+  "Order",
   "Family",
   "Genus",
   "Species"
@@ -515,8 +511,8 @@ tax_levels <- c(
 tax_regex <- c(
   "^d_.*",
   "^p_.*", 
-  "^o_.*", 
   "^c_.*", 
+  "^o_.*", 
   "^f_.*", 
   "^g_.*", 
   "^s_.*" 
@@ -631,6 +627,8 @@ reorder_tax_ranks <- function(level_id){
 
 kraken_norm$cladeReads$lowest_level <- reorder_tax_ranks(kraken_norm$cladeReads$lowest_level)
 kraken_raw$cladeReads$lowest_level <- reorder_tax_ranks(kraken_raw$cladeReads$lowest_level)
+kraken_norm$taxonReads$lowest_level <- reorder_tax_ranks(kraken_norm$taxonReads$lowest_level)
+kraken_raw$taxonReads$lowest_level <- reorder_tax_ranks(kraken_raw$taxonReads$lowest_level)
 
 kraken_clade_norm_list <-
   kraken_norm$cladeReads %>%
@@ -687,10 +685,10 @@ kraken_clade_raw_melted <- imap_dfr(
 ) # getting warning: binding character and factor vector, coercing into character vector
 
 
-kraken_taxon_norm_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_norm_melted$Level_ID)
-kraken_taxon_raw_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_raw_melted$Level_ID)
-kraken_clade_norm_melted$Level_ID <- reorder_tax_ranks(kraken_clade_norm_melted$Level_ID)
-kraken_clade_raw_melted$Level_ID <- reorder_tax_ranks(kraken_clade_raw_melted$Level_ID)
+# kraken_taxon_norm_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_norm_melted$Level_ID)
+# kraken_taxon_raw_melted$Level_ID <- reorder_tax_ranks(kraken_taxon_raw_melted$Level_ID)
+# kraken_clade_norm_melted$Level_ID <- reorder_tax_ranks(kraken_clade_norm_melted$Level_ID)
+# kraken_clade_raw_melted$Level_ID <- reorder_tax_ranks(kraken_clade_raw_melted$Level_ID)
 
 
 # Match metadata ----------------------------------------------------------
