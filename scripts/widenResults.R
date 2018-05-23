@@ -5,8 +5,6 @@ library(tidyverse)
 library(pavian)
 library(here)
 
-
-
 # Create directory for aggregated data ------------------------------------
 
 aggregated_dir <- here("aggregated_data_for_analysis")
