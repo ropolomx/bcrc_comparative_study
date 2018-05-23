@@ -154,7 +154,7 @@ by_env_plan <- drake_plan(
   remove_wild_type_raw = {
     map(
       generate_analytic_raw_amr,
-      ~ .x[!(.x$group %in% snp_regex),] # Hack: need to work with different notation than data table's
+      ~ .x[!(.x$group %in% snp_regex),] # Hack: needed to work with different notation than data table's
     )
   },
   group_by_class_norm = {

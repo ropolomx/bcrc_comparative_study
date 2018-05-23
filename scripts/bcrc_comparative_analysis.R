@@ -7,7 +7,7 @@
 ## cladeReads: using clade read counts
 
 ## Original author: Steven Lakin (Colorado State University)
-## Modified for BCRC comparative analysis by: Rodrigo Ortega Polo (University of Lethbridge)
+## Modified and adapted for BCRC comparative analysis by: Rodrigo Ortega Polo (University of Lethbridge)
 
 ## The files you want to use for input to this (for the MEG group analyses)
 ## are the AMR_analytic_matrix.csv and kraken_analytic_matrix.csv.  The AMR
@@ -469,8 +469,8 @@ kraken_taxonomy_split <-
     split_tax <- x %>%
       mutate(Domain = mutate_tax(splitting, "^d_.*")) %>% 
       mutate(Phylum = mutate_tax(splitting, "^p_.*")) %>% 
-      mutate(Order = mutate_tax(splitting, "^o_.*")) %>%
       mutate(Class = mutate_tax(splitting, "^c_.*")) %>%
+      mutate(Order = mutate_tax(splitting, "^o_.*")) %>%
       mutate(Family = mutate_tax(splitting, "^f_.*")) %>%
       mutate(Genus = mutate_tax(splitting, "^g_.*")) %>%
       mutate(Species = mutate_tax(splitting, "^s_.*"))
@@ -624,6 +624,7 @@ reorder_tax_ranks <- function(level_id){
                        "Species"
                      )
   )
+  level_id
 }
 
 
