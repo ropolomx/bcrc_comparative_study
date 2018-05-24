@@ -1,4 +1,8 @@
 
+# Load packages -----------------------------------------------------------
+
+library(drake)
+
 # Functions for splitting and normalizing microbiome and resistome --------
 
 # Calculate normalization factors on the analytic data.
