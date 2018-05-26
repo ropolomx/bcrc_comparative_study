@@ -97,6 +97,10 @@ amrCovSampler <- amrCovSamplerPaths %>%
 amrReportsMerged <- amrCovSampler %>%
   map_dfr(function(x) x, .id="Sample")
 
+amrReportsMerged <- 
+  amrReportsMerged %>%
+  filter(`Gene Fraction` >= 75)
+  
 amrAnalytical <- amrReportsMerged %>%
   select(Sample, Header, Hits) %>%
   spread(key = Sample, value = Hits, fill = 0)
@@ -128,6 +132,9 @@ megaBioReports <-
 megaBioReportsMerged <- megaBioReports %>%
   map_dfr(function(x) x, .id="Sample") %>%
   rename(Header = `Gene Id`)
+
+megaBioReportsMerged <- megaBioReportsMerged %>%
+  filter(`Gene Fraction` >= 75)
 
 # Change sample names to reflect names in metadata files
 
