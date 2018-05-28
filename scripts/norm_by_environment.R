@@ -42,13 +42,13 @@ normalize_split <- function(df){
 
 merge_amr <- function(amr_norm){
   amr_norm$header <- row.names(amr_df)
-  amr_norm <- left_join(annotations, amr_norm) # left outer join with dplyr
+  amr_norm <- left_join(amr_norm, annotations, by="header") # left outer join with dplyr
   amr_norm
 }
 
 group_by_amr_level <- function(amr_analytic){
-  amr_analytic <- as.data.table(amr_analytic)
-  amr_class <- amr_analytic[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group')]
+  amr_dt<- as.data.table(amr_analytic)
+  amr_class <- amr_dt[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group')]
   amr_class_analytic <- newMRexperiment(counts=amr_class[, .SD, .SDcols=!'class'])
   rownames(amr_class_analytic) <- amr_class$class
   amr_class_analytic
