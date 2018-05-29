@@ -46,7 +46,7 @@ merge_amr <- function(amr_norm){
   amr_norm
 }
 
-group_by_amr_level <- function(amr_analytic){
+group_by_amr_level <- function(amr_analytic, level){
   amr_dt<- as.data.table(amr_analytic)
   amr_class <- amr_dt[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group')]
   amr_class_analytic <- newMRexperiment(counts=amr_class[, .SD, .SDcols=!'class'])
@@ -169,6 +169,12 @@ by_env_plan <- drake_plan(
   group_by_class_norm = {
     map(
       remove_wild_type_norm,
+      ~ group_by_amr_level(.x)
+    )
+  },
+  group_by_class_raw = {
+    map(
+      remove_wild_type_raw,
       ~ group_by_amr_level(.x)
     )
   },
