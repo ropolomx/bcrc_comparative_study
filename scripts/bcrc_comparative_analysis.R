@@ -813,12 +813,12 @@ kraken_clade_raw_analytic <-
 #     rownames(fData(kraken_clade_raw_analytic[[l]])) <- rownames(MRcounts(kraken_clade_raw_analytic[[l]]))
 # }
 
-match_metadata <- function(x){
- sample_idx <- match(colnames(MRcounts(x)), metadata[[sample_column_id]])
+match_metadata <- function(x, meta){
+ sample_idx <- match(colnames(MRcounts(x)), meta[[sample_column_id]])
  pData(x) <- data.frame(
-   metadata[sample_idx, .SD, .SDcols=!sample_column_id]
+   meta[sample_idx, .SD, .SDcols=!sample_column_id]
    )
- rownames(pData(x)) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+ rownames(pData(x)) <- meta[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
  fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
  rownames(fData(x)) <- rownames(MRcounts(x))
  x

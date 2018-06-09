@@ -46,14 +46,26 @@ merge_amr <- function(amr_norm){
   amr_norm
 }
 
-group_by_amr_level <- function(amr_analytic, level){
-  amr_dt<- as.data.table(amr_analytic)
-  amr_class <- amr_dt[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group')]
-  amr_class_analytic <- newMRexperiment(counts=amr_class[, .SD, .SDcols=!'class'])
-  rownames(amr_class_analytic) <- amr_class$class
-  amr_class_analytic
+group_by_amr_level <- function(amr_analytic, amr_level) {
+  all_levels <- c("header", "mechanism", "group", "class")
+  to_ignore <- all_levels[all_levels != amr_level]
+  amr_dt <- as.data.table(amr_analytic)
+  if(amr_level == "gene") {
+    amr_by_level_analytic <- newMRexperiment(counts = amr_dt[!(group %in% snp_regex), .SD, .SDcols = !all_levels])
+    rownames(amr_by_level_analytic) <- amr_dt$header
+  } else{
+  amr_by_level <- amr_dt[, lapply(.SD, sum), by = amr_level, .SDcols = !to_ignore]
+  amr_by_level_analytic <- newMRexperiment(counts = amr_by_level[, .SD, .SDcols = !amr_level])
+  rownames(amr_by_level_analytic) <- amr_by_level[[amr_level]]
+  }
+  amr_by_level_analytic
 }
 
+dt_metadata <- function(meta){
+  meta_dt <- data.table(meta)
+  setkeyv(meta_dt, sample_column_id)
+  meta_dt
+}
 
 # Drake plan for normalization by environment -----------------------------
 
@@ -73,6 +85,12 @@ kraken_df <- temp_kraken_list
 
 kraken_taxon_df <- kraken_df$taxonReads
 kraken_clade_df <- kraken_df$cladeReads
+
+# Metadata
+
+meta_dt <- dt_metadata(metadata)
+
+# Drake plan
 
 by_env_plan <- drake_plan(
   transpose_analytic_amr = {
@@ -169,21 +187,93 @@ by_env_plan <- drake_plan(
   group_by_class_norm = {
     map(
       remove_wild_type_norm,
-      ~ group_by_amr_level(.x)
+      ~ group_by_amr_level(.x, "class")
+    )
+  },
+  group_by_mech_norm = {
+    map(
+      remove_wild_type_norm,
+      ~ group_by_amr_level(.x, "mechanism")
+    )
+  },
+  group_by_group_norm = {
+    map(
+      remove_wild_type_norm,
+      ~ group_by_amr_level(.x, "group")
+    )
+  },
+  group_by_gene_norm = {
+    map(
+      remove_wild_type_norm,
+      ~ group_by_amr_level(.x, "gene")
     )
   },
   group_by_class_raw = {
     map(
       remove_wild_type_raw,
-      ~ group_by_amr_level(.x)
+      ~ group_by_amr_level(.x, "class")
     )
   },
+  group_by_mech_raw = {
+    map(
+      remove_wild_type_raw,
+      ~ group_by_amr_level(.x, "mechanism")
+    )
+  },
+  group_by_group_raw = {
+    map(
+      remove_wild_type_raw,
+      ~ group_by_amr_level(.x, "group")
+    )
+  },
+  group_by_gene_raw = {
+    map(
+      remove_wild_type_raw,
+      ~ group_by_amr_level(.x, "gene")
+    )
+  },
+  amr_norm_list = {
+    list(
+      "Class" = group_by_class_norm,
+      "Mechanism" = group_by_mech_norm,
+      "Group" = group_by_group_norm,
+      "Gene" = group_by_gene_norm
+    )
+  },
+  amr_trans_norm_list = {
+    purrr::transpose(amr_norm_list)
+  },
+  melt_norm_amr = {
+    map(
+      amr_trans_norm_list,
+      ~ rbind(
+        melt_dt(MRcounts(.x$Class), "Class"),
+        melt_dt(MRcounts(.x$Mechanism), "Mechanism"),
+        melt_dt(MRcounts(.x$Group), "Group"),
+        melt_dt(MRcounts(.x$Gene), "Gene")
+      )
+    )
+  },
+  match_meta_norm_amr = {
+    modify_depth(
+      as.vector(amr_norm_list),
+        .depth = 2,
+        ~ match_metadata(.x, meta = meta_dt)
+      )
+  },
+  
+  # group_by_amr_levels_raw = {
+  #   cross2(
+  #     remove_wild_type_raw,
+  #     all_levels) %>%
+  #     map(~ group_by_amr_level(.x[[1]], .x[[2]]))
+  # },
   strings_in_dots = "literals"
 )
 
 # amr_raw <- amr_raw[!(group %in% snp_regex), ]
 
-# by_environment_eval <- evaluate_plan(
+# by_environment_eval <- evaluate_plan( 
 #   by_environment_plan, 
 #   rules = list(df = c(amr_df, kraken_taxon_df, kraken_clade_df)), 
 #   expand = TRUE
