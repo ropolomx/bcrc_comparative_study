@@ -166,6 +166,12 @@ by_env_plan <- drake_plan(
       ~ merge_amr(.x)
     )
   },
+  generate_analytic_norm_kraken = {
+    map(
+      extract_norm_kraken,
+      ~ merge_amr(.x)
+    )
+  },
   generate_analytic_raw_amr = {
     map(
       extract_raw_amr,

@@ -440,60 +440,76 @@ amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Clas
 # the actual data and aggregate using lapply as before.
 
 # kraken_taxonomy <- data.table(id=rownames(kraken))
+
 kraken_taxonomy <- 
   temp_kraken_list %>%
   map(~ data.table(id=rownames(.x)))
 
-kraken_taxonomy <- 
+lineage <- 
   kraken_taxonomy %>%
-  map(~ mutate(.x, splitting = str_split(string = id, pattern = "\\|")))
-
-mutate_tax <- function(lineage, tax_pattern){
-  split_lin <- map(
-    lineage,
-    ~ str_extract(.x, tax_pattern) %>%
-      purrr::discard(is.na)
-    )
-  split_lin <- split_lin %>% as.character()
-} 
-
-# Goal: make the step below more like functional programming
+  map(~ .x$id)
 
 kraken_taxonomy_split <- 
-  kraken_taxonomy %>% 
-  map(function(x){
-    split_tax <- x %>%
-      mutate(Domain = mutate_tax(splitting, "^d_.*")) %>% 
-      mutate(Phylum = mutate_tax(splitting, "^p_.*")) %>% 
-      mutate(Class = mutate_tax(splitting, "^c_.*")) %>%
-      mutate(Order = mutate_tax(splitting, "^o_.*")) %>%
-      mutate(Family = mutate_tax(splitting, "^f_.*")) %>%
-      mutate(Genus = mutate_tax(splitting, "^g_.*")) %>%
-      mutate(Species = mutate_tax(splitting, "^s_.*"))
-    split_tax
-  })
+  kraken_taxonomy %>%
+  map(~ str_split(string = .x$id, pattern = "\\|"))
 
-kraken_taxonomy_split <- 
-  kraken_taxonomy_split %>%
-  map(~ select(.x, -splitting))
+domain_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^d_.*")]) %>%
+  modify_depth(., .depth=2, ~ if(length(.x) == 0){.x=NA} else{.x})
 
-# Convert all character(0) instances to NA
+phylum_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^p_.*")]) %>%
+  modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
 
-kraken_taxonomy_split <- 
-  kraken_taxonomy_split %>% 
-  map(function(x){
-    df <- na_if(select(x, everything()), "character(0)")
-    df
-})
+class_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^c_.*")]) %>%
+  modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
 
-kraken_taxonomy_split <- 
-  kraken_taxonomy_split %>%
-  map(function(x){
-    add_lowest <- x %>%
-      mutate(lowest = str_split(string = id, pattern = "\\|") %>% 
-          map_chr(~ tail(.x, n=1)))
-    add_lowest
-  })
+order_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^o_.*")]) %>%
+  modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+
+family_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^f_.*")]) %>%
+  modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+
+genus_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^g_.*")]) %>%
+  modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+
+species_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^s_.*")]) %>%
+  modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+
+kraken_tax_dt_clade <- data.table(
+  Domain = domain_tax$cladeReads,
+  Phylum = phylum_tax$cladeReads,
+  Class = class_tax$cladeReads,
+  Order = order_tax$cladeReads,
+  Family = family_tax$cladeReads,
+  Genus = genus_tax$cladeReads,
+  Species = species_tax$cladeReads
+)
+
+kraken_tax_dt_taxon <- data.table(
+  Domain = domain_tax$taxonReads,
+  Phylum = phylum_tax$taxonReads,
+  Class = class_tax$taxonReads,
+  Order = order_tax$taxonReads,
+  Family = family_tax$taxonReads,
+  Genus = genus_tax$taxonReads,
+  Species = species_tax$taxonReads
+)
+
+kraken_tax_dt <- list(
+  "cladeReads" = kraken_tax_dt_clade,
+  "taxonReads" = kraken_tax_dt_taxon
+)
+
+kraken_tax_dt <- map2(
+  kraken_tax_dt,
+  lineage,
+  ~ .x[, id := .y]
+)
+
+kraken_tax_dt <- 
+  kraken_tax_dt %>%
+  map(
+    ~ .x[, lowest := str_split(id, pattern = "\\|") %>% map_chr(~ tail(.x, n=1))]
+  )
 
 # Use tax patterns named vector to replace lowest taxon name
 # for taxonomy level
@@ -522,13 +538,13 @@ tax_regex <- c(
 tax_patterns <- tax_levels
 names(tax_patterns) <- tax_regex
 
-kraken_taxonomy_split <-
-  kraken_taxonomy_split %>%
-  map(~ mutate(.x, lowest_level = str_replace_all(lowest, tax_patterns)))
+kraken_tax_dt <-
+  kraken_tax_dt %>%
+  map(
+    ~ .x[,lowest_level := str_replace_all(lowest, tax_patterns)]
+  )
 
-kraken_taxonomy_split <- map(kraken_taxonomy_split, ~ data.table(.x))
-
-kraken_taxonomy_split <- map(kraken_taxonomy_split, ~ setkey(.x, id))
+kraken_tax_dt <- map(kraken_tax_dt, ~ setkey(.x, id))
 
 kraken_norm <- map2(
   kraken_norm,
@@ -543,7 +559,7 @@ kraken_norm <- map(
 
 kraken_norm <- map2(
   kraken_norm,
-  kraken_taxonomy_split,
+  kraken_tax_dt,
   ~ .y[.x] # left outer join
 )
 
@@ -560,7 +576,7 @@ kraken_raw <- map(
  
 kraken_raw <- map2(
   kraken_raw,
-  kraken_taxonomy_split,
+  kraken_tax_dt,
   ~ .y[.x] # left outer join
 ) 
 
