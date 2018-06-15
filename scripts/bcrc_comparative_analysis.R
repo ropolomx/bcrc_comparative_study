@@ -475,23 +475,23 @@ species_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.
   modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
 
 kraken_tax_dt_clade <- data.table(
-  Domain = domain_tax$cladeReads,
-  Phylum = phylum_tax$cladeReads,
-  Class = class_tax$cladeReads,
-  Order = order_tax$cladeReads,
-  Family = family_tax$cladeReads,
-  Genus = genus_tax$cladeReads,
-  Species = species_tax$cladeReads
+  Domain = as.character(domain_tax$cladeReads),
+  Phylum = as.character(phylum_tax$cladeReads),
+  Class = as.character(class_tax$cladeReads),
+  Order = as.character(order_tax$cladeReads),
+  Family = as.character(family_tax$cladeReads),
+  Genus = as.character(genus_tax$cladeReads),
+  Species = as.character(species_tax$cladeReads)
 )
 
 kraken_tax_dt_taxon <- data.table(
-  Domain = domain_tax$taxonReads,
-  Phylum = phylum_tax$taxonReads,
-  Class = class_tax$taxonReads,
-  Order = order_tax$taxonReads,
-  Family = family_tax$taxonReads,
-  Genus = genus_tax$taxonReads,
-  Species = species_tax$taxonReads
+  Domain = as.character(domain_tax$taxonReads),
+  Phylum = as.character(phylum_tax$taxonReads),
+  Class = as.character(class_tax$taxonReads),
+  Order = as.character(order_tax$taxonReads),
+  Family = as.character(family_tax$taxonReads),
+  Genus =  as.character(genus_tax$taxonReads),
+  Species = as.character(species_tax$taxonReads)
 )
 
 kraken_tax_dt <- list(
@@ -563,6 +563,10 @@ kraken_norm <- map2(
   ~ .y[.x] # left outer join
 )
 
+kraken_norm <-
+  kraken_norm %>%
+  map( ~ as.data.table(.x))
+
 kraken_raw <- map2(
   kraken_raw,
   kraken_css,
@@ -580,6 +584,11 @@ kraken_raw <- map2(
   ~ .y[.x] # left outer join
 ) 
 
+kraken_raw <-
+  kraken_raw %>%
+  map( ~ as.data.table(.x))
+
+
 # Kraken taxon analytic matrices ------------------------------------------
 
 # Group the kraken taxonReads data by level for analysis, removing NA entries
@@ -594,7 +603,7 @@ kraken_taxon_norm_summarised <-
 kraken_taxon_raw_summarised <- 
   tax_levels %>%
   map(
-    ~ kraken_raw$taxonReads[!is.na(eval(as.name(.x))) & eval(as.name(.x)) != 'NA' , lapply(.SD, sum), by=.x, .SDcols=!1:10]
+    ~ kraken_raw$taxonReads[!is.na(eval(as.name(.x))) & eval(as.name(.x)) != 'NA', lapply(.SD, sum), by=.x, .SDcols=!1:10]
   ) %>% 
   set_names(nm=tax_levels)
 
@@ -651,7 +660,7 @@ kraken_clade_norm_list <-
   split(.$lowest_level) %>%
   map(
     ~ .x %>%
-      select(-c(id:Species,lowest_level))
+      select(-c(Domain:id,lowest_level))
   )
 
 kraken_clade_raw_list <-
@@ -659,7 +668,7 @@ kraken_clade_raw_list <-
   split(.$lowest_level) %>%
   map(
     ~ .x %>%
-      select(-c(id:Species,lowest_level))
+      select(-c(Domain:id,lowest_level))
   )
 
 make_analytic_clade <- function(x){
@@ -780,6 +789,24 @@ for( l in 1:length(kraken_taxon_raw_analytic) ) {
     rownames(fData(kraken_taxon_raw_analytic[[l]])) <- rownames(MRcounts(kraken_taxon_raw_analytic[[l]]))
 }
 
+for( l in 1:length(kraken_clade_norm_analytic) ) {
+    sample_idx <- match(colnames(MRcounts(kraken_clade_norm_analytic[[l]])), metadata[[sample_column_id]])
+    pData(kraken_clade_norm_analytic[[l]]) <- data.frame(
+        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+    rownames(pData(kraken_clade_norm_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+    fData(kraken_clade_norm_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_clade_norm_analytic[[l]])))
+    rownames(fData(kraken_clade_norm_analytic[[l]])) <- rownames(MRcounts(kraken_clade_norm_analytic[[l]]))
+}
+# 
+for( l in 1:length(kraken_clade_raw_analytic) ) {
+    sample_idx <- match(colnames(MRcounts(kraken_clade_raw_analytic[[l]])), metadata[[sample_column_id]])
+    pData(kraken_clade_raw_analytic[[l]]) <- data.frame(
+        metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+    rownames(pData(kraken_clade_raw_analytic[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+    fData(kraken_clade_raw_analytic[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_clade_raw_analytic[[l]])))
+    rownames(fData(kraken_clade_raw_analytic[[l]])) <- rownames(MRcounts(kraken_clade_raw_analytic[[l]]))
+}
+
 kraken_taxon_norm_analytic <-
   kraken_taxon_norm_analytic %>%
   map(function(x){
@@ -829,44 +856,44 @@ kraken_clade_raw_analytic <-
 #     rownames(fData(kraken_clade_raw_analytic[[l]])) <- rownames(MRcounts(kraken_clade_raw_analytic[[l]]))
 # }
 
-match_metadata <- function(x, meta){
- sample_idx <- match(colnames(MRcounts(x)), meta[[sample_column_id]])
- pData(x) <- data.frame(
-   meta[sample_idx, .SD, .SDcols=!sample_column_id]
-   )
- rownames(pData(x)) <- meta[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
- fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
- rownames(fData(x)) <- rownames(MRcounts(x))
- x
-}
-
-# Normalized Kraken analytic matrices
-
-kraken_taxon_norm_analytic <- 
-  as.vector(kraken_taxon_norm_analytic) %>%
-  map(
-    ~ match_metadata(.x)
-)
-
-kraken_clade_norm_analytic <- 
-as.vector(kraken_clade_norm_analytic) %>%
-  map(
-    ~ match_metadata(.x)
-  )
-
-# Raw Kraken analytic matrices
-
-kraken_taxon_raw_analytic <- 
-  as.vector(kraken_taxon_raw_analytic) %>%
-  map(
-    ~ match_metadata(.x)
-  )
-
-kraken_clade_raw_analytic <- 
-  as.vector(kraken_clade_raw_analytic) %>%
-  map(
-    ~ match_metadata(.x)
-  )
+# match_metadata <- function(x, meta){
+#  sample_idx <- match(colnames(MRcounts(x)), meta[[sample_column_id]])
+#  pData(x) <- data.frame(
+#    meta[sample_idx, .SD, .SDcols=!sample_column_id]
+#    )
+#  rownames(pData(x)) <- meta[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+#  fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
+#  rownames(fData(x)) <- rownames(MRcounts(x))
+#  x
+# }
+# 
+# # Normalized Kraken analytic matrices
+# 
+# kraken_taxon_norm_analytic <- 
+#   as.vector(kraken_taxon_norm_analytic) %>%
+#   map(
+#     ~ match_metadata(.x)
+# )
+# 
+# kraken_clade_norm_analytic <- 
+# as.vector(kraken_clade_norm_analytic) %>%
+#   map(
+#     ~ match_metadata(.x)
+#   )
+# 
+# # Raw Kraken analytic matrices
+# 
+# kraken_taxon_raw_analytic <- 
+#   as.vector(kraken_taxon_raw_analytic) %>%
+#   map(
+#     ~ match_metadata(.x)
+#   )
+# 
+# kraken_clade_raw_analytic <- 
+#   as.vector(kraken_clade_raw_analytic) %>%
+#   map(
+#     ~ match_metadata(.x)
+#   )
 
 kraken_taxon_names <- names(kraken_taxon_raw_analytic)
 kraken_clade_names <- names(kraken_clade_raw_analytic)
