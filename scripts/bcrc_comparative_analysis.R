@@ -453,6 +453,8 @@ kraken_taxonomy_split <-
   kraken_taxonomy %>%
   map(~ str_split(string = .x$id, pattern = "\\|"))
 
+# Make this more functional
+
 domain_tax <- modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^d_.*")]) %>%
   modify_depth(., .depth=2, ~ if(length(.x) == 0){.x=NA} else{.x})
 
@@ -902,42 +904,96 @@ kraken_clade_names <- names(kraken_clade_raw_analytic)
 
 # Exploratory Analyses: Alpha Rarefaction ---------------------------------
 
-for( v in 1:length(exploratory_analyses) ) {
-    # AMR
-    meg_alpha_rarefaction(data_list=AMR_raw_analytic_data,
-                          data_names=AMR_raw_analytic_names,
-                          metadata=metadata,
-                          sample_var=sample_column_id,
-                          group_var=exploratory_analyses[[v]]$exploratory_var,
-                          analysis_subset=exploratory_analyses[[v]]$subsets,
-                          outdir=paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
-                                       sep='/', collapse=''),
-                          data_type='AMR')
+
+# for( v in 1:length(exploratory_analyses) ) {
+#     # AMR
+#     meg_alpha_rarefaction(data_list=AMR_raw_analytic_data,
+#                           data_names=AMR_raw_analytic_names,
+#                           metadata=metadata,
+#                           sample_var=sample_column_id,
+#                           group_var=exploratory_analyses[[v]]$exploratory_var,
+#                           analysis_subset=exploratory_analyses[[v]]$subsets,
+#                           outdir=paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
+#                                        sep='/', collapse=''),
+#                           data_type='AMR')
+#     
+#     # Microbiome (taxon reads)
+#     meg_alpha_rarefaction(data_list=kraken_taxon_raw_analytic,
+#                           data_names=kraken_taxon_names,
+#                           metadata=metadata,
+#                           sample_var=sample_column_id,
+#                           group_var=exploratory_analyses[[v]]$exploratory_var,
+#                           analysis_subset=exploratory_analyses[[v]]$subsets,
+#                           outdir=paste(graph_output_dir, 'Microbiome_taxonReads', exploratory_analyses[[v]]$name,
+#                                        sep='/', collapse=''),
+#                           data_type='Microbiome_taxonReads')
     
-    # Microbiome (taxon reads)
-    meg_alpha_rarefaction(data_list=kraken_taxon_raw_analytic,
-                          data_names=kraken_taxon_names,
-                          metadata=metadata,
-                          sample_var=sample_column_id,
-                          group_var=exploratory_analyses[[v]]$exploratory_var,
-                          analysis_subset=exploratory_analyses[[v]]$subsets,
-                          outdir=paste(graph_output_dir, 'Microbiome_taxonReads', exploratory_analyses[[v]]$name,
-                                       sep='/', collapse=''),
-                          data_type='Microbiome_taxonReads')
-    
-}    
+# }
+
+
+# AMR
 
 exploratory_analyses %>%
-  walk(safely(~ meg_alpha_rarefaction(
-      data_list=kraken_clade_raw_analytic,
-      data_names=kraken_clade_names,
-      metadata=metadata,
-      sample_var=sample_column_id,
-      group_var=.x$exploratory_var,
-      analysis_subset=.x$subsets,
-      outdir=paste(graph_output_dir, 'Microbiome_cladeReads', .x$name,
-        sep='/', collapse=''),
-      data_type='Microbiome_cladeReads')
+  walk(
+    ~ meg_alpha_rarefaction(
+      data_list = AMR_raw_analytic_data,
+      data_names = AMR_raw_analytic_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      group_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'AMR',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'AMR'
+    )
+  )
+
+# Microbiome (taxon reads)
+
+exploratory_analyses %>%
+  walk(
+    ~ meg_alpha_rarefaction(
+      data_list = kraken_taxon_raw_analytic,
+      data_names = kraken_taxon_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      group_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'Microbiome_taxonReads',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'Microbiome_taxonReads'
+    )
+  )
+
+
+exploratory_analyses %>%
+  walk(safely(
+    ~ meg_alpha_rarefaction(
+      data_list = kraken_clade_raw_analytic,
+      data_names = kraken_clade_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      group_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'Microbiome_cladeReads',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'Microbiome_cladeReads'
+    )
   ))
 
 
@@ -1054,7 +1110,7 @@ amr_simpson <- function(amr_df) {
       plot.title = element_text(size = 50, hjust = 0.5)
     ) +
     xlab("Type") +
-    ylab("Inverse Simpson Index") +
+    ylab("Simpson Index\n") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
     facet_wrap( ~ Level, nrow = 2, scales = "free_y")
@@ -1064,7 +1120,7 @@ amr_norm_simpson_box <- amr_simpson(amr_norm_diversity)
 
 amr_shannon <- function(amr_df) {
   alphaDivBoxPlot <- ggplot(amr_df, aes(Type, Shannon, color = Type)) +
-    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    geom_boxplot(lwd = 0.8, aes(size = 5)) +
     theme(
       strip.text.x = element_text(size = 25),
       axis.text.y = element_text(size = 30),
@@ -1077,7 +1133,7 @@ amr_shannon <- function(amr_df) {
       plot.title = element_text(size = 50, hjust = 0.5)
     ) +
     xlab("Type") +
-    ylab("Shannon Index") +
+    ylab("Shannon Index\n") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
     facet_wrap( ~ Level, nrow = 2, scales = "free_y")

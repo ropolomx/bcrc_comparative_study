@@ -12,9 +12,10 @@ bibliography: bcrc_library.bib
 
 ## Bioinformatic analysis workflow 
 
-The samples were run with a custom Galaxy workflow based on the AMRPlusPlus pipeline 
-[@lakin_megares_2017] in the computer cluster of the National Microbiology Laboratory 
-(Public Health Agency of Canada).
+The metagenomic sequencing reads were analyzed with a custom Galaxy workflow that runs
+the microbiome and resistome analysis in parallel. The microbiome work is based on the 
+the AMRPlusPlus pipeline [@lakin_megares_2017] in the computer cluster of the National 
+Microbiology Laboratory (Public Health Agency of Canada).
 
 The following steps were performed in the bioinformatics workflow for the 
 characterization of sequence reads vs. antimicrobial resistance (AMR), 
@@ -87,19 +88,18 @@ then further analyzed using the R statistical computing language
 
 Comparative analyses were performed for different metadata categories:
 
-1. Sample type (fecal composite, catch basin, soil, and sewage treatment)
+1. Sample/environment type (fecal composite, catch basin, soil, and sewage treatment)
 2. Fecal composite samples from natural vs. conventional feedlots
 3. Catch basin samples from natural vs. conventional feedlots
-4. Geographical location (Acme, Calgary, Iron Springs, Medicine Hat, Nanton, 
-Vegreville)
-5. Sewage treatment locations (Calgary vs. Medicine Hat)
-6. Fecal composite locations (Acme, Iron Springs, Nanton, Vegreville)
+4. Geographical location (city/town names)
+5. Sewage treatment locations
+6. Fecal composite locations
 7. Soil Field type (East vs. West)
 
 Results for the phiX enterobacterial phage (positive control in Illumina 
 next-generation sequencing runs) were removed from the Kraken analytic matrix 
 prior to normalization, thus avoiding the incorporation of the read counts of 
-this species in the analyses. 
+this species in the analyses.
 
 AMR/ABR and post-PhiX filtered results were normalized using a data-driven method called 
 Cumulative Sum Scaling normalizaton (CSS, `metagenomeSeq` R package). In this method,the 
@@ -115,13 +115,16 @@ and visualization with heatmaps and barplots.
 
 ### Normalization of samples by environment
 
-
+A reproducible workflow was designed with the `drake` package of R. Briefly, 
+the Kraken and AMR data were split by each environment type and normalized using
+Cumulative Sum Scaling normalization. Ordination analysis was performed with the 
+normalized data.
 
 ### Alpha-rarefaction
 
 Alpha-rarefaction was performed for the estimation of alpha diversity. 
 Alpha diversity (mean species diversity within each sample) was calculated on 
-rarefied data, while species richness (total number of species) was calculated 
+rarefied data, while observed species richness (total number of species) was calculated 
 on rarefied data. Both alpha diversity and species richness were calculated as 
 the Inverse Simpson's Index, and the distributions of these indices were 
 plotted for every AMR and taxonomic level.
@@ -163,7 +166,7 @@ any other source type. In particular, VanO-type regulators were the only
 glycopeptides present in soil samples.
 
 
-![](../graphs/AMR/TypeOverall/Class_Type_Heatmap.png)
+![](../graphs/AMR/amr_top_group_by_class_heatmap.png)
 
 Figure 1. Comparison of log2 normalized counts of hits among metagenomic 
 datasets from different sample types. Datasetes were analyzed with the MEGAREs 
@@ -181,12 +184,12 @@ higher for fecal composite samples at the phylum, class, family, and genus
 levels. At the class, order, and family level, fecal composite samples had lower median alpha-diversity than soil samples, but higher or similar richness.
 
 
-![](/home/rodrigo/amr/bcrc-analysis_steven/graphs/Microbiome/TypeOverall/Microbiome_alphadiversity_by_Type.png)
+![](../graphs/Microbiome/TypeOverall/Microbiome_alphadiversity_by_Type.png)
 
 Figure 2. Distribution of Inverse Simpson's index for measuring alpha diversity across different taxonomic levels among different sample types. 
 
 
-![](/home/rodrigo/amr/bcrc-analysis_steven/graphs/Microbiome/TypeOverall/Microbiome_rarefied_richness_by_Type.png)
+![](../graphs/Microbiome/TypeOverall/Microbiome_rarefied_richness_by_Type.png)
 
 
 Figure 3. Distribution of taxon richness of different taxonomic levels among different sample types.
