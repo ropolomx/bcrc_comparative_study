@@ -67,6 +67,18 @@ dt_metadata <- function(meta){
   meta_dt
 }
 
+match_metadata <- function(x, meta){
+   sample_idx <- match(colnames(MRcounts(x)), meta[[sample_column_id]])
+   pData(x) <- data.frame(
+     meta[sample_idx, .SD, .SDcols=!sample_column_id]
+     )
+   rownames(pData(x)) <- meta[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
+   fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
+   rownames(fData(x)) <- rownames(MRcounts(x))
+   x
+  }
+
+
 # Drake plan for normalization by environment -----------------------------
 
 # AMR files
@@ -167,9 +179,10 @@ by_env_plan <- drake_plan(
     )
   },
   generate_analytic_norm_kraken = {
-    map(
+    modify_depth(
       extract_norm_kraken,
-      ~ merge_amr(.x)
+      .depth = 2,
+      ~ merge_amr(.x) # Change function to tax here
     )
   },
   generate_analytic_raw_amr = {
@@ -246,8 +259,19 @@ by_env_plan <- drake_plan(
       "Gene" = group_by_gene_norm
     )
   },
+  amr_raw_list = {
+    list(
+      "Class" = group_by_class_raw,
+      "Mechanism" = group_by_mech_raw,
+      "Group" = group_by_group_raw,
+      "Gene" = group_by_gene_raw
+    )
+  },
   amr_trans_norm_list = {
     purrr::transpose(amr_norm_list)
+  },
+  amr_trans_raw_list = {
+    purrr::transpose(amr_raw_list)
   },
   melt_norm_amr = {
     map(
@@ -260,12 +284,30 @@ by_env_plan <- drake_plan(
       )
     )
   },
+  melt_raw_amr = {
+    map(
+      amr_trans_raw_list,
+      ~ rbind(
+        melt_dt(MRcounts(.x$Class), "Class"),
+        melt_dt(MRcounts(.x$Mechanism), "Mechanism"),
+        melt_dt(MRcounts(.x$Group), "Group"),
+        melt_dt(MRcounts(.x$Gene), "Gene")
+      )
+    )
+  },
   match_meta_norm_amr = {
     modify_depth(
       as.vector(amr_norm_list),
         .depth = 2,
-        ~ match_metadata(.x, meta = meta_dt)
+        ~ match_metadata(.x, meta_dt)
       )
+  },
+  match_meta_raw_amr = {
+    modify_depth(
+      as.vector(amr_raw_list),
+      .depth = 2,
+      ~ match_metadata(.x, meta_dt)
+    )
   },
   
   # group_by_amr_levels_raw = {
