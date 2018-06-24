@@ -1407,7 +1407,7 @@ for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_clade_names) ) {
         suppressWarnings(
             meg_barplot(melted_data=kraken_clade_norm_melted,
-                    metadata=metadata,
+                    metadata=meta_melt,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=kraken_taxon_names[[l]],
