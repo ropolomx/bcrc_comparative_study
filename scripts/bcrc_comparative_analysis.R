@@ -93,7 +93,7 @@ exploratory_analyses = list(
   # Description: Location comparison within Fecal Composite type
   list(
     name = 'LocationFC',
-    subsets = list('Type == Fecal_Composite', 'NatType != Natural'),
+    subsets = list('Type == Fecal Composite', 'NatType != Natural'),
     exploratory_var = 'Location'
   ),
   
@@ -109,7 +109,7 @@ exploratory_analyses = list(
   # Description: Location comparison within Waste Water sewage treatment type
   list(
     name = 'LocationST',
-    subsets = list('Type == Sewage_Treatment'),
+    subsets = list('Type == Sewage Treatment'),
     exploratory_var = 'Location'
   ),
   
@@ -117,7 +117,7 @@ exploratory_analyses = list(
   # Description: Natural vs conventional Fecal Composite
   list(
     name = 'NaturalConventionalFC',
-    subsets = list('Type == Fecal_Composite', 'Location == Vegreville', 'NatType != None'),
+    subsets = list('Type == Fecal Composite', 'Location == Vegreville', 'NatType != None'),
     exploratory_var = 'NatType'
   ),
   
@@ -125,7 +125,7 @@ exploratory_analyses = list(
   # Description: Natural vs conventional Catch Basin
   list(
     name = 'NaturalConventionalCB',
-    subsets = list('Type == Catch_Basin', 'Location == Vegreville'),
+    subsets = list('Type == Catch Basin', 'Location == Vegreville'),
     exploratory_var = 'NatType'
   ),
   
@@ -351,8 +351,6 @@ kraken_css <-
   map(~ cumNorm(.x))
 
 cumNorm(amr)
-
-# Normalize clade reads kraken
 
 # Extract the normalized counts into data tables for aggregation
 
@@ -724,18 +722,31 @@ kraken_clade_raw_melted <- imap_dfr(
 metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, "ID"]), ])
 setkeyv(metadata, sample_column_id)
 
-reorder_environments <- function(env_column){
-  env_column <- factor(env_column,
-                     levels = c(
-                       "Fecal_Composite",
-                       "Catch_Basin",
-                       "Soil",
-                       "Sewage_Treatment"
-                      )
-  )
+reorder_environments <- function(env_column, data_type) {
+  if (data_type == "wide"){
+  env_column <- factor(
+    env_column,
+    levels = c(
+      "Fecal_Composite",
+      "Catch_Basin",
+      "Soil",
+      "Sewage_Treatment"
+    )
+  )}
+  else{
+    env_column <- factor(
+      env_column,
+      levels = c(
+        "Fecal Composite",
+        "Catch Basin",
+        "Soil",
+        "Sewage Treatment"
+      )
+    )
+  }
 }
 
-metadata$Type <- reorder_environments(metadata$Type)
+metadata$Type <- reorder_environments(metadata$Type,data_type = "wide")
 
 
 # Vector of objects for iteration and their names
@@ -812,7 +823,7 @@ for( l in 1:length(kraken_clade_raw_analytic) ) {
 kraken_taxon_norm_analytic <-
   kraken_taxon_norm_analytic %>%
   map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]])
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "wide")
     x
   }
 )
@@ -820,7 +831,7 @@ kraken_taxon_norm_analytic <-
 kraken_taxon_raw_analytic <-
   kraken_taxon_raw_analytic %>%
   map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]])
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "wide")
     x
   }
 )
@@ -828,7 +839,7 @@ kraken_taxon_raw_analytic <-
 kraken_clade_norm_analytic <-
   kraken_clade_norm_analytic %>%
   map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]])
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "wide")
     x
   }
 )
@@ -836,7 +847,7 @@ kraken_clade_norm_analytic <-
 kraken_clade_raw_analytic <-
   kraken_clade_raw_analytic %>%
   map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]])
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "wide")
     x
   }
 )
@@ -1035,11 +1046,26 @@ amr_norm_diversity <-
     .id = "Level"
   )
 
+reorder_amr_levels <- function(level_column) {
+  level_column <- factor(level_column,
+    levels = c(
+      "Class",
+      "Mechanism",
+      "Group",
+      "Gene")
+    )
+}
+
+amr_norm_diversity$Type <- reorder_environments(amr_norm_diversity$Type,data_type = "wide")
+amr_norm_diversity$Level <- reorder_amr_levels(amr_norm_diversity$Level)
+
 kraken_clade_norm_diversity <- 
   kraken_clade_norm_analytic %>%
-  map(
-    ~ calc_diversity_df(MRcounts(.x))
-  )
+  map_dfr(
+    ~ calc_diversity_df(MRcounts(.x)) %>%
+      left_join(., metadata, by "ID"),
+    .id = "Level"
+)
 
 kraken_taxon_norm_diversity <- 
   kraken_taxon_norm_analytic %>%
@@ -1064,6 +1090,8 @@ amr_observed_species <- function(amr_df) {
     ) +
     xlab("Type") +
     ylab("Number of Unique\nAMR Categories\n") +
+    # scale_color_discrete(labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) +
+    scale_x_discrete(labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) + 
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
     facet_wrap( ~ Level, nrow = 2, scales = "free_y")
@@ -1078,16 +1106,18 @@ amr_inv_simpson <- function(amr_df) {
     theme(
       strip.text.x = element_text(size = 25),
       axis.text.y = element_text(size = 30),
-      axis.text.x = element_text(size = 25, angle = 90),
+      axis.text.x = element_blank(),
       axis.title.x = element_text(size = 32),
       axis.title.y = element_text(size = 32),
-      legend.position = "none",
-      #legend.title=element_text(size=36),
-      #legend.text=element_text(size=36, vjust=0.5),
+      # legend.position = "none",
+      legend.title=element_text(size=36),
+      legend.text=element_text(size=28, vjust=1),
       plot.title = element_text(size = 50, hjust = 0.5)
     ) +
     xlab("Type") +
-    ylab("Inverse Simpson Index") +
+    ylab("Inverse Simpson Index\n") +
+    scale_color_discrete(labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) +
+    # scale_x_discrete(labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) + 
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
     facet_wrap( ~ Level, nrow = 2, scales = "free_y")
@@ -1197,20 +1227,27 @@ for( v in 1:length(exploratory_analyses) ) {
 # It also allows to store warnings
 # Consider using walk with capture.output to store the procrustes information
 
-micro_taxon_nmds <- exploratory_analyses %>%
-  map(
-    quietly(
+micro_taxon_nmds <-
+  exploratory_analyses %>%
+  map(quietly(
     ~ meg_ordination(
       data_list = kraken_taxon_norm_analytic,
       data_names = kraken_taxon_names,
       metadata = metadata,
       sample_var = sample_column_id,
       hull_var = .x$exploratory_var,
-      analysis_subset=.x$subsets,
-      outdir = paste(graph_output_dir, 'Microbiome_taxonReads', .x$name, sep='/', collapse=''),
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'Microbiome_taxonReads',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
       data_type = 'Microbiome',
-      method = 'NMDS')
-    ))
+      method = 'NMDS'
+    )
+  ))
 
 # dev.off() ?
     
@@ -1263,11 +1300,31 @@ exploratory_analyses %>%
 
 # Exploratory Analyses: Heatmaps ------------------------------------------
 
+meta_melt <- metadata
+meta_melt$Type <- str_replace(meta_melt$Type, "_|\\.", " ")
+meta_melt$Type <- reorder_environments(meta_melt$Type,data_type = "melted")
+
 # AMR Heatmaps for each level
+
+amr_heatmaps <- pmap(
+  cross2(exploratory_analyses,AMR_analytic_names),
+  safely(
+    ~ meg_heatmap(melted_data=amr_melted_analytic,
+      metadata=meta_melt,
+      sample_var=sample_column_id,
+      group_var=.x$exploratory_var,
+      level_var=.y,
+      analysis_subset=.x$subsets,
+      outdir=paste(graph_output_dir, 'AMR', .x$name,
+        sep='/', collapse=''),
+      data_type='AMR')
+  )
+)
+
 for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(AMR_analytic_names) ) {
         meg_heatmap(melted_data=amr_melted_analytic,
-                    metadata=metadata,
+                    metadata=meta_melt,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=AMR_analytic_names[[l]],
@@ -1282,7 +1339,7 @@ for( v in 1:length(exploratory_analyses) ) {
 for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_taxon_names) ) {
         meg_heatmap(melted_data=kraken_taxon_norm_melted,
-                    metadata=metadata,
+                    metadata=meta_melt,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=kraken_taxon_names[[l]],
@@ -1297,7 +1354,7 @@ for( v in 1:length(exploratory_analyses) ) {
 for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_clade_names) ) {
         meg_heatmap(melted_data=kraken_clade_norm_melted,
-                    metadata=metadata,
+                    metadata=meta_melt,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=kraken_clade_names[[l]],
@@ -1315,7 +1372,7 @@ for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(AMR_analytic_names) ) {
         suppressWarnings(
             meg_barplot(melted_data=amr_melted_analytic,
-                    metadata=metadata,
+                    metadata=meta_melt,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=AMR_analytic_names[l],

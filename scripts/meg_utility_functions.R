@@ -423,12 +423,15 @@ meg_alpha_rarefaction <- function(data_list,
   # all_species_rare[[group_var]] <- factor(all_species_rare[[group_var]],
   #                                         levels=species_rare_value_labels, ordered=T)
   
+  # group_var_new <- unique(str_replace_all(all_alphadiv[[group_var]], "_|\\.", " "))
+  
+  
   png(filename=paste(outdir, '/', data_type, '_alphadiversity_by_', group_var, '.png',
                      sep='', collapse=''),
       width=1024, height=768)
-  g_alphadiv <- ggplot(data=all_alphadiv, aes_string(x=group_var,
-                                                     y='Value',
-                                                     color=group_var)) +
+  g_alphadiv <- ggplot(data = all_alphadiv, aes_string(x = group_var,
+    y = 'Value',
+    color = group_var)) +
     geom_boxplot(width=0.8, lwd=0.8) + 
     facet_wrap(~Level, nrow=2, scales='free_y')
   g_alphadiv <- g_alphadiv +
@@ -436,6 +439,9 @@ meg_alpha_rarefaction <- function(data_list,
                   sep='', collapse='')) +
     ylab('Inverse Simpson\'s Index\n') +
     xlab(paste('\n', group_var, sep='', collapse='')) +
+    # scale_color_discrete(labels=group_var_new) +
+    # scale_color_discrete(labels=unique(str_replace_all(all_alphadiv[[group_var]], "_|\\.", " "))) +
+    # scale_x_discrete(labels=str_replace_all(group_var, "_|\\.", " ")) + 
     theme(strip.text.x=element_text(size=26),
           axis.text.y=element_text(size=20),
           axis.text.x=element_blank(),
@@ -460,6 +466,7 @@ meg_alpha_rarefaction <- function(data_list,
                       sep='', collapse='')) +
         ylab('Unique Species\n') +
         xlab(paste('\n', group_var, sep='', collapse='')) +
+        # scale_color_discrete(labels=unique(str_replace_all(all_species_raw[[group_var]], "_|\\.", " "))) +
         theme(strip.text.x=element_text(size=26),
               axis.text.y=element_text(size=20),
               axis.text.x=element_blank(),
@@ -483,6 +490,7 @@ meg_alpha_rarefaction <- function(data_list,
                       sep='', collapse='')) +
         ylab('Unique Species\n') +
         xlab(paste('\n', group_var, sep='', collapse='')) +
+        # scale_color_discrete(labels=unique(str_replace_all(all_species_rare[[group_var]], "_|\\.", " "))) +
         theme(strip.text.x=element_text(size=26),
               axis.text.y=element_text(size=20),
               axis.text.x=element_blank(),
@@ -524,10 +532,10 @@ meg_barplot <- function(melted_data,
                                                               'Normalized_Count')])
     setkeyv(bar_subset, sample_var)
     bar_subset <- metadata[bar_subset]
-    bar_subset[[sample_var]] <- factor(bar_subset[[sample_var]],
-                                          levels=unique(bar_subset[[sample_var]][order(bar_subset[[group_var]])]),
-                                          ordered=F)
-    
+    # bar_subset[[sample_var]] <- factor(bar_subset[[sample_var]],
+    #                                       levels=unique(bar_subset[[sample_var]][order(bar_subset[[group_var]])]),
+    #                                       ordered=F)
+    # 
     setkey(bar_subset, Normalized_Count)
     bar_subset[, sample_number:=(length(unique(bar_subset[[sample_var]]))), by=c(group_var, 'Name')]
     bar_subset <- unique(bar_subset[, sum(Normalized_Count) / sample_number,
@@ -548,9 +556,9 @@ meg_barplot <- function(melted_data,
     names(bar_subset)[length(names(bar_subset))] <- 'Normalized_Count'
     source_sums <- tapply(bar_subset[['Normalized_Count']],
                           bar_subset[[group_var]], sum)
-    source_labels <- names(source_sums)[order(source_sums, decreasing=T)]
-    bar_subset[[group_var]] <- factor(bar_subset[[group_var]],
-                                          levels=source_labels, ordered=F)
+    # source_labels <- names(source_sums)[order(source_sums, decreasing=T)]
+    # bar_subset[[group_var]] <- factor(bar_subset[[group_var]],
+    #                                       levels=source_labels, ordered=F)
 
     
     meg_bar <- ggplot(bar_subset, aes_string(x=group_var, y='Normalized_Count', fill='Name')) +

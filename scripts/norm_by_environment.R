@@ -309,6 +309,14 @@ by_env_plan <- drake_plan(
       ~ match_metadata(.x, meta_dt)
     )
   },
+  # plot_norm_amr ={
+  #   map2(
+  #     meg_barplot(melted_data = melt_norm_amr,
+  #     metadata = meta_dt,
+  #     sample_var = sample_column_id,
+  #     group_var = ,
+  #     level_var = )
+  # },
   
   # group_by_amr_levels_raw = {
   #   cross2(
@@ -318,6 +326,10 @@ by_env_plan <- drake_plan(
   # },
   strings_in_dots = "literals"
 )
+    
+    ggplot(subset(all_class, Level_ID == "Class"), aes(Type, Normalized_Count, fill = Name)) + 
+      geom_bar(stat = "identity") + 
+      scale_fill_viridis_d(option = "cividis", direction = 1, begin = 0.1, end = 1)
 
 # amr_raw <- amr_raw[!(group %in% snp_regex), ]
 
