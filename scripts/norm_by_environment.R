@@ -3,7 +3,7 @@
 
 library(drake)
 
-# Functions for splitting and normalizing microbiome and resistome --------
+# Custom functions --------------------------------------------------------
 
 # Calculate normalization factors on the analytic data.
 # We use Cumulative Sum Scaling as implemented in metagenomeSeq.
@@ -76,7 +76,14 @@ match_metadata <- function(x, meta){
    fData(x) <- data.frame(Feature=rownames(MRcounts(x)))
    rownames(fData(x)) <- rownames(MRcounts(x))
    x
-  }
+}
+
+count_barplot <-function(melted, level){
+  ggplot(data = subset(melted, Level_ID == "Class"), 
+         aes_string(x='Type', y='Normalized_Count', fill = 'Name')) +
+    geom_bar(stat="identity") + 
+    scale_fill_brewer(palette = "Set3")
+}
 
 
 # Drake plan for normalization by environment -----------------------------
@@ -309,7 +316,14 @@ by_env_plan <- drake_plan(
       ~ match_metadata(.x, meta_dt)
     )
   },
-  # plot_norm_amr ={
+  plot_norm_class_amr ={
+    map_dfr(
+      melt_norm_amr,
+      ~ .x,
+      .id = "Type"
+      ) %>%
+  count_barplot(., "Class")
+  },
   #   map2(
   #     meg_barplot(melted_data = melt_norm_amr,
   #     metadata = meta_dt,
@@ -327,10 +341,6 @@ by_env_plan <- drake_plan(
   strings_in_dots = "literals"
 )
     
-    ggplot(subset(all_class, Level_ID == "Class"), aes(Type, Normalized_Count, fill = Name)) + 
-      geom_bar(stat = "identity") + 
-      scale_fill_viridis_d(option = "cividis", direction = 1, begin = 0.1, end = 1)
-
 # amr_raw <- amr_raw[!(group %in% snp_regex), ]
 
 # by_environment_eval <- evaluate_plan( 

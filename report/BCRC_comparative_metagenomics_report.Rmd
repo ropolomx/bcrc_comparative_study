@@ -86,15 +86,6 @@ then further analyzed using the R statistical computing language
 
 ### Data pre-processing and normalization
 
-Comparative analyses were performed for different metadata categories:
-
-1. Sample/environment type (fecal composite, catch basin, soil, and sewage treatment)
-2. Fecal composite samples from natural vs. conventional feedlots
-3. Catch basin samples from natural vs. conventional feedlots
-4. Geographical location (city/town names)
-5. Sewage treatment locations
-6. Fecal composite locations
-7. Soil Field type (East vs. West)
 
 Results for the phiX enterobacterial phage (positive control in Illumina 
 next-generation sequencing runs) were removed from the Kraken analytic matrix 
@@ -112,6 +103,16 @@ normalized datasets in order to prevent false positives.
 
 Exploratory analyses included: alpha-rarefaction, ordination (NMDS and PCA),
 and visualization with heatmaps and barplots.
+
+Comparative analyses were performed for different metadata categories:
+
+1. Sample/environment type (fecal composite, catch basin, soil, and sewage treatment)
+2. Fecal composite samples from natural vs. conventional feedlots
+3. Catch basin samples from natural vs. conventional feedlots
+4. Geographical location (city/town names)
+5. Sewage treatment locations
+6. Fecal composite locations
+7. Soil Field type (East vs. West)
 
 ### Normalization of samples by environment
 

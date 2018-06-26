@@ -384,14 +384,14 @@ meg_alpha_rarefaction <- function(data_list,
   }
   
   all_alphadiv <- within(all_alphadiv, Level
-                         <- factor(Level, levels=data_names,
-                                   ordered=T))
+                        <- factor(Level, levels=data_names,
+                                  ordered=T))
   all_species_raw <- within(all_species_raw, Level
+                           <- factor(Level, levels=data_names,
+                                     ordered=T))
+  all_species_rare <- within(all_species_rare, Level
                             <- factor(Level, levels=data_names,
                                       ordered=T))
-  all_species_rare <- within(all_species_rare, Level
-                             <- factor(Level, levels=data_names,
-                                       ordered=T))
   setkeyv(all_alphadiv, sample_var)
   setkeyv(all_species_raw, sample_var)
   setkeyv(all_species_rare, sample_var)
@@ -462,9 +462,9 @@ meg_alpha_rarefaction <- function(data_list,
         geom_boxplot(width=0.8,lwd=0.8) + 
         facet_wrap(~Level, nrow=2, scales='free_y')
     g_sraw <- g_sraw +
-        ggtitle(paste('Species Richness by ', group_var, ' for Raw data\nObserved Richness',
+        ggtitle(paste('Observed Richness by ', group_var, ' for Raw data\n',
                       sep='', collapse='')) +
-        ylab('Unique Species\n') +
+        ylab('Number of Unique Assignments\n') +
         xlab(paste('\n', group_var, sep='', collapse='')) +
         # scale_color_discrete(labels=unique(str_replace_all(all_species_raw[[group_var]], "_|\\.", " "))) +
         theme(strip.text.x=element_text(size=26),
@@ -486,9 +486,9 @@ meg_alpha_rarefaction <- function(data_list,
         geom_boxplot(width=0.8,lwd=0.8) + 
         facet_wrap(~Level, nrow=2, scales='free_y')
     g_srare <- g_srare +
-        ggtitle(paste('Species Richness by ', group_var, ' for Rarefied data\nObserved Richness',
+        ggtitle(paste('Observed Richness by ', group_var, ' for Rarefied data\n',
                       sep='', collapse='')) +
-        ylab('Unique Species\n') +
+        ylab('Unique Assignments\n') +
         xlab(paste('\n', group_var, sep='', collapse='')) +
         # scale_color_discrete(labels=unique(str_replace_all(all_species_rare[[group_var]], "_|\\.", " "))) +
         theme(strip.text.x=element_text(size=26),

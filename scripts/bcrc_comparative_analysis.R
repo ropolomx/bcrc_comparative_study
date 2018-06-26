@@ -39,6 +39,8 @@ all_packages <- c(
 
 lapply(all_packages, require, character.only = TRUE)
 
+# packrat::restore()
+
 # User Controls -----------------------------------------------------------
 
 ## Hopefully, this section should be the only code you need to modify.
@@ -746,7 +748,32 @@ reorder_environments <- function(env_column, data_type) {
   }
 }
 
-metadata$Type <- reorder_environments(metadata$Type,data_type = "wide")
+reorder_fields <- function(env_column, data_type){
+  if (data_type == "wide"){
+    env_column <- factor(
+      env_column,
+      levels = c(
+        "West_Field",
+        "East_Field",
+        "None"
+      )
+    )}
+  else{
+    env_column <- factor(
+      env_column,
+      levels = c(
+        "West Field",
+        "East Field",
+        "None"
+      )
+    )
+  }
+  }
+
+metadata$Type <- str_replace(metadata$Type, "_|\\.", " ")
+metadata$Type <- reorder_environments(metadata$Type, data_type = "tidy")
+metadata$FieldType <- str_replace(metadata$FieldType, "_|\\.", " ")
+metadata$FieldType <- reorder_fields(metadata$FieldType, data_type= "tidy")
 
 
 # Vector of objects for iteration and their names
@@ -820,10 +847,29 @@ for( l in 1:length(kraken_clade_raw_analytic) ) {
     rownames(fData(kraken_clade_raw_analytic[[l]])) <- rownames(MRcounts(kraken_clade_raw_analytic[[l]]))
 }
 
+
+AMR_analytic_data <-
+  AMR_analytic_data %>%
+  map(function(x){
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
+    x
+  }
+)
+
+AMR_raw_analytic_data <-
+  AMR_raw_analytic_data %>%
+  map(function(x){
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
+    x
+  }
+)
 kraken_taxon_norm_analytic <-
   kraken_taxon_norm_analytic %>%
   map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "wide")
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
     x
   }
 )
@@ -831,7 +877,8 @@ kraken_taxon_norm_analytic <-
 kraken_taxon_raw_analytic <-
   kraken_taxon_raw_analytic %>%
   map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "wide")
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
     x
   }
 )
@@ -839,7 +886,8 @@ kraken_taxon_raw_analytic <-
 kraken_clade_norm_analytic <-
   kraken_clade_norm_analytic %>%
   map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "wide")
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
     x
   }
 )
@@ -847,7 +895,8 @@ kraken_clade_norm_analytic <-
 kraken_clade_raw_analytic <-
   kraken_clade_raw_analytic %>%
   map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "wide")
+    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
     x
   }
 )
@@ -916,36 +965,36 @@ kraken_clade_names <- names(kraken_clade_raw_analytic)
 # Exploratory Analyses: Alpha Rarefaction ---------------------------------
 
 
-# for( v in 1:length(exploratory_analyses) ) {
-#     # AMR
-#     meg_alpha_rarefaction(data_list=AMR_raw_analytic_data,
-#                           data_names=AMR_raw_analytic_names,
-#                           metadata=metadata,
-#                           sample_var=sample_column_id,
-#                           group_var=exploratory_analyses[[v]]$exploratory_var,
-#                           analysis_subset=exploratory_analyses[[v]]$subsets,
-#                           outdir=paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
-#                                        sep='/', collapse=''),
-#                           data_type='AMR')
-#     
-#     # Microbiome (taxon reads)
-#     meg_alpha_rarefaction(data_list=kraken_taxon_raw_analytic,
-#                           data_names=kraken_taxon_names,
-#                           metadata=metadata,
-#                           sample_var=sample_column_id,
-#                           group_var=exploratory_analyses[[v]]$exploratory_var,
-#                           analysis_subset=exploratory_analyses[[v]]$subsets,
-#                           outdir=paste(graph_output_dir, 'Microbiome_taxonReads', exploratory_analyses[[v]]$name,
-#                                        sep='/', collapse=''),
-#                           data_type='Microbiome_taxonReads')
-    
-# }
+for( v in 1:length(exploratory_analyses) ) {
+     # AMR
+     meg_alpha_rarefaction(data_list=AMR_raw_analytic_data,
+                           data_names=AMR_raw_analytic_names,
+                           metadata=metadata,
+                           sample_var=sample_column_id,
+                           group_var=exploratory_analyses[[v]]$exploratory_var,
+                           analysis_subset=exploratory_analyses[[v]]$subsets,
+                           outdir=paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
+                                        sep='/', collapse=''),
+                           data_type='AMR')
+
+     # Microbiome (taxon reads)
+     meg_alpha_rarefaction(data_list=kraken_taxon_raw_analytic,
+                           data_names=kraken_taxon_names,
+                           metadata=metadata,
+                           sample_var=sample_column_id,
+                           group_var=exploratory_analyses[[v]]$exploratory_var,
+                           analysis_subset=exploratory_analyses[[v]]$subsets,
+                           outdir=paste(graph_output_dir, 'Microbiome_taxonReads', exploratory_analyses[[v]]$name,
+                                        sep='/', collapse=''),
+                           data_type='Microbiome_taxonReads')
+
+ }
 
 
 # AMR
 
 exploratory_analyses %>%
-  walk(
+  walk(safely(
     ~ meg_alpha_rarefaction(
       data_list = AMR_raw_analytic_data,
       data_names = AMR_raw_analytic_names,
@@ -962,12 +1011,12 @@ exploratory_analyses %>%
       ),
       data_type = 'AMR'
     )
-  )
+  ))
 
 # Microbiome (taxon reads)
 
 exploratory_analyses %>%
-  walk(
+  walk(safely(
     ~ meg_alpha_rarefaction(
       data_list = kraken_taxon_raw_analytic,
       data_names = kraken_taxon_names,
@@ -984,8 +1033,9 @@ exploratory_analyses %>%
       ),
       data_type = 'Microbiome_taxonReads'
     )
-  )
+  ))
 
+# Microbiome (clade reads)
 
 exploratory_analyses %>%
   walk(safely(
@@ -1303,6 +1353,8 @@ exploratory_analyses %>%
 meta_melt <- metadata
 meta_melt$Type <- str_replace(meta_melt$Type, "_|\\.", " ")
 meta_melt$Type <- reorder_environments(meta_melt$Type,data_type = "melted")
+meta_melt$FieldType <- str_replace(meta_melt$FieldType, "_|\\.", " ")
+meta_melt$FieldType <- reorder_fields(meta_melt$FieldType, data_type = "melted")
 
 # AMR Heatmaps for each level
 
@@ -1389,7 +1441,7 @@ for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_taxon_names) ) {
         suppressWarnings(
             meg_barplot(melted_data=kraken_taxon_norm_melted,
-                    metadata=metadata,
+                    metadata=meta_melt,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=kraken_taxon_names[[l]],
