@@ -82,7 +82,7 @@ exploratory_analyses = list(
     subsets = list('Type != Wetlands', 'NatType != Natural'),
     exploratory_var = 'Type'
   ),
-  
+
   # Analysis 2
   # Description: Location comparison for all types
   list(
@@ -90,7 +90,7 @@ exploratory_analyses = list(
     subsets = list('Type != Wetlands', 'NatType != Natural'),
     exploratory_var = 'Location'
   ),
-  
+
   # Analysis 3
   # Description: Location comparison within Fecal Composite type
   list(
@@ -103,7 +103,7 @@ exploratory_analyses = list(
   # # Description: Location comparison within Catch Basin type
   # list(
   #     name = 'LocationCB',
-  #     subsets = list('Type == Catch_Basin', 'NatType != Natural'),
+  #     subsets = list('Type == Catch Basin', 'NatType != Natural'),
   #     exploratory_var = 'Location'
   # ),
 
@@ -115,24 +115,24 @@ exploratory_analyses = list(
     exploratory_var = 'Location'
   ),
   
-  # Analysis 6
-  # Description: Natural vs conventional Fecal Composite
+  # # Analysis 6
+  # # Description: Natural vs conventional Fecal Composite
   list(
     name = 'NaturalConventionalFC',
     subsets = list('Type == Fecal Composite', 'Location == Vegreville', 'NatType != None'),
     exploratory_var = 'NatType'
   ),
-  
-  # Analysis 7
-  # Description: Natural vs conventional Catch Basin
+  # 
+  # # Analysis 7
+  # # Description: Natural vs conventional Catch Basin
   list(
     name = 'NaturalConventionalCB',
-    subsets = list('Type == Catch Basin', 'Location == Vegreville'),
+    subsets = list('Type == Catch_Basin', 'Location == Vegreville'),
     exploratory_var = 'NatType'
   ),
-  
-  # Analysis 8
-  # Description: FieldType comparison within Soil type
+  # 
+  # # Analysis 8
+  # # Description: FieldType comparison within Soil type
   list(
     name = 'SoilFieldType',
     subsets = list('Type == Soil'),
@@ -848,58 +848,59 @@ for( l in 1:length(kraken_clade_raw_analytic) ) {
 }
 
 
-AMR_analytic_data <-
-  AMR_analytic_data %>%
-  map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
-    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
-    x
-  }
-)
+# AMR_analytic_data <-
+#   AMR_analytic_data %>%
+#   map(function(x){
+#     pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+#     pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
+#     x
+#   }
+# )
+# 
+# AMR_raw_analytic_data <-
+#   AMR_raw_analytic_data %>%
+#   map(function(x){
+#     pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+#     pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
+#     x
+#   }
+# )
+# kraken_taxon_norm_analytic <-
+#   kraken_taxon_norm_analytic %>%
+#   map(function(x){
+#     pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+#     pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
+#     x
+#   }
+# )
+# 
+# kraken_taxon_raw_analytic <-
+#   kraken_taxon_raw_analytic %>%
+#   map(function(x){
+#     pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+#     pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
+#     x
+#   }
+# )
+# 
+# kraken_clade_norm_analytic <-
+#   kraken_clade_norm_analytic %>%
+#   map(function(x){
+#     pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+#     pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
+#     x
+#   }
+# )
 
-AMR_raw_analytic_data <-
-  AMR_raw_analytic_data %>%
-  map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
-    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
-    x
-  }
-)
-kraken_taxon_norm_analytic <-
-  kraken_taxon_norm_analytic %>%
-  map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
-    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
-    x
-  }
-)
+# kraken_clade_raw_analytic <-
+#   kraken_clade_raw_analytic %>%
+#   map(function(x){
+#     pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
+#     pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
+#     x
+#   }
+# )
 
-kraken_taxon_raw_analytic <-
-  kraken_taxon_raw_analytic %>%
-  map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
-    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
-    x
-  }
-)
-
-kraken_clade_norm_analytic <-
-  kraken_clade_norm_analytic %>%
-  map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
-    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
-    x
-  }
-)
-
-kraken_clade_raw_analytic <-
-  kraken_clade_raw_analytic %>%
-  map(function(x){
-    pData(x)[["Type"]] <- reorder_environments(pData(x)[["Type"]],data_type = "tidy")
-    pData(x)[["FieldType"]] <- reorder_fields(pData(x)[["FieldType"]], data_type = "tidy")
-    x
-  }
-)
 # for( l in 1:length(kraken_clade_norm_analytic) ) {
 #     sample_idx <- match(colnames(MRcounts(kraken_clade_norm_analytic[[l]])), metadata[[sample_column_id]])
 #     pData(kraken_clade_norm_analytic[[l]]) <- data.frame(
@@ -1106,27 +1107,108 @@ reorder_amr_levels <- function(level_column) {
     )
 }
 
-amr_norm_diversity$Type <- reorder_environments(amr_norm_diversity$Type,data_type = "wide")
+amr_norm_diversity$Type <- str_replace(amr_norm_diversity$Type, "_|\\.", " ")
+amr_norm_diversity$Type <- reorder_environments(amr_norm_diversity$Type,data_type = "tidy")
+amr_norm_diversity$FieldType <- str_replace(amr_norm_diversity$FieldType, "_|\\.", " ")
+amr_norm_diversity$FieldType <- reorder_fields(amr_norm_diversity$FieldType, data_type = "tidy")
 amr_norm_diversity$Level <- reorder_amr_levels(amr_norm_diversity$Level)
 
 kraken_clade_norm_diversity <- 
   kraken_clade_norm_analytic %>%
   map_dfr(
     ~ calc_diversity_df(MRcounts(.x)) %>%
-      left_join(., metadata, by "ID"),
+      left_join(., metadata, by = "ID"),
     .id = "Level"
 )
 
+kraken_clade_norm_diversity$Type <- str_replace(kraken_clade_norm_diversity$Type, "_|\\.", " ")
+kraken_clade_norm_diversity$Type <- reorder_environments(kraken_clade_norm_diversity$Type,data_type = "tidy")
+kraken_clade_norm_diversity$FieldType <- str_replace(kraken_clade_norm_diversity$FieldType, "_|\\.", " ")
+kraken_clade_norm_diversity$FieldType <- reorder_fields(kraken_clade_norm_diversity$FieldType, data_type = "tidy")
+kraken_clade_norm_diversity$Level <- reorder_tax_ranks(kraken_clade_norm_diversity$Level)
+
 kraken_taxon_norm_diversity <- 
   kraken_taxon_norm_analytic %>%
-  map(
-    ~ calc_diversity_df(MRcounts(.x))
+  map_dfr(
+    ~ calc_diversity_df(MRcounts(.x)) %>%
+      left_join(., metadata, by = "ID"),
+    .id = "Level"
   )
+
+kraken_taxon_norm_diversity$Type <- str_replace(kraken_taxon_norm_diversity$Type, "_|\\.", " ")
+kraken_taxon_norm_diversity$Type <- reorder_environments(kraken_taxon_norm_diversity$Type,data_type = "tidy")
+kraken_taxon_norm_diversity$FieldType <- str_replace(kraken_taxon_norm_diversity$FieldType, "_|\\.", " ")
+kraken_taxon_norm_diversity$FieldType <- reorder_fields(kraken_taxon_norm_diversity$FieldType, data_type = "tidy")
+kraken_taxon_norm_diversity$Level <- reorder_tax_ranks(kraken_taxon_norm_diversity$Level)
+
+exploratory_analyses %>%
+  walk(
+    safely(
+    ~ meg_alpha_normalized(
+      diversity_df = as.data.table(amr_norm_diversity),
+      data_names = AMR_raw_analytic_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      group_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'AMR',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'AMR'
+    )
+  ))
+
+exploratory_analyses %>%
+  walk(
+    safely(
+    ~ meg_alpha_normalized(
+      diversity_df = as.data.table(kraken_clade_norm_diversity),
+      data_names = kraken_taxon_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      group_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'Microbiome_cladeReads',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'Microbiome_cladeReads'
+    )
+  ))
+
+exploratory_analyses %>%
+  walk(
+    safely(
+    ~ meg_alpha_normalized(
+      diversity_df = as.data.table(kraken_taxon_norm_diversity),
+      data_names = kraken_taxon_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      group_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'Microbiome_taxonReads',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'Microbiome_taxonReads'
+    )
+  ))
+
 
 amr_observed_species <- function(amr_df) {
   alphaDivBoxPlot <-
     ggplot(amr_df, aes(Type, Observed_Richness, color = Type)) +
-    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    geom_boxplot(size = 1) +
     theme(
       strip.text.x = element_text(size = 25),
       axis.text.y = element_text(size = 30),
@@ -1152,7 +1234,7 @@ amr_norm_rich_boxplots <- amr_observed_species(amr_norm_diversity)
 amr_inv_simpson <- function(amr_df) {
   alphaDivBoxPlot <-
     ggplot(amr_df, aes(Type, Inv_Simpson, color = Type)) +
-    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    geom_boxplot(size = 1) +
     theme(
       strip.text.x = element_text(size = 25),
       axis.text.y = element_text(size = 30),
@@ -1177,7 +1259,7 @@ amr_norm_inv_simpson_box <- amr_inv_simpson(amr_norm_diversity)
 
 amr_simpson <- function(amr_df) {
   alphaDivBoxPlot <- ggplot(amr_df, aes(Type, Simpson, color = Type)) +
-    geom_boxplot(lwd = 0.5, aes(size = 5)) +
+    geom_boxplot(size = 1) +
     theme(
       strip.text.x = element_text(size = 25),
       axis.text.y = element_text(size = 30),
@@ -1221,25 +1303,25 @@ amr_shannon <- function(amr_df) {
 
 amr_norm_shannon_box <- amr_shannon(amr_norm_diversity)
 
-exploratory_analyses %>%
-  walk(safely(
-    ~ meg_alpha_rarefaction(
-      data_list = kraken_clade_raw_analytic,
-      data_names = kraken_clade_names,
-      metadata = metadata,
-      sample_var = sample_column_id,
-      group_var = .x$exploratory_var,
-      analysis_subset = .x$subsets,
-      outdir = paste(
-        graph_output_dir,
-        'Microbiome_cladeReads',
-        .x$name,
-        sep = '/',
-        collapse = ''
-      ),
-      data_type = 'Microbiome_cladeReads'
-    )
-  ))
+# exploratory_analyses %>%
+#   walk(safely(
+#     ~ meg_alpha_rarefaction(
+#       data_list = kraken_clade_raw_analytic,
+#       data_names = kraken_clade_names,
+#       metadata = metadata,
+#       sample_var = sample_column_id,
+#       group_var = .x$exploratory_var,
+#       analysis_subset = .x$subsets,
+#       outdir = paste(
+#         graph_output_dir,
+#         'Microbiome_cladeReads',
+#         .x$name,
+#         sep = '/',
+#         collapse = ''
+#       ),
+#       data_type = 'Microbiome_cladeReads'
+#     )
+#   ))
 
 
 # Exploratory Analyses: Ordination ----------------------------------------
@@ -1277,9 +1359,10 @@ for( v in 1:length(exploratory_analyses) ) {
 # It also allows to store warnings
 # Consider using walk with capture.output to store the procrustes information
 
-micro_taxon_nmds <-
+# micro_taxon_nmds <-
+  
   exploratory_analyses %>%
-  map(quietly(
+  walk(safely(
     ~ meg_ordination(
       data_list = kraken_taxon_norm_analytic,
       data_names = kraken_taxon_names,
@@ -1350,11 +1433,11 @@ exploratory_analyses %>%
 
 # Exploratory Analyses: Heatmaps ------------------------------------------
 
-meta_melt <- metadata
-meta_melt$Type <- str_replace(meta_melt$Type, "_|\\.", " ")
-meta_melt$Type <- reorder_environments(meta_melt$Type,data_type = "melted")
-meta_melt$FieldType <- str_replace(meta_melt$FieldType, "_|\\.", " ")
-meta_melt$FieldType <- reorder_fields(meta_melt$FieldType, data_type = "melted")
+# meta_melt <- metadata
+# meta_melt$Type <- str_replace(meta_melt$Type, "_|\\.", " ")
+# meta_melt$Type <- reorder_environments(meta_melt$Type,data_type = "melted")
+# meta_melt$FieldType <- str_replace(meta_melt$FieldType, "_|\\.", " ")
+# meta_melt$FieldType <- reorder_fields(meta_melt$FieldType, data_type = "melted")
 
 # AMR Heatmaps for each level
 
@@ -1391,7 +1474,7 @@ for( v in 1:length(exploratory_analyses) ) {
 for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_taxon_names) ) {
         meg_heatmap(melted_data=kraken_taxon_norm_melted,
-                    metadata=meta_melt,
+                    metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=kraken_taxon_names[[l]],
@@ -1406,7 +1489,7 @@ for( v in 1:length(exploratory_analyses) ) {
 for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_clade_names) ) {
         meg_heatmap(melted_data=kraken_clade_norm_melted,
-                    metadata=meta_melt,
+                    metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=kraken_clade_names[[l]],
@@ -1422,9 +1505,9 @@ for( v in 1:length(exploratory_analyses) ) {
 # AMR
 for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(AMR_analytic_names) ) {
-        suppressWarnings(
+        # suppressWarnings(
             meg_barplot(melted_data=amr_melted_analytic,
-                    metadata=meta_melt,
+                    metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=AMR_analytic_names[l],
@@ -1432,7 +1515,7 @@ for( v in 1:length(exploratory_analyses) ) {
                     outdir=paste(graph_output_dir, 'AMR', exploratory_analyses[[v]]$name,
                                  sep='/', collapse=''),
                     data_type='AMR')
-        )
+        # )
     }
 }
 
@@ -1441,7 +1524,7 @@ for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_taxon_names) ) {
         suppressWarnings(
             meg_barplot(melted_data=kraken_taxon_norm_melted,
-                    metadata=meta_melt,
+                    metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=kraken_taxon_names[[l]],
@@ -1459,7 +1542,7 @@ for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(kraken_clade_names) ) {
         suppressWarnings(
             meg_barplot(melted_data=kraken_clade_norm_melted,
-                    metadata=meta_melt,
+                    metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=kraken_taxon_names[[l]],

@@ -273,8 +273,8 @@ meg_heatmap <- function(melted_data,
   # tile_subset <- within(tile_subset, sample_var
   #                       <- factor(sample_var,
   #                                 levels=sample_order,
-  #                                 ordered=T))
-  # 
+  #                                 ordered=F))
+
   setkey(tile_subset, Normalized_Count)
   tile_subset <- tile_subset[, sum(Normalized_Count),
                              by=c(group_var, sample_var, 'Name')]
@@ -315,7 +315,7 @@ meg_heatmap <- function(melted_data,
     ggtitle(paste(data_type, ' ', level_var, ' Normalized Counts by ', group_var, '\n',
                   sep='', collapse=''))
   png(filename=paste(outdir, '/', level_var, '_', group_var, '_',
-                     'Heatmap.png', sep='', collapse=''), width=1400, height=700)
+                     'Heatmap.png', sep='', collapse=''), width=1600, height=700)
   print(tile)
   dev.off()
 }
@@ -535,15 +535,15 @@ meg_barplot <- function(melted_data,
                                                               'Normalized_Count')])
     setkeyv(bar_subset, sample_var)
     bar_subset <- metadata[bar_subset]
-    # bar_subset[[sample_var]] <- factor(bar_subset[[sample_var]],
-    #                                       levels=unique(bar_subset[[sample_var]][order(bar_subset[[group_var]])]),
-    #                                       ordered=F)
-    # 
+    bar_subset[[sample_var]] <- factor(bar_subset[[sample_var]],
+                                          levels=unique(bar_subset[[sample_var]][order(bar_subset[[group_var]])]),
+                                          ordered=T)
+
     setkey(bar_subset, Normalized_Count)
-    bar_subset[, sample_number:=(length(unique(bar_subset[[sample_var]]))), by=c(group_var, 'Name')]
+    bar_subset[, sample_number:=(length(unique(bar_subset[["ID"]]))), by=c(group_var, 'Name')]
     bar_subset <- unique(bar_subset[, sum(Normalized_Count) / sample_number,
                                                   by=c(group_var, 'Name')])
-    
+
     numselect <- 11
     bar_names <- bar_select_top_counts(bar_subset, group_var, numselect)
     name_count <- length(unique(bar_names$Name))
@@ -561,7 +561,7 @@ meg_barplot <- function(melted_data,
                           bar_subset[[group_var]], sum)
     # source_labels <- names(source_sums)[order(source_sums, decreasing=T)]
     # bar_subset[[group_var]] <- factor(bar_subset[[group_var]],
-    #                                       levels=source_labels, ordered=F)
+                                          # levels=source_labels, ordered=F)
 
     
     meg_bar <- ggplot(bar_subset, aes_string(x=group_var, y='Normalized_Count', fill='Name')) +
@@ -580,7 +580,7 @@ meg_barplot <- function(melted_data,
         ggtitle(paste('Mean ', data_type, ' ', level_var, ' Normalized Count by ', group_var, '\n',
                       sep='', collapse=''))
     png(filename=paste(outdir, '/', data_type, '_', level_var, '_BarPlot_by_', group_var, '.png',
-                       sep='', collapse=''), width=1024, height=768)
+                       sep='', collapse=''), width=1366, height=768)
     print(meg_bar)
     dev.off()
 }
@@ -707,6 +707,114 @@ meg_fitZig <- function(data_list,
     }
 }
 
+meg_alpha_normalized <- function(diversity_df,
+                                  data_names,
+                                  metadata,
+                                  sample_var,
+                                  group_var,
+                                  analysis_subset,
+                                  outdir,
+                                  data_type) {
+  # local_data <- diversity_list
+  
+  # for( l in 1:length(local_data) ) {
+  
+  local_data <- diversity_df
+  
+  local_data <- data_subset_long(local_data, analysis_subset)
+  
+    # sample_counts <- colSums(MRcounts(local_data[[l]]))
+    # if(min(sample_counts) == 0) {
+    #   non_zero_sample <- min(sample_counts[sample_counts > 0])
+    # }
+    # else {
+    #   non_zero_sample <- 0
+    # }
+    
+  png(filename=paste(outdir, '/', data_type, '_normalized_richness_by_', group_var, '.png',
+                     sep='', collapse=''),
+      width=1024, height=768)
+  g_alphadiv <- ggplot(data = local_data, aes_string(x = group_var,
+    y = 'Observed_Richness', color = group_var)) +
+    # geom_boxplot(width=0.8, lwd=0.8) + 
+    geom_boxplot(size = 1) + 
+    facet_wrap(~Level, nrow=2, scales='free_y')
+  g_alphadiv <- g_alphadiv +
+    ggtitle(paste('Observed Richness by ', group_var, ' for Normalized data\n',
+                  sep='', collapse='')) +
+    ylab('Number of Unique Assignments\n') +
+    xlab(paste('\n', group_var, sep='', collapse='')) +
+    # scale_color_discrete(labels=group_var_new) +
+    # scale_color_discrete(labels=unique(str_replace_all(all_alphadiv[[group_var]], "_|\\.", " "))) +
+    # scale_x_discrete(labels=str_replace_all(group_var, "_|\\.", " ")) + 
+    theme(strip.text.x=element_text(size=26),
+          axis.text.y=element_text(size=20),
+          axis.text.x=element_blank(),
+          axis.title.x=element_text(size=26),
+      
+          axis.title.y=element_text(size=26, vjust=1),
+          #legend.position="right",
+          legend.title=element_text(size=24, vjust=1),
+          legend.text=element_text(size=20),
+          plot.title=element_text(size=30, hjust=0.5))
+  print(g_alphadiv)
+    dev.off()
+    
+    png(filename=paste(outdir, '/', data_type, '_normalized_alpha_diversity_by_', group_var, '.png',
+                       sep='', collapse=''),
+        width=1024, height=768)
+    g_invs <- ggplot(data=local_data, aes_string(group_var, 'Inv_Simpson', color=group_var)) +
+        # geom_boxplot(width=0.8,lwd=0.8) + 
+        geom_boxplot(size = 1) + 
+        facet_wrap(~Level, nrow=2, scales='free_y')
+    g_invs <- g_invs +
+      ggtitle(paste(
+        'Alpha Diversity by ',
+        group_var,
+        ' for Normalized data\n',
+        sep = '',
+        collapse = ''
+      )) +
+      xlab(paste('\n', group_var, sep = '', collapse = '')) +
+      ylab('Inverse Simpson\'s Index\n') +
+        # scale_color_discrete(labels=unique(str_replace_all(all_species_raw[[group_var]], "_|\\.", " "))) +
+        theme(strip.text.x=element_text(size=26),
+              axis.text.y=element_text(size=20),
+              axis.text.x=element_blank(),
+              axis.title.x=element_text(size=26),
+              axis.title.y=element_text(size=26, vjust=1),
+              #legend.position="right",
+              legend.title=element_text(size=24, vjust=1),
+              legend.text=element_text(size=20),
+              plot.title=element_text(size=30, hjust=0.5))
+    print(g_invs)
+    dev.off()
+    
+    # png(filename=paste(outdir, '/', data_type, '_rarefied_richness_by_', group_var, '.png',
+    #                    sep='', collapse=''),
+    #     width=1024, height=768)
+    # g_srare <- ggplot(data=all_species_rare, aes_string(group_var, 'Value', color=group_var)) +
+    #     # geom_boxplot(width=0.8,lwd=0.8) + 
+    #     geom_boxplot(size =1) +
+    #     facet_wrap(~Level, nrow=2, scales='free_y')
+    # g_srare <- g_srare +
+    #     ggtitle(paste('Observed Richness by ', group_var, ' for Rarefied data\n',
+    #                   sep='', collapse='')) +
+    #     ylab('Unique Assignments\n') +
+    #     xlab(paste('\n', group_var, sep='', collapse='')) +
+    #     # scale_color_discrete(labels=unique(str_replace_all(all_species_rare[[group_var]], "_|\\.", " "))) +
+    #     theme(strip.text.x=element_text(size=26),
+    #           axis.text.y=element_text(size=20),
+    #           axis.text.x=element_blank(),
+    #           axis.title.x=element_text(size=26),
+    #           axis.title.y=element_text(size=26, vjust=1),
+    #           #legend.position="right",
+    #           legend.title=element_text(size=24, vjust=1),
+    #           legend.text=element_text(size=20),
+    #           plot.title=element_text(size=30, hjust=0.5))
+    # print(g_srare)
+    # dev.off()
+}
 
 
 

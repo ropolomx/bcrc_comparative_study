@@ -121,7 +121,7 @@ the Kraken and AMR data were split by each environment type and normalized using
 Cumulative Sum Scaling normalization. Ordination analysis was performed with the 
 normalized data.
 
-### Alpha-rarefaction
+### Alpha-diversity
 
 Alpha-rarefaction was performed for the estimation of alpha diversity. 
 Alpha diversity (mean species diversity within each sample) was calculated on 
