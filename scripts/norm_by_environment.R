@@ -85,6 +85,16 @@ count_barplot <-function(melted, level){
     scale_fill_brewer(palette = "Set3")
 }
 
+summarise_kraken <- function(kraken_norm){
+  summarised <- lapply(tax_levels, function(x){
+    kraken_norm <- as.data.table(kraken_norm)
+    kraken_norm[!is.na(kraken_norm[[x]]) & kraken_norm[[x]] != 'NA' , lapply(.SD, sum), by=x, .SDcols=!1:10]
+  }
+  )
+  names(summarised) <- tax_levels
+  summarised
+}
+
 
 # Drake plan for normalization by environment -----------------------------
 
@@ -185,12 +195,19 @@ by_env_plan <- drake_plan(
       ~ merge_amr(.x)
     )
   },
-  generate_analytic_norm_kraken = {
-    modify_depth(
-      extract_norm_kraken,
-      .depth = 2,
-      ~ merge_amr(.x) # Change function to tax here
+  summarise_norm_kraken = {
+    map(
+      extract_norm_kraken$cladeReads %>%
+      ~ summarise_kraken(kraken_norm = .x)
     )
+  },
+  generate_analytic_norm_clades_kraken = {
+    for(t in 1:seq_along(tax_levels)) {
+      map(
+        summarise_norm_kraken$cladeReads,
+        ~ make_analytic(.x,t)
+      )
+      }
   },
   generate_analytic_raw_amr = {
     map(

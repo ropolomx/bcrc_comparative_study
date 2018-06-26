@@ -77,25 +77,25 @@ sample_column_id = 'ID'
 exploratory_analyses = list(
   # Analysis 1
   # Description: Type comparison for all locations
-  list(
-    name = 'TypeOverall',
-    subsets = list('Type != Wetlands', 'NatType != Natural'),
-    exploratory_var = 'Type'
-  ),
-
-  # Analysis 2
-  # Description: Location comparison for all types
-  list(
-    name = 'LocationOverall',
-    subsets = list('Type != Wetlands', 'NatType != Natural'),
-    exploratory_var = 'Location'
-  ),
+  # list(
+  #   name = 'TypeOverall',
+  #   subsets = list('Type != Wetlands', 'NatType != Natural'),
+  #   exploratory_var = 'Type'
+  # ),
+  # 
+  # # Analysis 2
+  # # Description: Location comparison for all types
+  # list(
+  #   name = 'LocationOverall',
+  #   subsets = list('Type != Wetlands', 'NatType != Natural'),
+  #   exploratory_var = 'Location'
+  # ),
 
   # Analysis 3
   # Description: Location comparison within Fecal Composite type
   list(
     name = 'LocationFC',
-    subsets = list('Type == Fecal Composite', 'NatType != Natural'),
+    subsets = list('Type == Fecal_Composite', 'NatType != Natural'),
     exploratory_var = 'Location'
   ),
   
@@ -111,33 +111,33 @@ exploratory_analyses = list(
   # Description: Location comparison within Waste Water sewage treatment type
   list(
     name = 'LocationST',
-    subsets = list('Type == Sewage Treatment'),
+    subsets = list('Type == Sewage_Treatment'),
     exploratory_var = 'Location'
-  ),
+  )
   
   # # Analysis 6
   # # Description: Natural vs conventional Fecal Composite
-  list(
-    name = 'NaturalConventionalFC',
-    subsets = list('Type == Fecal Composite', 'Location == Vegreville', 'NatType != None'),
-    exploratory_var = 'NatType'
-  ),
-  # 
-  # # Analysis 7
-  # # Description: Natural vs conventional Catch Basin
-  list(
-    name = 'NaturalConventionalCB',
-    subsets = list('Type == Catch_Basin', 'Location == Vegreville'),
-    exploratory_var = 'NatType'
-  ),
-  # 
-  # # Analysis 8
-  # # Description: FieldType comparison within Soil type
-  list(
-    name = 'SoilFieldType',
-    subsets = list('Type == Soil'),
-    exploratory_var = 'FieldType'
-  )
+  # list(
+  #   name = 'NaturalConventionalFC',
+  #   subsets = list('Type == Fecal_Composite', 'Location == Vegreville', 'NatType != None'),
+  #   exploratory_var = 'NatType'
+  # ),
+  # # 
+  # # # Analysis 7
+  # # # Description: Natural vs conventional Catch Basin
+  # list(
+  #   name = 'NaturalConventionalCB',
+  #   subsets = list('Type == Catch_Basin', 'Location == Vegreville'),
+  #   exploratory_var = 'NatType'
+  # ),
+  # # 
+  # # # Analysis 8
+  # # # Description: FieldType comparison within Soil type
+  # list(
+  #   name = 'SoilFieldType',
+  #   subsets = list('Type == Soil'),
+  #   exploratory_var = 'FieldType'
+  # )
 )
 
 # Each analyses you wish to perform should have its own list in the following
@@ -771,9 +771,9 @@ reorder_fields <- function(env_column, data_type){
   }
 
 metadata$Type <- str_replace(metadata$Type, "_|\\.", " ")
-metadata$Type <- reorder_environments(metadata$Type, data_type = "tidy")
+metadata$Type <- reorder_environments(metadata$Type, data_type = "wide")
 metadata$FieldType <- str_replace(metadata$FieldType, "_|\\.", " ")
-metadata$FieldType <- reorder_fields(metadata$FieldType, data_type= "tidy")
+metadata$FieldType <- reorder_fields(metadata$FieldType, data_type= "wide")
 
 
 # Vector of objects for iteration and their names
