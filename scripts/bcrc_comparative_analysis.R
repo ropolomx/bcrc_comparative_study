@@ -1358,25 +1358,25 @@ meta_melt$FieldType <- reorder_fields(meta_melt$FieldType, data_type = "melted")
 
 # AMR Heatmaps for each level
 
-amr_heatmaps <- pmap(
-  cross2(exploratory_analyses,AMR_analytic_names),
-  safely(
-    ~ meg_heatmap(melted_data=amr_melted_analytic,
-      metadata=meta_melt,
-      sample_var=sample_column_id,
-      group_var=.x$exploratory_var,
-      level_var=.y,
-      analysis_subset=.x$subsets,
-      outdir=paste(graph_output_dir, 'AMR', .x$name,
-        sep='/', collapse=''),
-      data_type='AMR')
-  )
-)
+# amr_heatmaps <- pmap(
+#   cross2(exploratory_analyses,AMR_analytic_names),
+#   safely(
+#     ~ meg_heatmap(melted_data=amr_melted_analytic,
+#       metadata=meta_melt,
+#       sample_var=sample_column_id,
+#       group_var=.x$exploratory_var,
+#       level_var=.y,
+#       analysis_subset=.x$subsets,
+#       outdir=paste(graph_output_dir, 'AMR', .x$name,
+#         sep='/', collapse=''),
+#       data_type='AMR')
+#   )
+# )
 
 for( v in 1:length(exploratory_analyses) ) {
     for( l in 1:length(AMR_analytic_names) ) {
         meg_heatmap(melted_data=amr_melted_analytic,
-                    metadata=meta_melt,
+                    metadata=metadata,
                     sample_var=sample_column_id,
                     group_var=exploratory_analyses[[v]]$exploratory_var,
                     level_var=AMR_analytic_names[[l]],
@@ -1617,3 +1617,4 @@ kraken_clade_raw_list %>%
       here('kraken_cladeReads_matrices', 'raw', paste0('kraken_',.y,'_Raw_Normalized.csv')),
       row.names = T)
   )
+
