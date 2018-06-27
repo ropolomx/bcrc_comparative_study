@@ -79,10 +79,14 @@ match_metadata <- function(x, meta){
 }
 
 count_barplot <-function(melted, level){
-  ggplot(data = subset(melted, Level_ID == "Class"), 
+  ggplot(data = subset(melted, Level_ID == level), 
          aes_string(x='Type', y='Normalized_Count', fill = 'Name')) +
-    geom_bar(stat="identity") + 
-    scale_fill_brewer(palette = "Set3")
+    geom_bar(stat="summary", fun.y = "mean") + 
+    scale_fill_brewer(palette = "Spectral")
+}
+
+merge_kraken <- function(x){
+  
 }
 
 summarise_kraken <- function(kraken_norm){
@@ -193,6 +197,55 @@ by_env_plan <- drake_plan(
     map(
       extract_norm_amr,
       ~ merge_amr(.x)
+    )
+  },
+  kraken_taxonomy = {
+    map(
+      extract_norm_kraken$cladeReads,
+      ~ data.table(id = rownames(.x))
+    )
+  },
+  kraken_lineage = {
+    kraken_taxonomy %>%
+      map (~ .x$id)
+  },
+  kraken_taxonomy_split = {
+    kraken_taxonomy %>%
+      map(~ str_split(string = .x$id, pattern = "\\|"))
+  },
+  domain_tax = {
+    modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^d_.*")]) %>%
+      modify_depth(., .depth=2, ~ if(length(.x) == 0){.x=NA} else{.x}) 
+  },
+  phylum_tax = {
+    modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^p_.*")]) %>%
+      modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+  },
+  class_tax = {
+    modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^c_.*")]) %>%
+      modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+  },
+  order_tax = {
+    modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^o_.*")]) %>%
+      modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+  },
+  family_tax = {
+    modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^f_.*")]) %>%
+      modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+  },
+  species_tax = {
+    modify_depth(kraken_taxonomy_split, .depth = 2, ~ .x[str_detect(.x, "^s_.*")]) %>%
+      modify_depth(., .depth = 2, ~ if(length(.x) == 0){.x=NA} else{.x})
+  },
+  kraken_tax_dt_clade = {
+    kraken_tax_dt_clade <- data.table(
+      Domain = as.character(domain_tax$cladeReads),
+      Phylum = as.character(phylum_tax$cladeReads),
+      Class = as.character(class_tax$cladeReads),
+      Order = as.character(order_tax$cladeReads),
+      Family = as.character(family_tax$cladeReads),
+      Genus = as.character(genus_tax$cladeReads),
+      Species = as.character(species_tax$cladeReads)
     )
   },
   summarise_norm_kraken = {
@@ -339,7 +392,35 @@ by_env_plan <- drake_plan(
       ~ .x,
       .id = "Type"
       ) %>%
+      mutate(Type = reorder_environments(.$Type, data_type = "wide")) %>%
   count_barplot(., "Class")
+  },
+  plot_norm_mech_amr ={
+    map_dfr(
+      melt_norm_amr,
+      ~ .x,
+      .id = "Type"
+      ) %>%
+      mutate(Type = reorder_environments(.$Type, data_type = "wide")) %>%
+  count_barplot(., "Mechanism")
+  },
+  plot_norm_group_amr ={
+    map_dfr(
+      melt_norm_amr,
+      ~ .x,
+      .id = "Type"
+      ) %>%
+      mutate(Type = reorder_environments(.$Type, data_type = "tidy")) %>%
+  count_barplot(., "Group")
+  },
+  plot_norm_gene_amr ={
+    map_dfr(
+      melt_norm_amr,
+      ~ .x,
+      .id = "Type"
+      ) %>%
+      mutate(Type = reorder_environments(.$Type, data_type = "tidy")) %>%
+  count_barplot(., "Gene")
   },
   #   map2(
   #     meg_barplot(melted_data = melt_norm_amr,
@@ -371,8 +452,11 @@ check_plan(by_env_plan)
 by_env_config <- drake_config(by_env_plan)
 
 vis_drake_graph(by_env_config,
-  from = c("kraken_df", "amr_df"),
+  # from = c("kraken_df", "amr_df"),
+  from = c("amr_df"),
   # to=c("remove_wild_type_raw"),
+  to=c("plot_norm_gene_amr"),
+  # layout = "layout_as_tree",
   font_size = 12)
 
 make(by_env_plan, jobs = 2, verbose = 1)

@@ -1,7 +1,7 @@
 ---
 title: "BCRC Comparative Metagenomics Report"
 author: "Rodrigo Ortega Polo"
-date: "April 2, 2018"
+date: "June 26, 2018"
 output:
   word_document: default
   html_document: default
@@ -12,12 +12,14 @@ bibliography: bcrc_library.bib
 
 ## Bioinformatic analysis workflow 
 
-The metagenomic sequencing reads were analyzed with a custom Galaxy workflow that runs
-the microbiome and resistome analysis in parallel. The microbiome work is based on the 
-the AMRPlusPlus pipeline [@lakin_megares_2017] in the computer cluster of the National 
-Microbiology Laboratory (Public Health Agency of Canada).
+The metagenomic sequencing reads were analyzed with a Galaxy workflow based on 
+the previous work [@zaheer_impact_2018]. The workflow in this study analyzes the
+the microbiome, resistome and anti-biocide/anti-biometal resistance of metagenomic samples in 
+parallel. Those analyses were performed in the Galaxy instance of theNational 
+Microbiology Laboratory (Public Health Agency of Canada). The resistome portion 
+of the workflow is based on the the AMRPlusPlus pipeline [@lakin_megares_2017]. 
 
-The following steps were performed in the bioinformatics workflow for the 
+The following steps were performed in the Galaxy workflow for the 
 characterization of sequence reads vs. antimicrobial resistance (AMR), 
 anti-biocide and anti-biometal resistance (ABR), and taxonomic classification: 
 
@@ -185,7 +187,7 @@ higher for fecal composite samples at the phylum, class, family, and genus
 levels. At the class, order, and family level, fecal composite samples had lower median alpha-diversity than soil samples, but higher or similar richness.
 
 
-![](../graphs/Microbiome/TypeOverall/Microbiome_alphadiversity_by_Type.png)
+![](../graphs/Microbiome_cladeReads/TypeOverall/Microbiome_cladeReads_normalized_alpha_diversity_by_Type.png)
 
 Figure 2. Distribution of Inverse Simpson's index for measuring alpha diversity across different taxonomic levels among different sample types. 
 
