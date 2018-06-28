@@ -82,7 +82,7 @@ count_barplot <-function(melted, level){
   ggplot(data = subset(melted, Level_ID == level), 
          aes_string(x='Type', y='Normalized_Count', fill = 'Name')) +
     geom_bar(stat="summary", fun.y = "mean") + 
-    scale_fill_brewer(palette = "Spectral")
+    scale_fill_viridis_d()
 }
 
 merge_kraken <- function(x){
