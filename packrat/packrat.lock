@@ -148,6 +148,12 @@ Source: CRAN
 Version: 1.3-2
 Hash: 0bf8618b585fa98eb23414cd3ab95118
 
+Package: cooccur
+Source: CRAN
+Version: 1.3
+Hash: b85e20c1a78db0c49b843107f7ee8fb5
+Requires: ggplot2, gmp, reshape2
+
 Package: crayon
 Source: CRAN
 Version: 1.3.4
@@ -175,6 +181,13 @@ Version: 1.2.1
 Hash: 167a1e23f4196b09db68b62c99d4f2c2
 Requires: DBI, R6, assertthat, dplyr, glue, purrr, rlang, tibble,
     tidyselect
+
+Package: devtools
+Source: CRAN
+Version: 1.13.5
+Hash: 80061b2ad6853fd3665bf883123a1b1a
+Requires: digest, git2r, httr, jsonlite, memoise, rstudioapi, whisker,
+    withr
 
 Package: dichromat
 Source: CRAN
@@ -253,6 +266,11 @@ GithubUsername: tidyverse
 GithubRef: master
 GithubSha1: bf9255e50cb8333e26133cc81927e5baff986d2a
 
+Package: git2r
+Source: CRAN
+Version: 0.21.0
+Hash: 64747922e287be74e8e8b46c107fd3ef
+
 Package: glmnet
 Source: CRAN
 Version: 2.0-13
@@ -269,6 +287,11 @@ Package: glue
 Source: CRAN
 Version: 1.2.0
 Hash: 381e42baedecc633c0e547a0c7ca9de7
+
+Package: gmp
+Source: CRAN
+Version: 0.5-13.1
+Hash: c5cb96111c418366299638462f49e37a
 
 Package: gplots
 Source: CRAN
@@ -342,7 +365,7 @@ Requires: irlba, magrittr, pkgconfig
 Package: irlba
 Source: CRAN
 Version: 2.3.2
-Hash: 115067fa1fd3d2a5524d80c481576763
+Hash: d74276ec87d16798fa5f0d7a323fb58b
 
 Package: iterators
 Source: CRAN
@@ -406,6 +429,12 @@ Package: matrixStats
 Source: CRAN
 Version: 0.53.0
 Hash: 1d76147d4514ab69382287ed27463e0e
+
+Package: memoise
+Source: CRAN
+Version: 1.1.0
+Hash: 410fcd334bc626db100237cc1370f2e9
+Requires: digest
 
 Package: metagenomeSeq
 Source: Bioconductor

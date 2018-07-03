@@ -77,25 +77,25 @@ sample_column_id = 'ID'
 exploratory_analyses = list(
   # Analysis 1
   # Description: Type comparison for all locations
-  # list(
-  #   name = 'TypeOverall',
-  #   subsets = list('Type != Wetlands', 'NatType != Natural'),
-  #   exploratory_var = 'Type'
-  # ),
+  list(
+    name = 'TypeOverall',
+    subsets = list('Type != Wetlands', 'NatType != Natural'),
+    exploratory_var = 'Type'
+  ),
   # 
   # # Analysis 2
   # # Description: Location comparison for all types
-  # list(
-  #   name = 'LocationOverall',
-  #   subsets = list('Type != Wetlands', 'NatType != Natural'),
-  #   exploratory_var = 'Location'
-  # ),
+  list(
+    name = 'LocationOverall',
+    subsets = list('Type != Wetlands', 'NatType != Natural'),
+    exploratory_var = 'Location'
+  ),
 
   # Analysis 3
   # Description: Location comparison within Fecal Composite type
   list(
     name = 'LocationFC',
-    subsets = list('Type == Fecal_Composite', 'NatType != Natural'),
+    subsets = list('Type == Fecal.Composite', 'NatType != Natural'),
     exploratory_var = 'Location'
   ),
   
@@ -111,33 +111,33 @@ exploratory_analyses = list(
   # Description: Location comparison within Waste Water sewage treatment type
   list(
     name = 'LocationST',
-    subsets = list('Type == Sewage_Treatment'),
+    subsets = list('Type == Sewage.Treatment'),
     exploratory_var = 'Location'
-  )
+  ),
   
   # # Analysis 6
   # # Description: Natural vs conventional Fecal Composite
-  # list(
-  #   name = 'NaturalConventionalFC',
-  #   subsets = list('Type == Fecal_Composite', 'Location == Vegreville', 'NatType != None'),
-  #   exploratory_var = 'NatType'
-  # ),
+  list(
+    name = 'NaturalConventionalFC',
+    subsets = list('Type == Fecal.Composite', 'Location == Vegreville', 'NatType != None'),
+    exploratory_var = 'NatType'
+  ),
   # # 
-  # # # Analysis 7
-  # # # Description: Natural vs conventional Catch Basin
-  # list(
-  #   name = 'NaturalConventionalCB',
-  #   subsets = list('Type == Catch_Basin', 'Location == Vegreville'),
-  #   exploratory_var = 'NatType'
-  # ),
+  # # Analysis 7
+  # # Description: Natural vs conventional Catch Basin
+  list(
+    name = 'NaturalConventionalCB',
+    subsets = list('Type == Catch.Basin', 'Location == Vegreville'),
+    exploratory_var = 'NatType'
+  ),
   # # 
-  # # # Analysis 8
-  # # # Description: FieldType comparison within Soil type
-  # list(
-  #   name = 'SoilFieldType',
-  #   subsets = list('Type == Soil'),
-  #   exploratory_var = 'FieldType'
-  # )
+  # # Analysis 8
+  # # Description: FieldType comparison within Soil type
+  list(
+    name = 'SoilFieldType',
+    subsets = list('Type == Soil'),
+    exploratory_var = 'FieldType'
+  )
 )
 
 # Each analyses you wish to perform should have its own list in the following
@@ -154,9 +154,12 @@ statistical_analyses = list(
     name = 'TypeFixedLocationRandom',
     subsets = list('Type != Wetlands', 'NatType != Natural'),
     model_matrix = '~ 0 + Type',
-    contrasts = list('TypeFecal_Composite - TypeCatch_Basin',
-                     'TypeFecal_Composite - TypeSewage_Treatment',
-                     'TypeCatch_Basin - TypeSewage_Treatment'),
+    # contrasts = list('TypeFecal.Composite - TypeCatch.Basin',
+    #                  'TypeFecal.Composite - TypeSewage.Treatment',
+    #                  'TypeCatch.Basin - TypeSewage.Treatment'),
+    contrasts = list('TypeCatch.Basin - TypeFecal.Composite',
+                    'TypeSewage.Treatment - TypeFecal.Composite',
+                    'TypeSewage.Treatment - TypeCatch.Basin'),
     random_effect = 'Location'
   ),
   
@@ -189,8 +192,8 @@ statistical_analyses = list(
   list(
     name = 'NaturalConventionalFCVegreville',
     subsets = list('Type != Wetlands',
-                   'Type != Sewage_Treatment',
-                   'Type != Catch_Basin',
+                   'Type != Sewage.Treatment',
+                   'Type != Catch.Basin',
                    'NatType != None',
                    'Location == Vegreville'),
     model_matrix = '~ 0 + NatType',
@@ -723,6 +726,7 @@ kraken_clade_raw_melted <- imap_dfr(
 # Ensure that the metadata entries match the factor order of the MRexperiments
 metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, "ID"]), ])
 setkeyv(metadata, sample_column_id)
+metadata$Type <- str_replace(metadata$Type, "_", "\\.")
 
 reorder_environments <- function(env_column, data_type) {
   if (data_type == "wide"){
@@ -1591,6 +1595,27 @@ for (a in 1:length(statistical_analyses)){
                pval=0.1,
                top_hits=1000)
 }
+
+statistical_analyses %>%
+  walk(
+    safely(
+    ~ meg_fitZig(data_list=kraken_taxon_norm_analytic,
+               data_names=kraken_taxon_names,
+               metadata=metadata,
+               zero_mod=model.matrix(~1 + log(libSize(kraken_css$taxonReads))),
+               data_mod=.x$model_matrix,
+               filter_min_threshold=0.15,
+               contrast_list=.x$contrasts,
+               random_effect_var=.x$random_effect,
+               outdir=paste(stats_output_dir, 'Microbiome_taxonReads', .x$name,
+                            sep='/', collapse=''),
+               analysis_name=.x$name,
+               analysis_subset=.x$subsets,
+               data_type='Microbiome_taxonReads',
+               pval=0.1,
+               top_hits=1000)
+    )
+    )
 
 for (a in 1:length(statistical_analyses)){
     meg_fitZig(data_list=kraken_clade_norm_analytic,

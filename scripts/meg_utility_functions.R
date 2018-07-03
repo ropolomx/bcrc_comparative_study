@@ -600,7 +600,7 @@ meg_fitZig <- function(data_list,
                        data_type,
                        pval=0.1,
                        top_hits=200) {
-    settings <- zigControl(maxit=50, verbose=F)
+    settings <- zigControl(maxit=100, verbose=T)
     
     local_obj <- data_list
     res <- list()
