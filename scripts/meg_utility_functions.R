@@ -599,8 +599,8 @@ meg_fitZig <- function(data_list,
                        analysis_subset,
                        data_type,
                        pval=0.1,
-                       top_hits=200) {
-    settings <- zigControl(maxit=100, verbose=T)
+                       top_hits=1000) {
+    settings <- zigControl(maxit=50, verbose=F)
     
     local_obj <- data_list
     res <- list()
@@ -623,7 +623,7 @@ meg_fitZig <- function(data_list,
         
         cumNorm(local_obj[[l]])  # This is a placeholder for metagenomeSeq; we don't actually use these values
         
-        tryCatch(
+        # tryCatch(
             {
                 if( is.na(random_effect_var) ) {
                     res[[l]] <- fitZig(obj=local_obj[[l]],
@@ -641,17 +641,18 @@ meg_fitZig <- function(data_list,
                                        useMixedModel=T,
                                        block=pData(local_obj[[l]])[, random_effect_var])
                 }
-            },
-            error=function(e) {
-                print(paste('Model failed to converge for ', data_type, ' ', data_names[l], ' ', analysis_name,
-                      sep='', collapse=''))
-            },
-            finally={
-                if( length(res) != l ) {
-                    next
-                }
             }
-        )
+        # ,
+        #     error=function(e) {
+        #         print(paste('Model failed to converge for ', data_type, ' ', data_names[l], ' ', analysis_name,
+        #               sep='', collapse=''))
+        #     },
+        #     finally={
+        #         if( length(res) != l ) {
+        #             next
+        #         }
+            }
+        # )
 
         local_contrasts <- contrast_list
         local_contrasts[[length(local_contrasts)+1]] <- res[[l]]$fit$design
@@ -705,7 +706,7 @@ meg_fitZig <- function(data_list,
                       quote=F, row.names=F)
         }
     }
-}
+# }
 
 meg_alpha_normalized <- function(diversity_df,
                                   data_names,
