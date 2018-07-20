@@ -152,16 +152,16 @@ statistical_analyses = list(
   # Description: Fixed effect for type, control for location using random effect
   list(
     name = 'TypeFixedLocationRandom',
-    subsets = list('Type != Wetlands', 'NatType != Natural'),
+    # subsets = list('Type != Wetlands', 'NatType != Natural'),
+    subsets = list('NatType != Natural'),
     model_matrix = '~ 0 + Type',
-    # contrasts = list('TypeFecal.Composite - TypeCatch.Basin',
-    #                  'TypeFecal.Composite - TypeSewage.Treatment',
-    #                  'TypeCatch.Basin - TypeSewage.Treatment'),
-    contrasts = list('TypeCatch.Basin - TypeFecal.Composite',
-                    'TypeSewage.Treatment - TypeFecal.Composite',
-                    'TypeSewage.Treatment - TypeCatch.Basin'),
+    contrasts = list('TypeFecal_Composite - TypeCatch_Basin',
+                     'TypeFecal_Composite - TypeSewage_Treatment',
+                     'TypeCatch_Basin - TypeSewage_Treatment'),
+    # contrasts = list(
+      # 'TypeCatch_Basin - TypeFecal_Composite'),
     random_effect = 'Location'
-  ),
+  ), 
   
   # Analysis 2
   # Description: Fixed effect for location, control for type using fixed effect
@@ -192,8 +192,8 @@ statistical_analyses = list(
   list(
     name = 'NaturalConventionalFCVegreville',
     subsets = list('Type != Wetlands',
-                   'Type != Sewage.Treatment',
-                   'Type != Catch.Basin',
+                   'Type != Sewage_Treatment',
+                   'Type != Catch_Basin',
                    'NatType != None',
                    'Location == Vegreville'),
     model_matrix = '~ 0 + NatType',
@@ -726,7 +726,7 @@ kraken_clade_raw_melted <- imap_dfr(
 # Ensure that the metadata entries match the factor order of the MRexperiments
 metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, "ID"]), ])
 setkeyv(metadata, sample_column_id)
-metadata$Type <- str_replace(metadata$Type, "_", "\\.")
+# metadata$Type <- str_replace(metadata$Type, "_", "\\.")
 
 reorder_environments <- function(env_column, data_type) {
   if (data_type == "wide"){
@@ -798,6 +798,8 @@ for( l in 1:length(AMR_analytic_data) ) {
     sample_idx <- match(colnames(MRcounts(AMR_analytic_data[[l]])), metadata[[sample_column_id]])
     pData(AMR_analytic_data[[l]]) <- data.frame(
         metadata[sample_idx, .SD, .SDcols=!sample_column_id])
+    # pData(AMR_analytic_data[[l]]) <- data.frame(
+    #     metadata[sample_idx, .SD])
     rownames(pData(AMR_analytic_data[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
     fData(AMR_analytic_data[[l]]) <- data.frame(Feature=rownames(MRcounts(AMR_analytic_data[[l]])))
     rownames(fData(AMR_analytic_data[[l]])) <- rownames(MRcounts(AMR_analytic_data[[l]]))
