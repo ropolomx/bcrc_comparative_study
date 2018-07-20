@@ -1,22 +1,16 @@
 ---
-title: "BCRC Comparative Metagenomics Updated Report"
+title: "BCRC Comparative Metagenomics Report"
 author: "Rodrigo Ortega Polo"
-date: "July 3, 2018"
+date: "July 20, 2018"
 output: word_document
 bibliography: bcrc_library.bib
 ---
 
-# Introduction to this report
+# Introduction
 
-The following report presents the different approaches to the analysis of the 
-data of the BCRC comparative study. A systematic approach was used to evaluate 
-the effect of Kraken assignment level (taxon reads vs. clade reads) and 
-normalization approaches in the interpretation of the data. Finally, the code 
-written by our collaborators at CSU was used as a basis to build our own 
-reproducible workflow with the __drake__ workflow management system inside R. 
-Briefly, this management system allows the modular inclusion of new functions as 
-well as easily tracking what got built and what remains to be built. In addition, two
-scripts for the construction of analytic matrices from Kraken and AMRPlusPlus outpus were developed in order to facilitate the analysis process.
+The following report includes the methods of the analysis of the 
+data of the BCRC comparative metagenomics. The Galaxy workflow was adapted from our own previous work, and the R code that was originally 
+developed by our collaborators at CSU was modified in-house to build our own microbiome and resistome analytic workflows.
 
 # Methods
 
@@ -25,82 +19,67 @@ scripts for the construction of analytic matrices from Kraken and AMRPlusPlus ou
 The metagenomic sequencing reads generated in this study were analyzed with a 
 Galaxy workflow based on the work implemented in a previous study 
 [@zaheer_impact_2018]. The Galaxy 
-workflow in this study analyzes the microbiome, resistome and 
-anti-biocide/anti-biometal resistance of metagenomic samples in 
-parallel. Those analyses were performed in the Galaxy instance of the National 
+workflow implemented in this study was used to analyze the microbiome, antimicrobial resistance (AMR) and anti-biocide/anti-biometal resistance (ABR) in metagenomic samples from various sample matrix types. Those analyses were performed in the Galaxy instance of the National 
 Microbiology Laboratory (Public Health Agency of Canada).
 
+The following steps were performed in the bioinformatic analysis of this project:
 
 1. __Trimming and quality assessment__
-2. __Alignment of trimmed reads vs. bovine host genome__
+2. __Alignment of trimmed reads vs. phiX genome__
 3. __AMR classification__
 4. __Biometal and biocide classification__
 5. __Taxonomic classification__
 
 ### Trimming and quality assessment
 
-Metagenomic sequencing reads had a length of 100 bp were trimmed with Trimmomatic 0.32 
-[@bolger_trimmomatic_2014]. The ILLUMINACLIP step for clipping TruSeq3 
-paired-end adapters from raw sequence reads was applied. In that step, a 
-maximum mismatch count of 2 was set. The accuracy score of the match between 
-the two adapter ligated reads for paired-end palindrome read alignments was set
-at a value of 30, and the score for how accurate the match between any adapter 
-sequence must be against a read was set at a value of 10.
+Metagenomic sequencing reads were trimmed with Trimmomatic 0.32 
+[@bolger_trimmomatic_2014] with the same parameters used in a previous study [@zaheer_impact_2018].
 
-In addition, the leading 3 bases and the trailing 3 bases of every read were 
-trimmed. Quality score filtering was performed with a sliding window at every 
-four bases with a minimum Phred score of 15. Finally, only paired reads with a 
-minimum length of 36 base pairs after trimming were kept for analysis 
-downstream steps.
+### Alignment of trimmed reads vs. phiX genome
 
-### Alignment of trimmed reads vs. bovine host genome
-
-Paired, trimmed reads that passed the quality assessment criteria from the 
-Trimmomatic pre-processing stage were aligned to the phiX genome using 
-the MEM algorithm of the BWA aligner [@li_fast_2009]. The sorted alignments 
-were then processed with `samtools` [@li_sequence_2009] to filter out the 
-reads that did not map to the bovine genome. This was done using a flag value 
-of 4 to extract the unmapped reads in BAM format. The unmapped, paired reads 
-were then extracted from the alignment using the `bamToFastq` tool of 
-`bedtools` [@quinlan_bedtools_2002].
+The trimmed paired reads that passed the quality assessment criteria from the 
+Trimmomatic pre-processing step were aligned to the genome of the enterobacteria phage phiX174 (GenBank accession NC_001422.1) using the MEM algorithm of the BWA aligner [@li_fast_2009]. The sorted alignments 
+were then processed with _samtools_ [@li_sequence_2009] to filter out the 
+reads that did not map to the phiX genome. This was done using a flag value 
+of 4 to extract the unmapped reads in BAM format. The paired reads that did not map to phiX
+were then extracted from the alignment using the _bamToFastq_ tool of 
+_bedtools_ [@quinlan_bedtools_2002].
   
 ### AMR, biometal and biocide classification
 
-The extracted paired reads that did not map to the phiX genome were mapped 
-vs. the MEGAREs database v1.01 [@lakin_megares_2017] using BWA MEM. Alignments 
+The extracted paired reads that were not aligned with the phiX genome were mapped 
+vs. the MEGAREs database v1.01 [@lakin_megares_2017] and the MegaBio database using _bwa mem_. Alignments 
 were converted to SAM format and were post-processed with the Coverage Sampler 
-tool (https://github.com/cdeanj/coveragesampler). A minimum and maximum 
-sampling levels of 100% were set, and 5 levels were skipped between samples 
-(i.e. sampling was performed at each 5% sampled of the alignment). Alignments 
-were sampled at a gene fraction of 75%, and only one sampling iteration 
-was performed.
+tool (https://github.com/cdeanj/coveragesampler) using the same parameters as a previous study 
+[@zaheer_impact_2018].
 
 ### Taxonomic classification
 
-The paired reads that did not map to the bovine genome were classified 
-with `kraken` [@wood_kraken_2014] using the same Kraken database that was used on a previous study containing genomes from bacteria, archaea, viruses 
-[@zaheer_impact_2018]. Reports of the taxonomic classification of reads were 
-generated with `kraken-report`.
+The paired reads that did not map to the phiX genome were taxonomically classified 
+with _kraken_ [@wood_kraken_2014] using the same database that was used on a previous study containing complete genomes in RefSeq for bacteria, viruses, fungi, protozoa and archaea (bvfpa)[@zaheer_impact_2018]. Kraken results were filtered using a confidence threshold of 0.05 as in a previous study [@zaheer_impact_2018]. 
 
 ## Data analysis
 
-The AMR and ABR reports were combined, and the AMR/ABR and Kraken taxonomical 
-classification reports were each converted into matrices. In the case of the Kraken 
-outputs, two matrices were generated: one for the number of reads covered by the 
-clade rooted at a particular taxon (cladeReads), and another for the number of reads
-assinged directly to a particular taxon (taxonReads). The analytic matrices were 
-then further analyzed using the R statistical computing language 
-[@r_core_team_2017].
+The following steps were used for the analysis of the data resulting from the 
+bioinformatic analysis:
+
+1. __Data pre-processing and normalization__
+2. __Alpha diversity__
+3. __Ordination__
+4. __Heatmaps and barplots__
+5. __Statistical analyses__
 
 ### Data pre-processing and normalization
 
-Counts for the phiX enterobacterial phage (positive control in Illumina 
-next-generation sequencing runs) were removed from the Kraken analytic matrix 
-prior to normalization, thus avoiding the incorporation of the read counts of 
-this species in the analyses.
+The AMR and ABR reports were combined and the AMR/ABR Coverage Sampler and Kraken taxonomical 
+classification reports were converted into matrices for downstream analysis. In the case of the Kraken 
+outputs, two matrices were generated: one for the number of reads covered by the 
+clade rooted at a particular taxon (clade reads), and another for the number of reads
+assinged directly to a particular taxon (taxon reads). Comparisons between the data from taxon reads
+and clade reads showed that using clade reads results in higher sensitivity of assignments.
 
-AMR/ABR and post-PhiX filtered results were normalized using a data-driven method called 
-Cumulative Sum Scaling normalizaton (CSS) of the `metagenomeSeq` R package). In this method,the 
+AMR/ABR and post-PhiX filtered Kraken results were normalized using a data-driven method called 
+Cumulative Sum Scaling normalizaton (CSS) of the _metagenomeSeq_ R package). In this method,the 
 quantile of each column (sample) is calculated and then the sum up to and 
 including said quantile is also calculated.
 
@@ -108,44 +87,42 @@ Normalized count data were aggregated by AMR/ABR level or by taxonomic rank.
 Data for AMR groups that are potentially wild type were removed from the 
 normalized datasets in order to prevent false positives.
 
-Exploratory analyses included: assessment of alpha diversity for both rarefied 
-and normalized data, ordination (NMDS and PCA), and visualization of normalized data with heatmaps and barplots.
-
-Comparative analyses were performed for different metadata categories:
+The exploratory analyses performed in this study included: assessment of alpha diversity for both rarefied 
+and normalized data, ordination (NMDS and PCA), and visualization of normalized data with heatmaps and 
+barplots. Analyses were performed to compare samples from different sample matrix types: fecal composite, 
+catch basin, soil, and sewage treatment. Other comparisons of metadata categories were performed:
 
 1. Sample matrix type (fecal composite, catch basin, soil, and sewage treatment)
 2. Fecal composite samples from natural vs. conventional feedlots
 3. Catch basin samples from natural vs. conventional feedlots
-4. Geographical location (city/town names)
+4. Geographical location
 5. Sewage treatment locations
 6. Fecal composite locations
 7. Soil Field type (West vs. East; without vs. with manure)
 
-### Normalization of samples by environment
+### Normalization of samples by sample matrix type
 
-A reproducible workflow was designed with the `drake` package of R. Briefly, 
-the Kraken and AMR data were split by each matrix type. Then, data for each 
-matrix type was normalized independently using Cumulative Sum Scaling 
-normalization. Ordination analysis was performed with the normalized data.
+A reproducible workflow was designed with the `drake` package of R for studying the effect of 
+normalizing samples by sample matrix type. Thee Kraken and AMR data were split by each matrix type. 
+Then, data for each sample matrix type was normalized independently using the Cumulative Sum Scaling 
+normalization. Normalized data was plotted.
 
-### Alpha-diversity
+### Alpha diversity
 
-Alpha diversity were calculated as the Inverse Simpson's Index, Shannon's Index, 
-and the distributions of these indices were 
-plotted for every resistome level and taxonomic rank. Statistical tests were 
-performed to test for differences in the levels.
+Alpha diversity was calculated wutg the Inverse Simpson's Index for rarefied and normalized data, 
+and the distributions of these indices were plotted as boxplots for every resistome level and taxonomic rank. 
+Alpha diversity was also calculated with the Shannon's Index.
 
 ### Ordination
 
 Non-metric multidimensional scaling (NMDS) was used to ordinate samples based 
-on microbiome and resistome composition for each AMR and taxonomic level. 
-Principal component analysis (PCA) was also performed for each AMR and taxonomic level.
+on microbiome and resistome composition for each AMR/ABR level and taxonomic rank. 
+Principal component analysis (PCA) was also performed for each AMR/ABR level and taxonomic rank.
 
 ### Heatmaps and barplots
 
-Heatmaps were constructed using the log2 transformed CSS-normalized counts which were plotted on a black to cyan gradient scale. Stacked barplots were 
-constructed by plotting the mean normalized counts by resistome level and 
-taxonomic level.
+Heatmaps were constructed using the log2 transformed CSS-normalized counts which were plotted using a black 
+to cyan gradient scale. Stacked barplots were constructed by plotting the mean normalized counts by resistome level and taxonomic resistome.
 
 ### Statistical analyses
 
@@ -155,92 +132,98 @@ abundant features in the resistomes and microbiomes analyzed here.
 
 # Results
 
-## Normalization of all the samples
 
-### Comparison of resistome between sample types
+### Comparison of resistomes between sample matrix types
 
-The following AMR/ABR classes were absent/underrepresented from soil samples: 
-aminoglycosides, betalactams, macrolides, and silver resistance, but the following 
+An exploratory analysis of the log2 transformed CSS-normalized resistome counts (Figure 1) revealed that the 
+following AMR/ABR classes were absent/underrepresented from soil samples:
+aminoglycosides, betalactams, macrolides, and silver resistance. However, the following 
 classes were present in soil: glycopeptides, multi-drug resistance, peroxide 
-resistance, phenicol resistance, rifampin resistance, and tetracyclines. 
-
-Tetracyclines were only present in two soil samples. Those tetracyclines belonged to the TETL group.
+resistance, phenicol resistance, rifampin resistance, and tetracyclines. Tetracyclines were only present in 
+two soil samples. Those tetracyclines belonged to the TETL group.
 
 Glycopeptides were present across all the soil samples, but were absent from 
 any other source type. In particular, VanO-type regulators were the only 
 glycopeptides present in soil samples.
 
-
 ![](../graphs/AMR/amr_top_group_by_class_heatmap.png)
 
-Figure 1. Comparison of log2 normalized counts of resitome assignments among metagenomic 
-datasets from different sample types. Heatmap is segmented by 
+Figure 1. Comparison of log2 normalized counts of resistome assignments among metagenomic 
+datasets from different sample types. The heatmap is segmented by 
 antimicrobial, anti-biocide or anti-biometal resistance class, and labels 
 representing AMR/ABR groups are on the y-axis.
 
-### Comparison of microbiomes between sample types
+### Comparison of microbiomes between sample matrix types
 
 The median alpha diversity of phyla was higher for fecal composite samples than
-for any other type of sample. However, the range of phyla alpha-diversity observed across catch basin samples is wider than for any other sample type. The same pattern is observed for at the classes, order, family, and genus level (Figure 1).
+for any other type of sample matrix. However, the range of phyla alpha-diversity observed across catch basin samples 
+is wider than for any other sample type, and this pattern is also observed at the Class, Order, and Family ranks. Soil samples had the 
+largest median alpha diversity at the Family, Genus, and Species ranks (Figure 2).
 
-The median richness, or the total number of taxa observed in samples, was 
-higher for fecal composite samples at the phylum, class, family, and genus 
-levels. At the class, order, and family level, fecal composite samples had lower median alpha-diversity than soil samples, but higher or similar richness.
-
+The median observed richness (i.e. the total number of taxa observed in samples), was 
+higher for sewage treatment samples at the family, genus, and species ranks (Figure 3).
 
 ![](../graphs/Microbiome_cladeReads/TypeOverall/Microbiome_cladeReads_normalized_alpha_diversity_by_Type.png)
 
-Figure 2. Distribution of Inverse Simpson's index for measuring alpha diversity across different taxonomic levels among different sample types. 
+Figure 2. Distribution of Inverse Simpson's index for measuring alpha diversity across different taxonomic levels among different sample matrix types. 
 
+![](../graphs/Microbiome_cladeReads/TypeOverall/Microbiome_cladeReads_raw_richness_by_Type.png)
 
-![](../graphs/Microbiome_cladeReads/TypeOverall/Microbiome_cladeReads_alphadiversity_by_Type.png)
+Figure 3. Distribution of taxonomic assignment richness of different taxonomic ranks among different sample matrix types.
 
-
-Figure 3. Distribution of taxon richness of different taxonomic levels among different sample types.
-
-NMDS ordination resulted in the clear distinction of the four sample matrices by microbiome at each of levels phylum, class, order, family, genus, and species levels (Figure 4).
+NMDS ordination resulted in the clear distinction of the four sample matrices by microbiome at each of levels 
+phylum, class, order, family, genus, and species levels (Figure 4).
 
 ![](../graphs/Microbiome_cladeReads/TypeOverall/NMDS_Type_AllLevels.png)
 
 Figure 4. NMDS ordination of microbiome by sample type for each taxonomic level.
 
-The most abundant phylum in catch basin, soil, and sewage treatment samples was
-the Proteobacteria, while the most abundant phylum in fecal composite samples 
-was the Firmicutes. The Bacteroidetes and the Proteobaceria were also abundant 
-in the fecal composite samples, while the Actinobacteria were also abundant in 
+The most abundant phylum in catch basin, soil, and sewage treatment samples was 
+Proteobacteria, while the most abundant phylum in fecal composite samples 
+was Firmicutes. Bacteroidetes and Proteobaceria were also abundant 
+in the fecal composite samples, while Actinobacteria were also abundant in 
 the soil samples (Figure 5).
 
 ![](../graphs/Microbiome_cladeReads/TypeOverall/Microbiome_cladeReads_Phylum_BarPlot_by_Type.png)
 
 Figure 5. Mean normalized counts of Kraken reads of clades rooted at the Phylum level for each sample type.
 
-### Comparison of resistomes between feedlot types
+### Comparison of resistomes between fecal composite samples from different feedlot types
 
 Comparison of samples between fecal composite and catch basin samples from  
 natural and conventional showed differences in the abundance of certain AMR 
 /ABR classes.
 
-The analysis of matches with the AMR/ABR database at a gene fraction of 50% or 
-higher revealed tetracylines were significantly less abundant in natural 
-feedlots than in conventional feedlots (log-fold change = -0.58393, adjusted P 
-< 0.05). This comparison did not converge when results were analyzed at a gene 
-fraction of 80% or higher.
+The analysis of matches with the AMR/ABR database at a gene fraction equal or greater than 75%
+revealed that tetracylines were significantly less abundant in natural 
+feedlots than in conventional feedlots (log fold-change = -1.70, adjusted P 
+< 0.05), as well as phenicol (log fold-change = -6.59, adjusted P < 0.05), and sulfonamides 
+(log fold-change = -6.48, adjusted P < 0.05). Other classes such as MLS (log fold-change = -1.345, adjusted P = 0
+056), aminoglyclosides (log fold-change = -1.74, adjusted P = 0.0512), and betalactams (log fold-change = -1.44, adjusted P = 0.068).
 
-Metal resistance (log-fold change = 1.38601, adjusted P < 0.05), drug and 
-biocide resistance (log-fold change = 1.23966, adjusted P < 0.05), zinc 
-resistance (log-fold change = 0.89312, adjusted P < 0.05), nickel resistance 
+Drug and biocide resistance (log-fold change = 6.41, adjusted P < 0.05), zinc 
+resistance (log-fold change = 4.753, adjusted P < 0.05), nickel resistance 
 (log-fold change = 0.67313, adjusted P < 0.05), and bacitracin (log-fold change
 = 0.44475, adjusted P < 0.05) were all significantly more abundant in natural 
-feedlots than in conventional feedlots.
+feedlots than in conventional feedlots. Metal and biocide resistance was also higher in natural feedlots
+(log fold-change = 0.77, adjusted P = 0.056).
 
-### Comparison of microbiome between feedlot types
+### Comparison of resistomes between fecal composite samples from different feedlot types
+
+Phyla such as Bacteroidetes (log fold-change = -0.656, adjusted P < 0.05), Euryarchaeota (log fold-change = -3.798, adjusted
+P < 0.05), Spirochaetes (log fold-change = -2.304, adjusted P < 0.05), Thermodesulfobacteria (log fold-change = -0.269, adjusted
+P < 0.05) were significantly more abundant in conventional feedlots than in natural feedlots. 
+
+Phyla such as Candidatus Cloacimonetes (log fold-change = 0.28, adjusted P < 0.05), Thaumarcheaota (log fold-change = 0.318, adjusted P < 0
+.05), and Deinococcus-Thermus (log fold-change = 0.49, adjusted P < 0.05) were significantly more abundant in natural feedlots than in 
+conventional feedlots.
 
 ## Normalization by environment
 
 # Discussion
 
-The results here presented contrast with the results presented by Noyes et al. (2016). In that study, it was proposed thast specific classes drive the separation of soil from fecal and wastewater resistomes. In particular, evidence presented in that study supported the idea that aminoglycoside
-
+The results here presented contrast with the previously reported results [@noyes_characterization_2016]. 
+In that study, it was proposed that specific AMR classes drive the separation of soil from fecal and wastewater resistomes. 
 
 # References
  
