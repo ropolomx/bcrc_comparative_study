@@ -95,7 +95,7 @@ exploratory_analyses = list(
   # Description: Location comparison within Fecal Composite type
   list(
     name = 'LocationFC',
-    subsets = list('Type == Fecal.Composite', 'NatType != Natural'),
+    subsets = list('Type == Fecal_Composite', 'NatType != Natural'),
     exploratory_var = 'Location'
   ),
   
@@ -111,7 +111,7 @@ exploratory_analyses = list(
   # Description: Location comparison within Waste Water sewage treatment type
   list(
     name = 'LocationST',
-    subsets = list('Type == Sewage.Treatment'),
+    subsets = list('Type == Sewage_Treatment'),
     exploratory_var = 'Location'
   ),
   
@@ -155,13 +155,30 @@ statistical_analyses = list(
     # subsets = list('Type != Wetlands', 'NatType != Natural'),
     subsets = list('NatType != Natural'),
     model_matrix = '~ 0 + Type',
-    contrasts = list('TypeFecal_Composite - TypeCatch_Basin',
-                     'TypeFecal_Composite - TypeSewage_Treatment',
-                     'TypeCatch_Basin - TypeSewage_Treatment'),
+    contrasts = list(
+      'TypeFecal_Composite - TypeCatch_Basin',
+      'TypeFecal_Composite - TypeSewage_Treatment',
+      'TypeFecal_Composite - TypeSoil',
+      'TypeCatch_Basin - TypeSewage_Treatment',
+      'TypeCatch_Basin - TypeSoil',
+      'TypeSoil - TypeSewage_Treatment'
+    ), 
     # contrasts = list(
       # 'TypeCatch_Basin - TypeFecal_Composite'),
     random_effect = 'Location'
   ), 
+  
+  list(
+    name = 'FCvsCBFixedLocationRandom',
+    # subsets = list('Type != Wetlands', 'NatType != Natural'),
+    subsets = list('Type == Fecal_Composite', 'Type == Catch_Basin'),
+    model_matrix = '~ 0 + Type',
+    contrasts = list('TypeFecal_Composite - TypeCatch_Basin'),
+    # contrasts = list(
+      # 'TypeCatch_Basin - TypeFecal_Composite'),
+    random_effect = 'Location'
+  ),
+  
   
   # Analysis 2
   # Description: Fixed effect for location, control for type using fixed effect
