@@ -1655,6 +1655,26 @@ for (a in 1:length(statistical_analyses)){
 }
 
 
+# Volcano plots -----------------------------------------------------------
+
+amr_stats <- Sys.glob(here('stats','AMR','TypeFixedLocationRandom','TypeFixedLocationRandom_AMR*.csv'))
+
+amr_stats_names <-
+  amr_stats %>%
+  map_chr(., ~ str_replace(.x, "^.*TypeFixed.*(AMR_\\w+)_TypeFecal.*$", "\\1"))
+
+amr_stats_df <-
+  amr_stats %>%
+  map(~ read_csv(.x)) %>%
+  set_names(nm = amr_stats_names)
+
+volcano_plot <- function(meta_stats){
+  ggplot(data = meta_stats, aes(logFC, -log10(adj.P.Val))) +
+    geom_point() +
+    facet_wrap(~ Contrast, ncol = 3)
+}
+
+
 # Output of matrices ------------------------------------------------------
 
 # Attempt to include purrr functional programming approach
