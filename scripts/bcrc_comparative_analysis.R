@@ -54,11 +54,11 @@ lapply(all_packages, require, character.only = TRUE)
 
 
 # Set the output directory for graphs:
-graph_output_dir = 'graphs'
+graph_output_dir = 'graphs_updated'
 
 
 # Set the output directory for statistics:
-stats_output_dir = 'stats'
+stats_output_dir = 'stats_updated'
 
 # Where is the metadata file stored on your machine?
 metadata_filepath = here('BCRC_metadata.csv')
@@ -79,7 +79,10 @@ exploratory_analyses = list(
   # Description: Type comparison for all locations
   list(
     name = 'TypeOverall',
-    subsets = list('Type != Wetlands', 'NatType != Natural'),
+    subsets = list(
+      'Type != Wetlands'
+      # 'NatType != Natural'
+      ),
     exploratory_var = 'Type'
   ),
   # 
@@ -87,7 +90,10 @@ exploratory_analyses = list(
   # # Description: Location comparison for all types
   list(
     name = 'LocationOverall',
-    subsets = list('Type != Wetlands', 'NatType != Natural'),
+    subsets = list(
+      'Type != Wetlands'
+      # 'NatType != Natural'
+      ),
     exploratory_var = 'Location'
   ),
 
@@ -95,7 +101,9 @@ exploratory_analyses = list(
   # Description: Location comparison within Fecal Composite type
   list(
     name = 'LocationFC',
-    subsets = list('Type == Fecal.Composite', 'NatType != Natural'),
+    subsets = list('Type == Fecal.Composite', 
+      'NatType != Natural'
+      ),
     exploratory_var = 'Location'
   ),
   
@@ -152,17 +160,29 @@ statistical_analyses = list(
   # Description: Fixed effect for type, control for location using random effect
   list(
     name = 'TypeFixedLocationRandom',
-    subsets = list('Type != Wetlands', 'NatType != Natural'),
+    subsets = list(
+      'Type != Wetlands', 
+      'NatType != Natural'
+      ),
     model_matrix = '~ 0 + Type',
-    contrasts = list('TypeFecal.Composite - TypeCatch.Basin',
-                    'TypeFecal.Composite - TypeSewage.Treatment',
-                    'TypeCatch.Basin - TypeSewage.Treatment'),
-    contrasts = list('TypeCatch.Basin - TypeFecal.Composite',
-                    'TypeSewage.Treatment - TypeFecal.Composite',
-                    'TypeSewage.Treatment - TypeCatch.Basin'),
+    contrasts = list(
+      'TypeFecal_Composite - TypeCatch_Basin',
+      'TypeFecal_Composite - TypeWastewater',
+      'TypeFecal_Composite - TypeSoil',
+      'TypeCatch_Basin - TypeWastewater',
+      'TypeCatch_Basin - TypeSoil',
+      'TypeSoil - TypeWastewater'
+      ),
     random_effect = 'Location'
   ),
   
+  list(
+    name = 'FCvsCBFixedLocationRandom',
+    subsets = list('Type == Fecal_Composite', 'Type == Catch_Basin'),
+    model_matrix = '~ 0 + Type',
+    contrasts = list('TypeFecal_Composite - TypeCatch_Basin'),
+    random_effect = 'Location'
+  ),
   # Analysis 2
   # Description: Fixed effect for location, control for type using fixed effect
   list(
@@ -300,22 +320,22 @@ for( dtype in c('AMR', 'Microbiome_taxonReads', 'Microbiome_cladeReads') ) {
   }
 }
 
-ifelse(!dir.exists(file.path('amr_matrices')), dir.create(file.path('amr_matrices'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_matrices')), dir.create(file.path('kraken_matrices'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonReads_matrices')), dir.create(file.path('kraken_taxonReads_matrices'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices')), dir.create(file.path('kraken_cladeReads_matrices'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_updated')), dir.create(file.path('amr_matrices_updated'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_matrices_updated')), dir.create(file.path('kraken_matrices_updated'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonReads_matrices_updated')), dir.create(file.path('kraken_taxonReads_matrices_updated'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_updated')), dir.create(file.path('kraken_cladeReads_matrices_updated'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('amr_matrices/sparse_normalized')), dir.create(file.path('amr_matrices/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('amr_matrices/normalized')), dir.create(file.path('amr_matrices/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('amr_matrices/raw')), dir.create(file.path('amr_matrices/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_updated/sparse_normalized')), dir.create(file.path('amr_matrices_updated/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_updated/normalized')), dir.create(file.path('amr_matrices_updated/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_updated/raw')), dir.create(file.path('amr_matrices_updated/raw'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('kraken_taxonReads_matrices/sparse_normalized')), dir.create(file.path('kraken_taxonReads_matrices/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonReads_matrices/normalized')), dir.create(file.path('kraken_taxonReads_matrices/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonReads_matrices/raw')), dir.create(file.path('kraken_taxonReads_matrices/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_updated/sparse_normalized')), dir.create(file.path('kraken_taxonReads_matrices_updated/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_updated/normalized')), dir.create(file.path('kraken_taxonReads_matrices_updated/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_updated/raw')), dir.create(file.path('kraken_taxonReads_matrices_updated/raw'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices/sparse_normalized')), dir.create(file.path('kraken_cladeReads_matrices/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices/normalized')), dir.create(file.path('kraken_cladeReads_matrices/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices/raw')), dir.create(file.path('kraken_cladeReads_matrices/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_updated/sparse_normalized')), dir.create(file.path('kraken_cladeReads_matrices_updated/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_updated/normalized')), dir.create(file.path('kraken_cladeReads_matrices_updated/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_updated/raw')), dir.create(file.path('kraken_cladeReads_matrices_updated/raw'), mode='777'), FALSE)
 
 # Load the Kraken data, MEGARes annotations, and metadata
 
@@ -330,16 +350,98 @@ kraken_names <- map_chr(
 
 temp_kraken_list <- map(
   kraken_analytical,
-  ~ read.table(.x, header = T, row.names = 1, sep = ",")
+  ~ read.table(.x, header = T, row.names = 1, sep = ",", quote = "\"")
 ) %>%
   set_names(nm = kraken_names)
+
+temp_kraken_list <-
+  temp_kraken_list %>%
+  map(
+    ~ mutate(.x, lineage = row.names(.x)) %>% 
+        select(.,everything(), lineage) %>%
+        gather(key=ID, value = counts, 1:47)
+  )
+
+# Deal with sample duplicates
+
+temp_kraken_list <-
+  temp_kraken_list %>%
+  map(
+    ~ mutate(.x, ID = str_replace(ID, "FC_(006|007|008)_(.*)$", "FC_\\2"))
+  )
+
+temp_kraken_list <-
+  temp_kraken_list %>%
+  map(
+    ~ mutate(.x, ID = str_replace(ID, "Soil_N_(.*)_(006|007)$", "Soil_N_\\1"))
+  )
+
+temp_kraken_list <- 
+  temp_kraken_list %>%
+  map(
+    ~ group_by(.x, ID, lineage) %>%
+      summarise(average_counts = mean(counts))
+  )
+
+# Re-widen data-frames
+
+temp_kraken_list <- 
+  temp_kraken_list %>%
+  map(
+    ~ tidyr::spread(.x, key = ID, value = average_counts, fill = 0) 
+  )
+
+lineage_row_name <- function(df){
+  df <- as.data.frame(df)
+  row.names(df) <- df$lineage
+  df <- 
+    df %>%
+    select(-lineage)
+  df
+}
+
+temp_kraken_list <-
+  temp_kraken_list %>%
+  map(
+    ~ lineage_row_name(.x)
+  )
 
 kraken_new_mr <-
   temp_kraken_list %>%
   map( ~ newMRexperiment(.x[rowSums(.x) > 0, ]))
 
-amr <- newMRexperiment(read.table(here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'), 
-                                  header=T, row.names=1, sep=','))
+amr <-
+  read.table(
+    here('aggregated_data_for_analysis', 'amrBioAnalytical.csv'),
+    header = T,
+    row.names = 1,
+    sep = ','
+  )
+
+amr <- 
+  amr %>%
+  mutate(., lineage = row.names(.)) %>%
+  select(.,everything(), lineage) %>%
+  gather(key=ID, value = counts, 1:47)
+
+amr <-
+  amr %>%
+  mutate(., ID = str_replace(ID, "FC_(006|007|008)_(.*)$", "FC_\\2")) %>%
+  mutate(., ID = str_replace(ID, "Soil_N_(.*)_(006|007)$", "Soil_N_\\1"))
+
+amr <- 
+  amr %>%
+  group_by(., ID, lineage) %>%
+  summarise(average_counts = mean(counts))
+
+amr <-
+  amr %>%
+  tidyr::spread(., key = ID, value = average_counts, fill = 0)
+
+amr <- lineage_row_name(amr)
+
+amr <- newMRexperiment(amr)
+
 
 annotations <- data.table(read.csv(megares_annotation_filename, header=T))
 annotations$class <- str_replace(annotations$class, "betalactams", "Betalactams")
@@ -349,7 +451,22 @@ setkey(annotations, header)  # Data tables are SQL objects with optional primary
 metadata <- read.csv(metadata_filepath, header=T)
 metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
 
-# Normalizing unsplit Kraken and AMR
+metadata <- 
+  metadata %>%
+  mutate(Type = str_replace(Type, "Sewage_Treatment", "Wastewater"))
+
+metadata <-
+  metadata %>%
+  mutate(., ID = str_replace(ID, "FC_(006|007|008)_(.*)$", "FC_\\2")) %>%
+  mutate(., ID = str_replace(ID, "Soil_N_(.*)_(006|007)$", "Soil_N_\\1"))
+
+metadata <-
+  metadata %>%
+  mutate(., ID = str_replace(ID, "FC_Con_V055", "FC_V055"))
+
+
+
+# Normalizing unsplit Kraken and AMR --------------------------------------
 
 kraken_css <- 
   kraken_new_mr %>%
@@ -725,8 +842,8 @@ kraken_clade_raw_melted <- imap_dfr(
 
 # Ensure that the metadata entries match the factor order of the MRexperiments
 metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[, "ID"]), ])
-setkeyv(metadata, sample_column_id)
-metadata$Type <- str_replace(metadata$Type, "_", "\\.")
+setkeyv(as.data.table(metadata), sample_column_id)
+# metadata$Type <- str_replace(metadata$Type, "_", "\\.")
 
 reorder_environments <- function(env_column, data_type) {
   if (data_type == "wide"){
@@ -736,7 +853,7 @@ reorder_environments <- function(env_column, data_type) {
       "Fecal_Composite",
       "Catch_Basin",
       "Soil",
-      "Sewage_Treatment"
+      "Wastewater"
     )
   )}
   else{
@@ -746,7 +863,7 @@ reorder_environments <- function(env_column, data_type) {
         "Fecal Composite",
         "Catch Basin",
         "Soil",
-        "Sewage Treatment"
+        "Wastewater"
       )
     )
   }
@@ -774,10 +891,10 @@ reorder_fields <- function(env_column, data_type){
   }
   }
 
-metadata$Type <- str_replace(metadata$Type, "_|\\.", " ")
 metadata$Type <- reorder_environments(metadata$Type, data_type = "wide")
-metadata$FieldType <- str_replace(metadata$FieldType, "_|\\.", " ")
+metadata$Type <- str_replace(metadata$Type, "_|\\.", " ")
 metadata$FieldType <- reorder_fields(metadata$FieldType, data_type= "wide")
+metadata$FieldType <- str_replace(metadata$FieldType, "_|\\.", " ")
 
 
 # Vector of objects for iteration and their names
@@ -1111,9 +1228,9 @@ reorder_amr_levels <- function(level_column) {
     )
 }
 
-amr_norm_diversity$Type <- str_replace(amr_norm_diversity$Type, "_|\\.", " ")
+# amr_norm_diversity$Type <- str_replace(amr_norm_diversity$Type, "_|\\.", " ")
 amr_norm_diversity$Type <- reorder_environments(amr_norm_diversity$Type,data_type = "tidy")
-amr_norm_diversity$FieldType <- str_replace(amr_norm_diversity$FieldType, "_|\\.", " ")
+# amr_norm_diversity$FieldType <- str_replace(amr_norm_diversity$FieldType, "_|\\.", " ")
 amr_norm_diversity$FieldType <- reorder_fields(amr_norm_diversity$FieldType, data_type = "tidy")
 amr_norm_diversity$Level <- reorder_amr_levels(amr_norm_diversity$Level)
 
@@ -1641,51 +1758,51 @@ for (a in 1:length(statistical_analyses)){
 # Attempt to include purrr functional programming approach
 
 
-write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices_updated/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_class, 'amr_matrices/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_class_raw, 'amr_matrices/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_class, 'amr_matrices_updated/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_class_raw, 'amr_matrices_updated/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
-write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), 'amr_matrices/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), 'amr_matrices_updated/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_mech, 'amr_matrices/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_mech_raw, 'amr_matrices/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech, 'amr_matrices_updated/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech_raw, 'amr_matrices_updated/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
 
-write.csv(make_sparse(amr_group, 'group', c('group')), 'amr_matrices/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_group, 'group', c('group')), 'amr_matrices_updated/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_group, 'amr_matrices/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_mech_raw, 'amr_matrices/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_group, 'amr_matrices_updated/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech_raw, 'amr_matrices_updated/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
 
 write.csv(make_sparse(amr_norm, 'header', c('header', 'class', 'mechanism', 'group')),
-          'amr_matrices/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
+          'amr_matrices_updated/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_norm, 'amr_matrices/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_raw, 'amr_matrices/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_norm, 'amr_matrices_updated/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_raw, 'amr_matrices_updated/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
 kraken_taxon_norm_summarised %>%
   iwalk(
     ~ write.csv(
       make_sparse(.x, .y, c(.y)), 
-      here('kraken_taxonReads_matrices', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
-      row.names = T)
+      here('kraken_taxonReads_matrices_updated', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
+      row.names = F)
     )
 
 kraken_taxon_norm_summarised %>%
   iwalk(
     ~ write.csv(
       .x, 
-      here('kraken_taxonReads_matrices', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
-      row.names = T)
+      here('kraken_taxonReads_matrices_updated', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
+      row.names = F)
   )
 
 kraken_taxon_raw_summarised %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_taxonReads_matrices', 'raw', paste0('kraken_',.y,'_Raw.csv')),
-      row.names = T)
+      here('kraken_taxonReads_matrices_updated', 'raw', paste0('kraken_',.y,'_Raw.csv')),
+      row.names = F)
     )
 
 
@@ -1706,7 +1823,7 @@ kraken_clade_raw_list <-
 kraken_clade_norm_list %>%
   iwalk(~ write.csv(
     make_sparse(.x, .y, c(.y)), 
-    here('kraken_cladeReads_matrices', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
+    here('kraken_cladeReads_matrices_updated', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
     row.names = T)
   )
 
@@ -1714,15 +1831,15 @@ kraken_clade_norm_list %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_cladeReads_matrices', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
-      row.names = T)
+      here('kraken_cladeReads_matrices_updated', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
+      row.names = F)
     )
 
 kraken_clade_raw_list %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_cladeReads_matrices', 'raw', paste0('kraken_',.y,'_Raw_Normalized.csv')),
-      row.names = T)
+      here('kraken_cladeReads_matrices_updated', 'raw', paste0('kraken_',.y,'_Raw_Normalized.csv')),
+      row.names = F)
   )
 

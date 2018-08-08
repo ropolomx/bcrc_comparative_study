@@ -10,18 +10,20 @@ metadata <- read.csv('BCRC_metadata.csv')
 
 # annotations <- read.csv('megares_annotations_v1.01.csv')
 
-amr_group_norm <-
-  read_csv('amr_matrices/normalized/AMR_Group_Normalized.csv')
+amr_group_norm <- read.csv('amr_matrices/normalized/AMR_Group_Normalized.csv')
 
-krakenNorm <-
-  read.csv('kraken_matrices/normalized/kraken_Genus_Normalized.csv')
+krakenNorm <- read.csv('kraken_taxonReads_matrices_updated/normalized/kraken_Genus_Normalized.csv')
 
-# krakenParsed <- read.csv('kraken_analytic_parsed.csv')
+krakenParsed <- read.csv('kraken_analytic_parsed.csv')
 
 # Tidy the normalized data
 
 amr_group_tidy <-
   tidyr::gather(amr_group_norm, ID, counts, 2:ncol(amr_group_norm))
+
+amr_group_tidy <-
+  amr_group_tidy %>%
+  mutate(ID = str_replace(ID, "FC_Con_V055", "FC_V055"))
 
 amr_group_merge <- merge(amr_group_tidy, annotations, by = "group")
 
@@ -56,7 +58,7 @@ amr_group_merge$Type <-
 amr_group_merge$Type <-
   factor(
     amr_group_merge$Type,
-    levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Treatment')
+    levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Wastewater')
   )
 
 # Generating heatmap of subset of top X groups by sum of counts across Types
@@ -80,8 +82,62 @@ amr_group_subset <-
 amr_group_subset$Type <-
   factor(
     amr_group_subset$Type,
-    levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Treatment')
+    levels = c(
+      'Fecal Composite', 
+      'Catch Basin', 
+      'Soil', 
+      'Wastewater'
+      )
   )
+
+amr_group_subset$ID <-
+  factor(
+    amr_group_subset$ID,
+    levels = c(
+      "FC_A062",
+      "FC_A070",
+      "FC_S034",
+      "FC_S040",
+      "FC_N003",
+      "FC_N013",
+      "FC_V046",
+      "FC_V053",
+      "FC_V055",
+      "FC_Nat_V042",
+      "FC_Nat_V045",
+      "FC_Nat_V052",
+      "CB_A018",
+      "CB_A038",
+      "CB_S008",
+      "CB_S026",
+      "CB_S043",
+      "CB_N001",
+      "CB_N002",
+      "CB_N021",
+      "CB_N022",
+      "CB_V011",
+      "CB_V027",
+      "CB_V012",
+      "CB_V028",
+      "Soil_N_WF_02May14",
+      "Soil_N_WF_20May15",
+      "Soil_N_EF_02May14",
+      "Soil_N_EF_20May15",
+      "ST_C039",
+      "ST_C053",
+      "ST_C062",
+      "ST_M029",
+      "ST_M050",
+      "ST_M060"          
+    )
+  )
+
+# amr_group_subset$ID <-
+#   factor(
+#     amr_group_subset$,
+#     levels = c('')
+#   )
+
 
 #meg_heatmap <- ggplot(amr80NormMerge, aes(x=ID, y=Group)) +
 
@@ -101,24 +157,25 @@ amr_group_by_class_hm <-
     panel.background = element_rect(fill = "black", colour = "black"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    strip.text.x = element_text(size = 15),
-    strip.text.y = element_text(size = 11, angle = 0),
+    strip.text.x = element_text(size = 17, face = "bold"),
+    strip.text.y = element_text(size = 10, angle = 0, face = "bold", margin = margin(4.5,0,4.5,0, "cm")),
     #strip.text.y=element_blank(),
     #strip.background= element_rect(fill = amr80NormMerge$Class),
     #axis.text.y=element_text(size=3),
     axis.text.x = element_blank(),
+    # axis.text.x = element_text(angle = 90,hjust=1),
     #axis.text.y=element_blank(),
-    axis.text.y = element_text(size = 6.5),
+    axis.text.y = element_text(size = 7),
     axis.title.x = element_text(size = 17),
     axis.title.y = element_blank(),
     legend.position = "bottom",
     legend.title = element_text(size = ),
-    panel.spacing.x = unit(0.1, "lines"),
+    panel.spacing.x = unit(0.01, "lines"),
     panel.spacing.y = unit(0.06, "lines"),
     plot.title = element_text(size = 24, hjust = 0.5),
     plot.margin = unit(c(0, 0, 0, 0), "cm")
   ) +
-  xlab(paste('Samples by ', 'Type', sep = '', collapse = '')) +
+  xlab('\nSample Matrix Type') +
   scale_fill_gradient(low = "black", high = "cyan") +
   labs(fill = 'Log2 Normalized Count') +
   ggtitle(paste(
@@ -132,17 +189,17 @@ amr_group_by_class_hm <-
 amr_group_by_class_hm
 
 ggsave(
-  here('graphs', 'AMR', 'amr_top_group_by_class_heatmap.png'),
+  here('graphs_updated', 'AMR', 'amr_top_group_by_class_hm_updated.png'),
   amr_group_by_class_hm,
   width = 18,
   height = 14.5,
   units = "in",
-  dpi = 320
+  dpi = 600
 )
 
 krakenTax <- krakenParsed[, -(2:49)]
 
-krakenNormTidy <- gather(krakenNorm, ID, counts, 2:49)
+krakenNormTidy <- gather(krakenNorm, ID, counts, 2:36)
 
 krakenNormMerge <- merge(krakenTax, krakenNormTidy, by = "Genus")
 
