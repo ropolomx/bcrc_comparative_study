@@ -731,9 +731,25 @@ meg_alpha_normalized <- function(diversity_df,
     #   non_zero_sample <- 0
     # }
     
-  png(filename=paste(outdir, '/', data_type, '_normalized_richness_by_', group_var, '.png',
-                     sep='', collapse=''),
-      width=1024, height=768)
+  png(
+    filename = paste(
+      outdir,
+      '/',
+      data_type,
+      '_normalized_richness_by_',
+      group_var,
+      '.png',
+      sep = '',
+      collapse = ''
+    ),
+    # width = 1024,
+    # height = 768,
+    width = 11.5,
+    height = 8,
+    units = "in",
+    res = 600,
+    pointsize = 4
+  )
   g_alphadiv <- ggplot(data = local_data, aes_string(x = group_var,
     y = 'Observed_Richness', color = group_var)) +
     # geom_boxplot(width=0.8, lwd=0.8) + 
@@ -760,9 +776,25 @@ meg_alpha_normalized <- function(diversity_df,
   print(g_alphadiv)
     dev.off()
     
-    png(filename=paste(outdir, '/', data_type, '_normalized_alpha_diversity_by_', group_var, '.png',
-                       sep='', collapse=''),
-        width=1024, height=768)
+    png(
+      filename = paste(
+        outdir,
+        '/',
+        data_type,
+        '_normalized_alpha_diversity_by_',
+        group_var,
+        '.png',
+        sep = '',
+        collapse = ''
+      ),
+      # width = 1024,
+      # height = 768,
+      width = 11.5,
+      height = 8,
+      units = "in",
+      res = 600, 
+      pointsize = 4
+    )
     g_invs <- ggplot(data=local_data, aes_string(group_var, 'Inv_Simpson', color=group_var)) +
         # geom_boxplot(width=0.8,lwd=0.8) + 
         geom_boxplot(size = 1) + 

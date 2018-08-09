@@ -1,10 +1,14 @@
 # Script for generating custom heatmaps of the BCRC data
 
+# Load packages -----------------------------------------------------------
+
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(stringr)
 #source('scripts/meg_utility_functions.R')
+
+# Read data ---------------------------------------------------------------
 
 metadata <- read.csv('BCRC_metadata.csv')
 
@@ -14,7 +18,18 @@ amr_group_norm <- read.csv('amr_matrices/normalized/AMR_Group_Normalized.csv')
 
 krakenNorm <- read.csv('kraken_taxonReads_matrices_updated/normalized/kraken_Genus_Normalized.csv')
 
-krakenParsed <- read.csv('kraken_analytic_parsed.csv')
+krakenTaxonParsed <- read.csv('aggregated_data_for_analysis/krakenAnalytical_taxonReads.csv') 
+
+krakenTaxonParsed <- 
+  krakenTaxonParsed %>%
+  rename(id = Lineage)
+
+krakenTaxonParsed <- 
+  krakenTaxonParsed %>%
+  left_join(.,kraken_tax_dt_taxon, by = "id")
+  
+
+# AMR heatmaps ------------------------------------------------------------
 
 # Tidy the normalized data
 
@@ -197,7 +212,9 @@ ggsave(
   dpi = 600
 )
 
-krakenTax <- krakenParsed[, -(2:49)]
+# Kraken heatmap ----------------------------------------------------------
+
+krakenTax <- krakenTaxonParsed[, -(2:36)]
 
 krakenNormTidy <- gather(krakenNorm, ID, counts, 2:36)
 
@@ -205,11 +222,14 @@ krakenNormMerge <- merge(krakenTax, krakenNormTidy, by = "Genus")
 
 krakenNormMerge <- merge(krakenNormMerge, metadata, by = "ID")
 
-krakenNormMerge <-
-  krakenNormMerge[krakenNormMerge$Type != "Wetlands", ]
+krakenNormMerge <- krakenNormMerge[krakenNormMerge$Type != "Wetlands", ]
 
 krakenNormMerge <-
-  krakenNormMerge %>% arrange(Phylum) %>% filter(!Domain %in% "Viruses") %>% filter(!Phylum %in% "") %>% drop_na(Phylum)
+  krakenNormMerge %>% 
+  arrange(Phylum) %>% 
+  filter(Domain != "Viruses") %>% 
+  filter(Phylum != "") %>% 
+  drop_na(Phylum)
 
 names(krakenNormMerge) <-
   str_replace(names(krakenNormMerge), "counts", "Normalized_Counts")
@@ -225,16 +245,67 @@ krakenNormMerge$Type <-
     levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Treatment')
   )
 
-krakenNormTop <- amr80NormMerge %>%
-  group_by(Class) %>%
+krakenNormTop <- 
+  krakenNormMerge %>%
+  group_by(Genus) %>%
   summarise(Count_sum = sum(Normalized_Counts)) %>%
   arrange(-Count_sum) %>%
   slice(1:100)
 
-amr80NormSubset <-
-  amr80NormMerge[amr80NormMerge$Group %in% amr80NormTop$Group, ]
+krakenNormSubset <-
+  krakenNormMerge[krakenNormMerge$Genus %in% krakenNormTop$Genus, ]
+
+kraken_genus_by_phylum_hm <-
+  ggplot(amr_group_subset, aes(x = ID, y = Group)) +
+  geom_tile(aes(fill = log2(Normalized_Counts + 1))) +
+  facet_grid(
+    Class ~ Type,
+    scales = 'free',
+    switch = 'x',
+    drop = TRUE,
+    space = 'free_y'
+  ) +
+  #facet_wrap(~ Type, scales ='free_x', strip.position = 'bottom', nrow = 1) +
+  #facet_grid(Class ~ ., scales ='free') +
+  theme(
+    panel.background = element_rect(fill = "black", colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.text.x = element_text(size = 17, face = "bold"),
+    strip.text.y = element_text(size = 10, angle = 0, face = "bold", margin = margin(4.5,0,4.5,0, "cm")),
+    #strip.text.y=element_blank(),
+    #strip.background= element_rect(fill = amr80NormMerge$Class),
+    #axis.text.y=element_text(size=3),
+    axis.text.x = element_blank(),
+    # axis.text.x = element_text(angle = 90,hjust=1),
+    #axis.text.y=element_blank(),
+    axis.text.y = element_text(size = 7),
+    axis.title.x = element_text(size = 17),
+    axis.title.y = element_blank(),
+    legend.position = "bottom",
+    legend.title = element_text(size = ),
+    panel.spacing.x = unit(0.01, "lines"),
+    panel.spacing.y = unit(0.06, "lines"),
+    plot.title = element_text(size = 24, hjust = 0.5),
+    plot.margin = unit(c(0, 0, 0, 0), "cm")
+  ) +
+  xlab('\nSample Matrix Type') +
+  scale_fill_gradient(low = "black", high = "cyan") +
+  labs(fill = 'Log2 Normalized Count') +
+  ggtitle(paste(
+    'Normalized AMR Group Counts',
+    ' by Class',
+    '\n',
+    sep = '',
+    collapse = ''
+  ))
 
 
+
+
+
+
+# Fancier Kraken heatmaps -------------------------------------------------
 
 meg_heatmap_kraken <- function(df,
   sample_var,
@@ -334,11 +405,8 @@ meg_barplot_kraken <-
   )
 meg_barplot_kraken
 
-
-meg_heatmap_kraken(krakenNatConvCBSubset, ID, Species, Family, Type, NatType)
-
 meg_heatmap_kraken(
-  df = krakenNatConvSubset,
+  df = krakenNormSubset,
   sample_var = "ID",
   taxon = "Species",
   facet1 = "Phylum",
@@ -408,3 +476,4 @@ meg_heatmap_kraken(
   facet2a = "Type",
   facet2b = "NatType"
 )
+

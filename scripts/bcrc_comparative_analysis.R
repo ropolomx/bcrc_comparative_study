@@ -484,7 +484,8 @@ kraken_raw <-
   kraken_css %>%
   map(~ data.table(MRcounts(.x, norm=F)))
 
-amr_norm <- data.table(MRcounts(amr, norm=T))
+amr_norm <- data.table(MRcounts(amr, norm=T)) %>%
+  rename(FC_V055 = FC_Con_V055)
 amr_raw <- data.table(MRcounts(amr, norm=F))
 
 # Aggregate the normalized counts for AMR using the annotations data table, SQL
@@ -500,7 +501,7 @@ amr_raw <- annotations[amr_raw]  # left outer join
 
 # Remove groups that correspond to potentially wild-type genes
 amr_raw <- amr_raw[!(group %in% snp_regex), ]
-amr_norm<- amr_norm[!(group %in% snp_regex), ]
+amr_norm <- amr_norm[!(group %in% snp_regex), ]
 
 
 # Group the AMR data by level for analysis
@@ -1214,6 +1215,7 @@ amr_norm_diversity <-
   set_names(nm = AMR_analytic_names) %>%
   map_dfr(
     ~ calc_diversity_df(MRcounts(.x)) %>%
+      mutate(., ID = str_replace(ID, "FC_Con_V055", "FC_V055")) %>%
         left_join(., metadata, by = "ID"),
     .id = "Level"
   )
@@ -1234,6 +1236,10 @@ amr_norm_diversity$Type <- reorder_environments(amr_norm_diversity$Type,data_typ
 amr_norm_diversity$FieldType <- reorder_fields(amr_norm_diversity$FieldType, data_type = "tidy")
 amr_norm_diversity$Level <- reorder_amr_levels(amr_norm_diversity$Level)
 
+amr_norm_div_subset <-
+  amr_norm_diversity %>%
+  filter(Level != "Gene")
+
 kraken_clade_norm_diversity <- 
   kraken_clade_norm_analytic %>%
   map_dfr(
@@ -1247,6 +1253,12 @@ kraken_clade_norm_diversity$Type <- reorder_environments(kraken_clade_norm_diver
 kraken_clade_norm_diversity$FieldType <- str_replace(kraken_clade_norm_diversity$FieldType, "_|\\.", " ")
 kraken_clade_norm_diversity$FieldType <- reorder_fields(kraken_clade_norm_diversity$FieldType, data_type = "tidy")
 kraken_clade_norm_diversity$Level <- reorder_tax_ranks(kraken_clade_norm_diversity$Level)
+
+kraken_clade_norm_div_subset <-
+  kraken_clade_norm_diversity %>%
+  filter(Level != "Domain")
+
+
 
 kraken_taxon_norm_diversity <- 
   kraken_taxon_norm_analytic %>%
@@ -1262,11 +1274,15 @@ kraken_taxon_norm_diversity$FieldType <- str_replace(kraken_taxon_norm_diversity
 kraken_taxon_norm_diversity$FieldType <- reorder_fields(kraken_taxon_norm_diversity$FieldType, data_type = "tidy")
 kraken_taxon_norm_diversity$Level <- reorder_tax_ranks(kraken_taxon_norm_diversity$Level)
 
+kraken_taxon_norm_div_subset <-
+  kraken_taxon_norm_diversity %>%
+  filter(Level != "Domain")
+
 exploratory_analyses %>%
   walk(
     safely(
     ~ meg_alpha_normalized(
-      diversity_df = as.data.table(amr_norm_diversity),
+      diversity_df = as.data.table(amr_norm_div_subset),
       data_names = AMR_raw_analytic_names,
       metadata = metadata,
       sample_var = sample_column_id,
@@ -1287,7 +1303,7 @@ exploratory_analyses %>%
   walk(
     safely(
     ~ meg_alpha_normalized(
-      diversity_df = as.data.table(kraken_clade_norm_diversity),
+      diversity_df = as.data.table(kraken_clade_norm_div_subset),
       data_names = kraken_taxon_names,
       metadata = metadata,
       sample_var = sample_column_id,
@@ -1308,7 +1324,7 @@ exploratory_analyses %>%
   walk(
     safely(
     ~ meg_alpha_normalized(
-      diversity_df = as.data.table(kraken_taxon_norm_diversity),
+      diversity_df = as.data.table(kraken_taxon_norm_div_subset),
       data_names = kraken_taxon_names,
       metadata = metadata,
       sample_var = sample_column_id,
@@ -1407,43 +1423,35 @@ amr_shannon <- function(amr_df) {
     theme(
       strip.text.x = element_text(size = 25),
       axis.text.y = element_text(size = 30),
-      axis.text.x = element_text(size = 25, angle = 90),
+      # axis.text.x = element_text(size = 25, angle = 90),
+      axis.text.x = element_blank(),
       axis.title.x = element_text(size = 32),
       axis.title.y = element_text(size = 32),
-      legend.position = "none",
+      legend.position = "right",
+      legend.title=element_text(size=24, vjust=1),
+      legend.text=element_text(size=20),
       #legend.title=element_text(size=36),
       #legend.text=element_text(size=36, vjust=0.5),
       plot.title = element_text(size = 50, hjust = 0.5)
     ) +
     xlab("Type") +
-    ylab("Shannon Index\n") +
+    ylab("Shannon's Index\n") +
     #ggtitle('AMR Category Richness by Depth for Raw Data') +
     # scale_color_manual(values=rev(cbPalette)) +
     facet_wrap( ~ Level, nrow = 2, scales = "free_y")
+  alphaDivBoxPlot
 }
 
-amr_norm_shannon_box <- amr_shannon(amr_norm_diversity)
+amr_norm_shannon_box <- amr_shannon(amr_norm_div_subset)
 
-# exploratory_analyses %>%
-#   walk(safely(
-#     ~ meg_alpha_rarefaction(
-#       data_list = kraken_clade_raw_analytic,
-#       data_names = kraken_clade_names,
-#       metadata = metadata,
-#       sample_var = sample_column_id,
-#       group_var = .x$exploratory_var,
-#       analysis_subset = .x$subsets,
-#       outdir = paste(
-#         graph_output_dir,
-#         'Microbiome_cladeReads',
-#         .x$name,
-#         sep = '/',
-#         collapse = ''
-#       ),
-#       data_type = 'Microbiome_cladeReads'
-#     )
-#   ))
-
+ggsave(
+  here('graphs_updated', 'AMR', 'TypeOverall', 'AMR_normalized_shannon_by_Type.png'),
+  amr_norm_shannon_box,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
 
 # Exploratory Analyses: Ordination ----------------------------------------
 
