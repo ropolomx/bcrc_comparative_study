@@ -83,7 +83,7 @@ exploratory_analyses = list(
       'Type != Wetlands'
       # 'NatType != Natural'
       ),
-    exploratory_var = 'Type'
+    exploratory_var = 'Matrix_Type'
   ),
   # 
   # # Analysis 2
@@ -164,31 +164,31 @@ statistical_analyses = list(
       'Type != Wetlands', 
       'NatType != Natural'
       ),
-    model_matrix = '~ 0 + Type',
+    model_matrix = '~ 0 + Matrix_Type',
     contrasts = list(
-      'TypeFecal_Composite - TypeCatch_Basin',
-      'TypeFecal_Composite - TypeWastewater',
-      'TypeFecal_Composite - TypeSoil',
-      'TypeCatch_Basin - TypeWastewater',
-      'TypeCatch_Basin - TypeSoil',
-      'TypeSoil - TypeWastewater'
+      'Matrix_TypeFecal_Composite - Matrix_TypeCatch_Basin',
+      'Matrix_TypeFecal_Composite - Matrix_TypeWastewater',
+      'Matrix_TypeFecal_Composite - Matrix_TypeSoil',
+      'Matrix_TypeCatch_Basin - Matrix_TypeWastewater',
+      'Matrix_TypeCatch_Basin - Matrix_TypeSoil',
+      'Matrix_TypeSoil - Matrix_TypeWastewater'
       ),
     random_effect = 'Location'
   ),
   
   list(
     name = 'FCvsCBFixedLocationRandom',
-    subsets = list('Type == Fecal_Composite', 'Type == Catch_Basin'),
-    model_matrix = '~ 0 + Type',
-    contrasts = list('TypeFecal_Composite - TypeCatch_Basin'),
+    subsets = list('Matrix_Type == Fecal_Composite', 'Matrix_Type == Catch_Basin'),
+    model_matrix = '~ 0 + Matrix_Type',
+    contrasts = list('Matrix_TypeFecal_Composite - Matrix_TypeCatch_Basin'),
     random_effect = 'Location'
   ),
   # Analysis 2
   # Description: Fixed effect for location, control for type using fixed effect
   list(
-    name = 'LocationFixedTypeFixed',
-    subsets = list('Type != Wetlands', 'NatType != Natural'),
-    model_matrix = '~ 0 + Location + Type',
+    name = 'LocationFixedMatrix_TypeFixed',
+    subsets = list('Matrix_Type != Wetlands', 'NatMatrix_Type != Natural'),
+    model_matrix = '~ 0 + Location + Matrix_Type',
     contrasts = list('LocationAcme - LocationCalgary',
                      'LocationAcme - LocationIron_Springs',
                      'LocationAcme - LocationMedicine_Hat',
@@ -211,13 +211,13 @@ statistical_analyses = list(
   # Description: Natural vs Conventional fixed effect within Vegreville, Fecal Composite
   list(
     name = 'NaturalConventionalFCVegreville',
-    subsets = list('Type != Wetlands',
-                   'Type != Sewage.Treatment',
-                   'Type != Catch.Basin',
-                   'NatType != None',
+    subsets = list('Matrix_Type != Wetlands',
+                   'Matrix_Type != Sewage.Treatment',
+                   'Matrix_Type != Catch.Basin',
+                   'NatMatrix_Type != None',
                    'Location == Vegreville'),
-    model_matrix = '~ 0 + NatType',
-    contrasts = list('NatTypeNatural - NatTypeConventional'),
+    model_matrix = '~ 0 + NatMatrix_Type',
+    contrasts = list('NatMatrix_TypeNatural - NatMatrix_TypeConventional'),
     random_effect = NA
   )
 )
@@ -463,6 +463,10 @@ metadata <-
 metadata <-
   metadata %>%
   mutate(., ID = str_replace(ID, "FC_Con_V055", "FC_V055"))
+
+metadata <-
+  metadata %>%
+  rename(Matrix_Type = Type)
 
 
 
@@ -892,8 +896,8 @@ reorder_fields <- function(env_column, data_type){
   }
   }
 
-metadata$Type <- reorder_environments(metadata$Type, data_type = "wide")
-metadata$Type <- str_replace(metadata$Type, "_|\\.", " ")
+metadata$Matrix_Type <- reorder_environments(metadata$Matrix_Type, data_type = "wide")
+metadata$Matrix_Type <- str_replace(metadata$Matrix_Type, "_|\\.", " ")
 metadata$FieldType <- reorder_fields(metadata$FieldType, data_type= "wide")
 metadata$FieldType <- str_replace(metadata$FieldType, "_|\\.", " ")
 
@@ -1231,7 +1235,7 @@ reorder_amr_levels <- function(level_column) {
 }
 
 # amr_norm_diversity$Type <- str_replace(amr_norm_diversity$Type, "_|\\.", " ")
-amr_norm_diversity$Type <- reorder_environments(amr_norm_diversity$Type,data_type = "tidy")
+amr_norm_diversity$Matrix_Type <- reorder_environments(amr_norm_diversity$Matrix_Type,data_type = "tidy")
 # amr_norm_diversity$FieldType <- str_replace(amr_norm_diversity$FieldType, "_|\\.", " ")
 amr_norm_diversity$FieldType <- reorder_fields(amr_norm_diversity$FieldType, data_type = "tidy")
 amr_norm_diversity$Level <- reorder_amr_levels(amr_norm_diversity$Level)
@@ -1244,12 +1248,13 @@ kraken_clade_norm_diversity <-
   kraken_clade_norm_analytic %>%
   map_dfr(
     ~ calc_diversity_df(MRcounts(.x)) %>%
+      mutate(ID = str_replace(ID, "FC_Con_V055", "FC_V055")) %>%
       left_join(., metadata, by = "ID"),
     .id = "Level"
 )
 
-kraken_clade_norm_diversity$Type <- str_replace(kraken_clade_norm_diversity$Type, "_|\\.", " ")
-kraken_clade_norm_diversity$Type <- reorder_environments(kraken_clade_norm_diversity$Type,data_type = "tidy")
+kraken_clade_norm_diversity$Matrix_Type <- str_replace(kraken_clade_norm_diversity$Matrix_Type, "_|\\.", " ")
+kraken_clade_norm_diversity$Matrix_Type <- reorder_environments(kraken_clade_norm_diversity$Matrix_Type,data_type = "tidy")
 kraken_clade_norm_diversity$FieldType <- str_replace(kraken_clade_norm_diversity$FieldType, "_|\\.", " ")
 kraken_clade_norm_diversity$FieldType <- reorder_fields(kraken_clade_norm_diversity$FieldType, data_type = "tidy")
 kraken_clade_norm_diversity$Level <- reorder_tax_ranks(kraken_clade_norm_diversity$Level)
@@ -1258,18 +1263,17 @@ kraken_clade_norm_div_subset <-
   kraken_clade_norm_diversity %>%
   filter(Level != "Domain")
 
-
-
 kraken_taxon_norm_diversity <- 
   kraken_taxon_norm_analytic %>%
   map_dfr(
     ~ calc_diversity_df(MRcounts(.x)) %>%
+      mutate(ID = str_replace(ID, "FC_Con_V055", "FC_V055")) %>%
       left_join(., metadata, by = "ID"),
     .id = "Level"
   )
 
-kraken_taxon_norm_diversity$Type <- str_replace(kraken_taxon_norm_diversity$Type, "_|\\.", " ")
-kraken_taxon_norm_diversity$Type <- reorder_environments(kraken_taxon_norm_diversity$Type,data_type = "tidy")
+kraken_taxon_norm_diversity$Matrix_Type <- str_replace(kraken_taxon_norm_diversity$Matrix_Type, "_|\\.", " ")
+kraken_taxon_norm_diversity$Matrix_Type <- reorder_environments(kraken_taxon_norm_diversity$Matrix_Type,data_type = "tidy")
 kraken_taxon_norm_diversity$FieldType <- str_replace(kraken_taxon_norm_diversity$FieldType, "_|\\.", " ")
 kraken_taxon_norm_diversity$FieldType <- reorder_fields(kraken_taxon_norm_diversity$FieldType, data_type = "tidy")
 kraken_taxon_norm_diversity$Level <- reorder_tax_ranks(kraken_taxon_norm_diversity$Level)
@@ -1344,55 +1348,160 @@ exploratory_analyses %>%
 
 amr_observed_species <- function(amr_df) {
   alphaDivBoxPlot <-
-    ggplot(amr_df, aes(Type, Observed_Richness, color = Type)) +
+    ggplot(amr_df, aes(Matrix_Type, Observed_Richness, color = Matrix_Type)) +
     geom_boxplot(size = 1) +
     theme(
-      strip.text.x = element_text(size = 25),
-      axis.text.y = element_text(size = 30),
-      axis.text.x = element_text(size = 25, angle = 90),
-      axis.title.x = element_text(size = 32),
-      axis.title.y = element_text(size = 32),
-      legend.position = "none",
-      legend.title = element_text(size = 36),
-      legend.text = element_text(size = 36, vjust = 0.5),
-      plot.title = element_text(size = 50, hjust = 0.5)
+      strip.text.x = element_text(size = 22, face = "bold"),
+      axis.text.y = element_text(size = 27),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(size = 30),
+      legend.title=element_text(size=24),
+      legend.text=element_text(size=21, vjust=1),
+      plot.title = element_text(size = 30, hjust = 0.5),
+      plot.margin = unit(c(1.5,0,1.5,0), "cm")
     ) +
-    xlab("Type") +
-    ylab("Number of Unique\nAMR Categories\n") +
-    # scale_color_discrete(labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) +
-    scale_x_discrete(labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) + 
-    #ggtitle('AMR Category Richness by Depth for Raw Data') +
-    # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
+    # xlab("Type") +
+    ylab("Number of Unique\nAssignments\n") +
+    scale_color_discrete(name = "Matrix Type") +
+      # labels=c("Fecal Composite","Catch Basin","Soil","Wastewater")
+    ggtitle('Observed Richness by Type for Normalized Data\n') +
+    # scale_y_continuous(breaks = seq(0,225,25)) +
+    facet_grid(. ~ Level, scales = "free_y")
 }
 
-amr_norm_rich_boxplots <- amr_observed_species(amr_norm_diversity)
+amr_norm_rich_boxplots <- amr_observed_species(amr_norm_div_subset)
+
+ggsave(
+  here('graphs_updated', 'AMR', 'TypeOverall', 'AMR_normalized_richness_by_Type.png'),
+  amr_norm_rich_boxplots,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
+
+kraken_observed_species <- function(kraken_df) {
+  alphaDivBoxPlot <-
+    ggplot(kraken_df, aes(Matrix_Type, Observed_Richness, color = Matrix_Type)) +
+    geom_boxplot(size = 1) +
+    theme(
+      strip.text.x = element_text(size = 24, face = "bold"),
+      axis.text.y = element_text(size = 27),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(size = 30),
+      legend.title=element_text(size=24),
+      legend.text=element_text(size=21, vjust=1),
+      plot.title = element_text(size = 30, hjust = 0.5),
+      plot.margin = unit(c(1.5,0,1.5,0), "cm")
+    ) +
+    # xlab("Type") +
+    ylab("Number of Unique\nAssignments\n") +
+    scale_color_discrete(name = "Matrix Type") +
+      # labels=c("Fecal Composite","Catch Basin","Soil","Wastewater")
+    ggtitle('Observed Richness by Type for Normalized Data\n') +
+    # scale_y_continuous(breaks = seq(0,225,25)) +
+    facet_wrap(~ Level, nrow = 2, scales = "free_y")
+}
+
+kraken_norm_rich_boxplots <- kraken_observed_species(kraken_clade_norm_div_subset)
+
+ggsave(
+  here(
+    'graphs_updated',
+    'Microbiome_cladeReads',
+    'TypeOverall',
+    'Microbiome_cladeReads_normalized_richness_by_Type.png'
+  ),
+  kraken_norm_rich_boxplots,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
 
 amr_inv_simpson <- function(amr_df) {
   alphaDivBoxPlot <-
-    ggplot(amr_df, aes(Type, Inv_Simpson, color = Type)) +
+    ggplot(amr_df, aes(Matrix_Type, Inv_Simpson, color = Matrix_Type)) +
     geom_boxplot(size = 1) +
     theme(
-      strip.text.x = element_text(size = 25),
-      axis.text.y = element_text(size = 30),
+      strip.text.x = element_text(size = 24, face = "bold"),
+      axis.text.y = element_text(size = 27),
       axis.text.x = element_blank(),
-      axis.title.x = element_text(size = 32),
-      axis.title.y = element_text(size = 32),
+      axis.ticks.x = element_blank(),
+      # axis.title.x = element_text(size = 32),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(size = 30),
       # legend.position = "none",
-      legend.title=element_text(size=36),
-      legend.text=element_text(size=28, vjust=1),
-      plot.title = element_text(size = 50, hjust = 0.5)
+      legend.title=element_text(size=28),
+      legend.text=element_text(size=24, vjust=1),
+      plot.title = element_text(size = 30, hjust = 0.5),
+      plot.margin = unit(c(2,0,2,0), "cm")
     ) +
-    xlab("Type") +
+    # xlab("Type") +
     ylab("Inverse Simpson Index\n") +
-    scale_color_discrete(labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) +
-    # scale_x_discrete(labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) + 
-    #ggtitle('AMR Category Richness by Depth for Raw Data') +
+    scale_color_discrete(name = "Matrix Type", labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) +
+    ggtitle('Alpha Diversity by Type for Normalized Data\n') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
+    facet_grid(. ~ Level, scales = "free_y")
 }
 
-amr_norm_inv_simpson_box <- amr_inv_simpson(amr_norm_diversity)
+amr_norm_inv_simpson_box <- amr_inv_simpson(amr_norm_div_subset)
+
+ggsave(
+  here('graphs_updated', 'AMR', 'TypeOverall', 'AMR_normalized_inv_simpson_by_Type.png'),
+  amr_norm_inv_simpson_box,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
+
+kraken_inv_simpson <- function(kraken_df) {
+  alphaDivBoxPlot <-
+    ggplot(kraken_df, aes(Matrix_Type, Inv_Simpson, color = Matrix_Type)) +
+    geom_boxplot(size = 1) +
+    theme(
+      strip.text.x = element_text(size = 24, face = "bold"),
+      axis.text.y = element_text(size = 27),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      # axis.title.x = element_text(size = 32),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(size = 30),
+      # legend.position = "none",
+      legend.title=element_text(size=28),
+      legend.text=element_text(size=24, vjust=1),
+      plot.title = element_text(size = 30, hjust = 0.5),
+      plot.margin = unit(c(2,0,2,0), "cm")
+    ) +
+    # xlab("Type") +
+    ylab("Inverse Simpson Index\n") +
+    scale_color_discrete(name = "Matrix Type") +
+      # labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")
+    ggtitle('Alpha Diversity by Type for Normalized Data\n') +
+    # scale_color_manual(values=rev(cbPalette)) +
+    facet_wrap(. ~ Level, nrow = 2, scales = "free_y")
+}
+
+kraken_norm_inv_simpson_box <- kraken_inv_simpson(kraken_clade_norm_div_subset)
+
+ggsave(
+  here(
+    'graphs_updated',
+    'Microbiome_cladeReads',
+    'TypeOverall',
+    'kraken_normalized_inv_simpson_by_Type.png'
+  ),
+  kraken_norm_inv_simpson_box,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
 
 amr_simpson <- function(amr_df) {
   alphaDivBoxPlot <- ggplot(amr_df, aes(Type, Simpson, color = Type)) +
@@ -1418,35 +1527,98 @@ amr_simpson <- function(amr_df) {
 amr_norm_simpson_box <- amr_simpson(amr_norm_diversity)
 
 amr_shannon <- function(amr_df) {
-  alphaDivBoxPlot <- ggplot(amr_df, aes(Type, Shannon, color = Type)) +
-    geom_boxplot(lwd = 0.8, aes(size = 5)) +
+  alphaDivBoxPlot <- ggplot(amr_df, aes(Matrix_Type, Shannon, color = Matrix_Type)) +
+    geom_boxplot(size = 1) +
     theme(
-      strip.text.x = element_text(size = 25),
-      axis.text.y = element_text(size = 30),
-      # axis.text.x = element_text(size = 25, angle = 90),
+      strip.text.x = element_text(size = 24, face = "bold"),
+      axis.text.y = element_text(size = 27),
       axis.text.x = element_blank(),
-      axis.title.x = element_text(size = 32),
-      axis.title.y = element_text(size = 32),
-      legend.position = "right",
-      legend.title=element_text(size=24, vjust=1),
-      legend.text=element_text(size=20),
-      #legend.title=element_text(size=36),
-      #legend.text=element_text(size=36, vjust=0.5),
-      plot.title = element_text(size = 50, hjust = 0.5)
+      axis.ticks.x = element_blank(),
+      # axis.title.x = element_text(size = 32),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(size = 30),
+      # legend.position = "none",
+      legend.title=element_text(size=28),
+      legend.text=element_text(size=24, vjust=1),
+      plot.title = element_text(size = 30, hjust = 0.5),
+      plot.margin = unit(c(2,0,2,0), "cm")
     ) +
-    xlab("Type") +
-    ylab("Shannon's Index\n") +
-    #ggtitle('AMR Category Richness by Depth for Raw Data') +
+    # xlab("Type") +
+    ylab("Shannon Index\n") +
+    scale_color_discrete(name = "Matrix Type") +
+      # labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")
+    scale_y_continuous(limits = c(-0.005,4.25)) +
+    ggtitle('Alpha Diversity by Type for Normalized Data\n') +
     # scale_color_manual(values=rev(cbPalette)) +
-    facet_wrap( ~ Level, nrow = 2, scales = "free_y")
+    facet_grid( ~ Level, scales = "free_y")
   alphaDivBoxPlot
 }
 
 amr_norm_shannon_box <- amr_shannon(amr_norm_div_subset)
 
+kraken_norm_inv_simpson_box <- kraken_inv_simpson(kraken_clade_norm_div_subset)
+
+ggsave(
+  here(
+    'graphs_updated',
+    'Microbiome_taxonReads',
+    'TypeOverall',
+    'kraken_normalized_inv_simpson_by_Type.png'
+  ),
+  kraken_norm_inv_simpson_box,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
+
 ggsave(
   here('graphs_updated', 'AMR', 'TypeOverall', 'AMR_normalized_shannon_by_Type.png'),
   amr_norm_shannon_box,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
+
+kraken_shannon <- function(kraken_df) {
+  alphaDivBoxPlot <- ggplot(kraken_df, aes(Matrix_Type, Shannon, color = Matrix_Type)) +
+    geom_boxplot(size = 1) +
+    theme(
+      strip.text.x = element_text(size = 24, face = "bold"),
+      axis.text.y = element_text(size = 27),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      # axis.title.x = element_text(size = 32),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(size = 30),
+      # legend.position = "none",
+      legend.title=element_text(size=28),
+      legend.text=element_text(size=24, vjust=1),
+      plot.title = element_text(size = 30, hjust = 0.5),
+      plot.margin = unit(c(2,0,2,0), "cm")
+    ) +
+    # xlab("Type") +
+    ylab("Shannon Index\n") +
+    scale_color_discrete(name = "Matrix Type") +
+      # labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")
+    scale_y_continuous(limits = c(-0.005,4.25)) +
+    ggtitle('Alpha Diversity by Type for Normalized Data\n') +
+    # scale_color_manual(values=rev(cbPalette)) +
+    facet_grid( ~ Level, scales = "free_y")
+  alphaDivBoxPlot
+}
+
+kraken_norm_shannon_box <- kraken_shannon(kraken_clade_norm_div_subset)
+
+ggsave(
+  here(
+    'graphs_updated',
+    'Microbiome_cladeReads',
+    'TypeOverall',
+    'kraken_normalized_shannon_by_Type.png'
+  ),
+  kraken_norm_inv_simpson_box,
   height = 8,
   width = 11.5,
   units = "in",

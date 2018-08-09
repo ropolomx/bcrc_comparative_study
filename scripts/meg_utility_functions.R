@@ -808,7 +808,7 @@ meg_alpha_normalized <- function(diversity_df,
         collapse = ''
       )) +
       xlab(paste('\n', group_var, sep = '', collapse = '')) +
-      ylab('Inverse Simpson\'s Index\n') +
+      ylab('Inverse Simpson Index\n') +
         # scale_color_discrete(labels=unique(str_replace_all(all_species_raw[[group_var]], "_|\\.", " "))) +
         theme(strip.text.x=element_text(size=26),
               axis.text.y=element_text(size=20),
