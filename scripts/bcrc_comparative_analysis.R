@@ -1663,10 +1663,7 @@ for( v in 1:length(exploratory_analyses) ) {
 
 
 
-
-
-meta_nmds(t(MRcounts(AMR_analytic_data$Class)))
-
+class_nmds <- meta_nmds(t(MRcounts(AMR_analytic_data$Class)))
 
 
 
