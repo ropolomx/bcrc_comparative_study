@@ -1664,6 +1664,24 @@ for( v in 1:length(exploratory_analyses) ) {
 
 
 class_nmds <- meta_nmds(t(MRcounts(AMR_analytic_data$Class)))
+ord_points <- ord_points %>% mutate(Type = str_replace(Type, "^(CB|FC|Soil|ST)_.*$", "\\1"))
+ord_points <- as.data.table(ord_points)
+hulls <- ord_points[,meg_find_hulls(.SD), .SDcols=c('MDS1', 'MDS2'), by=Type]
+hulls <- hulls %>% mutate(Type = str_replace(Type, "^(CB|FC|Soil|ST)_.*$", "\\1"))
+
+ggplot(ord_points, aes(MDS1, MDS2, color = Type, fill = Type)) +
+  geom_point() +
+  geom_polygon(
+    data = hulls,
+    aes(
+      x = MDS1,
+      MDS2,
+      color = Type,
+      fill = Type
+    ),
+    alpha = 0.2,
+    show.legend = F
+  )
 
 
 
