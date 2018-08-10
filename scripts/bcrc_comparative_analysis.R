@@ -80,72 +80,76 @@ exploratory_analyses = list(
   list(
     name = 'TypeOverall',
     subsets = list(
-      'Type != Wetlands'
+      # 'Matrix_Type == Fecal_Composite',
+      # 'Matrix_Type == Catch_Basin',
+      'Matrix_Type != Soil'
+      # 'Matrix_Type == Wastewater'
       # 'NatType != Natural'
+      # 'Matrix_Type != Wetlands'
       ),
     exploratory_var = 'Matrix_Type'
-  ),
+  )
   # 
   # # Analysis 2
   # # Description: Location comparison for all types
-  list(
-    name = 'LocationOverall',
-    subsets = list(
-      'Type != Wetlands'
-      # 'NatType != Natural'
-      ),
-    exploratory_var = 'Location'
-  ),
-
-  # Analysis 3
-  # Description: Location comparison within Fecal Composite type
-  list(
-    name = 'LocationFC',
-    subsets = list('Type == Fecal.Composite', 
-      'NatType != Natural'
-      ),
-    exploratory_var = 'Location'
-  ),
-  
-  # # Analysis 4
-  # # Description: Location comparison within Catch Basin type
   # list(
-  #     name = 'LocationCB',
-  #     subsets = list('Type == Catch Basin', 'NatType != Natural'),
-  #     exploratory_var = 'Location'
+  #   name = 'LocationOverall',
+  #   subsets = list(
+  #     # 'Matrix_Type != Wetlands'
+  #     'NatType != Natural'
+  #     ),
+  #   exploratory_var = 'Location'
   # ),
-
-  # Analysis 5
-  # Description: Location comparison within Waste Water sewage treatment type
-  list(
-    name = 'LocationST',
-    subsets = list('Type == Sewage.Treatment'),
-    exploratory_var = 'Location'
-  ),
-  
-  # # Analysis 6
-  # # Description: Natural vs conventional Fecal Composite
-  list(
-    name = 'NaturalConventionalFC',
-    subsets = list('Type == Fecal.Composite', 'Location == Vegreville', 'NatType != None'),
-    exploratory_var = 'NatType'
-  ),
-  # # 
-  # # Analysis 7
-  # # Description: Natural vs conventional Catch Basin
-  list(
-    name = 'NaturalConventionalCB',
-    subsets = list('Type == Catch.Basin', 'Location == Vegreville'),
-    exploratory_var = 'NatType'
-  ),
-  # # 
-  # # Analysis 8
-  # # Description: FieldType comparison within Soil type
-  list(
-    name = 'SoilFieldType',
-    subsets = list('Type == Soil'),
-    exploratory_var = 'FieldType'
-  )
+  # 
+  # # Analysis 3
+  # # Description: Location comparison within Fecal Composite type
+  # list(
+  #   name = 'LocationFC',
+  #   subsets = list('Matrix_Type == Fecal_Composite', 
+  #     'NatType != Natural'
+  #     ),
+  #   exploratory_var = 'Location'
+  # ),
+  # 
+  # # # Analysis 4
+  # # # Description: Location comparison within Catch Basin type
+  # # list(
+  # #     name = 'LocationCB',
+  # #     subsets = list('Type == Catch Basin', 'NatType != Natural'),
+  # #     exploratory_var = 'Location'
+  # # ),
+  # 
+  # # Analysis 5
+  # # Description: Location comparison within Waste Water sewage treatment type
+  # list(
+  #   name = 'LocationST',
+  #   subsets = list('Matrix_Type == Wastewater'),
+  #   exploratory_var = 'Location'
+  # ),
+  # 
+  # # # Analysis 6
+  # # # Description: Natural vs conventional Fecal Composite
+  # list(
+  #   name = 'NaturalConventionalFC',
+  #   subsets = list('Matrix_Type == Fecal_Composite', 'Location == Vegreville', 'NatType != None'),
+  #   exploratory_var = 'NatType'
+  # ),
+  # # # 
+  # # # Analysis 7
+  # # # Description: Natural vs conventional Catch Basin
+  # list(
+  #   name = 'NaturalConventionalCB',
+  #   subsets = list('Matrix_Type == Catch_Basin', 'Location == Vegreville'),
+  #   exploratory_var = 'NatType'
+  # ),
+  # # # 
+  # # # Analysis 8
+  # # # Description: FieldType comparison within Soil type
+  # list(
+  #   name = 'SoilFieldType',
+  #   subsets = list('Matrix_Type == Soil'),
+  #   exploratory_var = 'FieldType'
+  # )
 )
 
 # Each analyses you wish to perform should have its own list in the following
@@ -161,7 +165,7 @@ statistical_analyses = list(
   list(
     name = 'TypeFixedLocationRandom',
     subsets = list(
-      'Type != Wetlands', 
+      'Matrix_Type != Wetlands', 
       'NatType != Natural'
       ),
     model_matrix = '~ 0 + Matrix_Type',
@@ -373,7 +377,8 @@ temp_kraken_list <-
 temp_kraken_list <-
   temp_kraken_list %>%
   map(
-    ~ mutate(.x, ID = str_replace(ID, "Soil_N_(.*)_(006|007)$", "Soil_N_\\1"))
+    ~ mutate(.x, ID = str_replace(ID, "Soil_N_(.*)_(006|007)$", "Soil_N_\\1")) %>%
+      mutate(ID = str_replace(ID, "FC_Con_V055", "FC_V055"))
   )
 
 temp_kraken_list <- 
@@ -427,7 +432,8 @@ amr <-
 amr <-
   amr %>%
   mutate(., ID = str_replace(ID, "FC_(006|007|008)_(.*)$", "FC_\\2")) %>%
-  mutate(., ID = str_replace(ID, "Soil_N_(.*)_(006|007)$", "Soil_N_\\1"))
+  mutate(., ID = str_replace(ID, "Soil_N_(.*)_(006|007)$", "Soil_N_\\1")) %>%
+  mutate(ID = str_replace(ID, "FC_Con_V055", "FC_V055"))
 
 amr <- 
   amr %>%
@@ -468,8 +474,6 @@ metadata <-
   metadata %>%
   rename(Matrix_Type = Type)
 
-
-
 # Normalizing unsplit Kraken and AMR --------------------------------------
 
 kraken_css <- 
@@ -488,8 +492,7 @@ kraken_raw <-
   kraken_css %>%
   map(~ data.table(MRcounts(.x, norm=F)))
 
-amr_norm <- data.table(MRcounts(amr, norm=T)) %>%
-  rename(FC_V055 = FC_Con_V055)
+amr_norm <- data.table(MRcounts(amr, norm=T))
 amr_raw <- data.table(MRcounts(amr, norm=F))
 
 # Aggregate the normalized counts for AMR using the annotations data table, SQL
@@ -1165,7 +1168,8 @@ exploratory_analyses %>%
 # Microbiome (clade reads)
 
 exploratory_analyses %>%
-  walk(safely(
+  walk(
+    safely(
     ~ meg_alpha_rarefaction(
       data_list = kraken_clade_raw_analytic,
       data_names = kraken_clade_names,
@@ -1182,7 +1186,8 @@ exploratory_analyses %>%
       ),
       data_type = 'Microbiome_cladeReads'
     )
-  ))
+  )
+    )
 
 
 # Exploratory Analyses: Alpha Normalized ----------------------------------
@@ -1639,7 +1644,9 @@ for( v in 1:length(exploratory_analyses) ) {
                                   sep='/', collapse=''),
                    data_type = 'AMR',
                    method = 'NMDS')
+}
     
+for( v in 1:length(exploratory_analyses) ) {
     # AMR PCA
     meg_ordination(data_list = AMR_analytic_data,
                    data_names = AMR_analytic_names,
@@ -1653,8 +1660,42 @@ for( v in 1:length(exploratory_analyses) ) {
                    method = 'PCA')
     
 }
-    
-    # Microbiome NMDS (taxon reads)
+
+
+
+
+
+meta_nmds(t(MRcounts(AMR_analytic_data$Class)))
+
+
+
+
+exploratory_analyses %>%
+  walk(
+    # safely(
+    ~ meg_ordination(
+      data_list = AMR_analytic_data,
+      data_names = AMR_analytic_names,
+      metadata = metadata,
+      sample_var = sample_column_id,
+      hull_var = .x$exploratory_var,
+      analysis_subset = .x$subsets,
+      outdir = paste(
+        graph_output_dir,
+        'AMR',
+        .x$name,
+        sep = '/',
+        collapse = ''
+      ),
+      data_type = 'AMR',
+      method = 'PCA'
+    )
+  # )
+    )
+
+
+
+# Microbiome NMDS (taxon reads)
 
 # Mapping quietly allows to capture output on procrustes and stress
 # It also allows to store warnings
@@ -1662,7 +1703,7 @@ for( v in 1:length(exploratory_analyses) ) {
 
 # micro_taxon_nmds <-
   
-  exploratory_analyses %>%
+exploratory_analyses %>%
   walk(safely(
     ~ meg_ordination(
       data_list = kraken_taxon_norm_analytic,
@@ -1688,7 +1729,7 @@ for( v in 1:length(exploratory_analyses) ) {
     # Microbiome PCA
 exploratory_analyses %>%
   walk(
-    safely(
+    # safely(
     ~ meg_ordination(data_list = kraken_taxon_norm_analytic,
                    data_names = kraken_taxon_names,
                    metadata = metadata,
@@ -1698,13 +1739,14 @@ exploratory_analyses %>%
                    outdir = paste(graph_output_dir, 'Microbiome_taxonReads', .x$name, sep='/', collapse=''),
                    data_type = 'Microbiome_taxonReads',
                    method = 'PCA')
-  ))
+  # )
+)
 
 # Microbiome NMDS (clade Reads)
 
 exploratory_analyses %>%
   walk(
-    safely(
+    # safely(
     ~ meg_ordination(
       data_list = kraken_clade_norm_analytic,
       data_names = kraken_clade_names,
@@ -1715,7 +1757,8 @@ exploratory_analyses %>%
       outdir = paste(graph_output_dir, 'Microbiome_cladeReads', .x$name, sep='/', collapse=''),
       data_type = 'Microbiome',
       method = 'NMDS')
-    ))
+    # )
+    )
     
     # Microbiome PCA
 exploratory_analyses %>%

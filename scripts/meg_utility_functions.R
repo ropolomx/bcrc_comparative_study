@@ -138,7 +138,7 @@ meg_ordination <- function(data_list,
     if(length(analysis_subset) > 0) {
       local_obj[[l]] <- data_subset(local_obj[[l]], analysis_subset)
     }
-    local_meta <- metadata
+    local_meta <- as.data.table(metadata)
     local_meta <- local_meta[local_meta[[sample_var]] %in% colnames(MRcounts(local_obj[[l]])), ]
     
     # Transpose the matrix for NMDS (groups are now in rows and features in columns)
@@ -168,7 +168,10 @@ meg_ordination <- function(data_list,
     
     ord_points[, Level_ID :=( rep(data_names[l], nrow(ord_points)) )]
     setkey(ord_points, ID)
+    # ord_points <- metadata[ord_points]
     ord_points <- metadata[ord_points]
+    # ord_points <- left_join(metadata, ord_points, by = "ID")
+    # ord_points <- as.data.table(ord_points)
     ord_points <- ord_points[, .SD, .SDcols=c(sample_var, hull_var, 'Ord1', 'Ord2', 'Level_ID')]
     names(ord_points)[2] <- 'Group_Var'
     all_ord <- rbind(all_ord, ord_points)
@@ -848,6 +851,13 @@ meg_alpha_normalized <- function(diversity_df,
     # dev.off()
 }
 
+meta_nmds <- function(dataset){
+    metaMDS(dataset,
+      autotransform = F,
+      parallel = 3, 
+      trymax = 49)
+  }
+  
 
 
 
