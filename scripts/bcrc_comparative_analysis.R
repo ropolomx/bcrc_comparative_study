@@ -54,11 +54,11 @@ lapply(all_packages, require, character.only = TRUE)
 
 
 # Set the output directory for graphs:
-graph_output_dir = 'graphs_new_norm_0.2'
+graph_output_dir = 'graphs_new_norm_0.85'
 
 
 # Set the output directory for statistics:
-stats_output_dir = 'stats_new_norm_0.2'
+stats_output_dir = 'stats_new_norm_0.85'
 
 # Where is the metadata file stored on your machine?
 metadata_filepath = here('BCRC_metadata.csv')
@@ -324,22 +324,22 @@ for( dtype in c('AMR', 'Microbiome_taxonReads', 'Microbiome_cladeReads') ) {
   }
 }
 
-ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.2')), dir.create(file.path('amr_matrices_new_norm_0.2'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_matrices_new_norm_0.2')), dir.create(file.path('kraken_matrices_new_norm_0.2'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonReads_matrices_new_norm_0.2')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.2'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.2')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.2'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.85')), dir.create(file.path('amr_matrices_new_norm_0.85'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_matrices_new_norm_0.85')), dir.create(file.path('kraken_matrices_new_norm_0.85'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonReads_matrices_new_norm_0.85')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.85'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.85')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.85'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.2/sparse_normalized')), dir.create(file.path('amr_matrices_new_norm_0.2/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.2/normalized')), dir.create(file.path('amr_matrices_new_norm_0.2/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.2/raw')), dir.create(file.path('amr_matrices_new_norm_0.2/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.85/sparse_normalized')), dir.create(file.path('amr_matrices_new_norm_0.85/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.85/normalized')), dir.create(file.path('amr_matrices_new_norm_0.85/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.85/raw')), dir.create(file.path('amr_matrices_new_norm_0.85/raw'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.2/sparse_normalized')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.2/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.2/normalized')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.2/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.2/raw')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.2/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.85/sparse_normalized')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.85/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.85/normalized')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.85/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.85/raw')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.85/raw'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.2/sparse_normalized')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.2/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.2/normalized')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.2/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.2/raw')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.2/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.85/sparse_normalized')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.85/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.85/normalized')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.85/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.85/raw')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.85/raw'), mode='777'), FALSE)
 
 # Load the Kraken data, MEGARes annotations, and metadata
 
@@ -478,9 +478,9 @@ metadata <-
 
 kraken_css <- 
   kraken_new_mr %>%
-  map(~ cumNorm(.x,p=0.2))
+  map(~ cumNorm(.x,p=0.85))
 
-cumNorm(amr, p=0.2)
+cumNorm(amr, p=0.85)
 
 # Extract the normalized counts into data tables for aggregation
 
@@ -2112,34 +2112,34 @@ for (a in 1:length(statistical_analyses)){
 # Attempt to include purrr functional programming approach
 
 
-write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices_new_norm_0.2/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices_new_norm_0.85/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_class, 'amr_matrices_new_norm_0.2/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_class_raw, 'amr_matrices_new_norm_0.2/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_class, 'amr_matrices_new_norm_0.85/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_class_raw, 'amr_matrices_new_norm_0.85/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
-write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), 'amr_matrices_new_norm_0.2/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), 'amr_matrices_new_norm_0.85/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_mech, 'amr_matrices_new_norm_0.2/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_mech_raw, 'amr_matrices_new_norm_0.2/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech, 'amr_matrices_new_norm_0.85/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech_raw, 'amr_matrices_new_norm_0.85/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
 
-write.csv(make_sparse(amr_group, 'group', c('group')), 'amr_matrices_new_norm_0.2/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_group, 'group', c('group')), 'amr_matrices_new_norm_0.85/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_group, 'amr_matrices_new_norm_0.2/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_mech_raw, 'amr_matrices_new_norm_0.2/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_group, 'amr_matrices_new_norm_0.85/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech_raw, 'amr_matrices_new_norm_0.85/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
 
 write.csv(make_sparse(amr_norm, 'header', c('header', 'class', 'mechanism', 'group')),
-          'amr_matrices_new_norm_0.2/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
+          'amr_matrices_new_norm_0.85/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_norm, 'amr_matrices_new_norm_0.2/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_raw, 'amr_matrices_new_norm_0.2/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_norm, 'amr_matrices_new_norm_0.85/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_raw, 'amr_matrices_new_norm_0.85/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
 kraken_taxon_norm_summarised %>%
   iwalk(
     ~ write.csv(
       make_sparse(.x, .y, c(.y)), 
-      here('kraken_taxonReads_matrices_new_norm_0.2', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
+      here('kraken_taxonReads_matrices_new_norm_0.85', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
       row.names = F)
     )
 
@@ -2147,7 +2147,7 @@ kraken_taxon_norm_summarised %>%
   iwalk(
     ~ write.csv(
       .x, 
-      here('kraken_taxonReads_matrices_new_norm_0.2', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
+      here('kraken_taxonReads_matrices_new_norm_0.85', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
       row.names = F)
   )
 
@@ -2155,7 +2155,7 @@ kraken_taxon_raw_summarised %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_taxonReads_matrices_new_norm_0.2', 'raw', paste0('kraken_',.y,'_Raw.csv')),
+      here('kraken_taxonReads_matrices_new_norm_0.85', 'raw', paste0('kraken_',.y,'_Raw.csv')),
       row.names = F)
     )
 
@@ -2177,7 +2177,7 @@ kraken_clade_raw_list <-
 kraken_clade_norm_list %>%
   iwalk(~ write.csv(
     make_sparse(.x, .y, c(.y)), 
-    here('kraken_cladeReads_matrices_new_norm_0.2', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
+    here('kraken_cladeReads_matrices_new_norm_0.85', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
     row.names = T)
   )
 
@@ -2185,7 +2185,7 @@ kraken_clade_norm_list %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_cladeReads_matrices_new_norm_0.2', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
+      here('kraken_cladeReads_matrices_new_norm_0.85', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
       row.names = F)
     )
 
@@ -2193,7 +2193,7 @@ kraken_clade_raw_list %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_cladeReads_matrices_new_norm_0.2', 'raw', paste0('kraken_',.y,'_Raw_Normalized.csv')),
+      here('kraken_cladeReads_matrices_new_norm_0.85', 'raw', paste0('kraken_',.y,'_Raw_Normalized.csv')),
       row.names = F)
   )
 
