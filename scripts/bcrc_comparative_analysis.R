@@ -54,11 +54,11 @@ lapply(all_packages, require, character.only = TRUE)
 
 
 # Set the output directory for graphs:
-graph_output_dir = 'graphs_updated'
+graph_output_dir = 'graphs_new_norm_0.2'
 
 
 # Set the output directory for statistics:
-stats_output_dir = 'stats_updated'
+stats_output_dir = 'stats_new_norm_0.2'
 
 # Where is the metadata file stored on your machine?
 metadata_filepath = here('BCRC_metadata.csv')
@@ -324,22 +324,22 @@ for( dtype in c('AMR', 'Microbiome_taxonReads', 'Microbiome_cladeReads') ) {
   }
 }
 
-ifelse(!dir.exists(file.path('amr_matrices_updated')), dir.create(file.path('amr_matrices_updated'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_matrices_updated')), dir.create(file.path('kraken_matrices_updated'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonReads_matrices_updated')), dir.create(file.path('kraken_taxonReads_matrices_updated'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_updated')), dir.create(file.path('kraken_cladeReads_matrices_updated'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.2')), dir.create(file.path('amr_matrices_new_norm_0.2'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_matrices_new_norm_0.2')), dir.create(file.path('kraken_matrices_new_norm_0.2'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonReads_matrices_new_norm_0.2')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.2'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.2')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.2'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('amr_matrices_updated/sparse_normalized')), dir.create(file.path('amr_matrices_updated/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('amr_matrices_updated/normalized')), dir.create(file.path('amr_matrices_updated/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('amr_matrices_updated/raw')), dir.create(file.path('amr_matrices_updated/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.2/sparse_normalized')), dir.create(file.path('amr_matrices_new_norm_0.2/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.2/normalized')), dir.create(file.path('amr_matrices_new_norm_0.2/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('amr_matrices_new_norm_0.2/raw')), dir.create(file.path('amr_matrices_new_norm_0.2/raw'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_updated/sparse_normalized')), dir.create(file.path('kraken_taxonReads_matrices_updated/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_updated/normalized')), dir.create(file.path('kraken_taxonReads_matrices_updated/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_updated/raw')), dir.create(file.path('kraken_taxonReads_matrices_updated/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.2/sparse_normalized')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.2/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.2/normalized')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.2/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_taxonreads_matrices_new_norm_0.2/raw')), dir.create(file.path('kraken_taxonReads_matrices_new_norm_0.2/raw'), mode='777'), FALSE)
 
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_updated/sparse_normalized')), dir.create(file.path('kraken_cladeReads_matrices_updated/sparse_normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_updated/normalized')), dir.create(file.path('kraken_cladeReads_matrices_updated/normalized'), mode='777'), FALSE)
-ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_updated/raw')), dir.create(file.path('kraken_cladeReads_matrices_updated/raw'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.2/sparse_normalized')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.2/sparse_normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.2/normalized')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.2/normalized'), mode='777'), FALSE)
+ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.2/raw')), dir.create(file.path('kraken_cladeReads_matrices_new_norm_0.2/raw'), mode='777'), FALSE)
 
 # Load the Kraken data, MEGARes annotations, and metadata
 
@@ -478,9 +478,9 @@ metadata <-
 
 kraken_css <- 
   kraken_new_mr %>%
-  map(~ cumNorm(.x))
+  map(~ cumNorm(.x,p=0.2))
 
-cumNorm(amr)
+cumNorm(amr, p=0.2)
 
 # Extract the normalized counts into data tables for aggregation
 
@@ -1662,27 +1662,143 @@ for( v in 1:length(exploratory_analyses) ) {
 }
 
 
-
-class_nmds <- meta_nmds(t(MRcounts(AMR_analytic_data$Class)))
-ord_points <- ord_points %>% mutate(Type = str_replace(Type, "^(CB|FC|Soil|ST)_.*$", "\\1"))
-ord_points <- as.data.table(ord_points)
-hulls <- ord_points[,meg_find_hulls(.SD), .SDcols=c('MDS1', 'MDS2'), by=Type]
-hulls <- hulls %>% mutate(Type = str_replace(Type, "^(CB|FC|Soil|ST)_.*$", "\\1"))
-
-ggplot(ord_points, aes(MDS1, MDS2, color = Type, fill = Type)) +
-  geom_point() +
-  geom_polygon(
-    data = hulls,
-    aes(
-      x = MDS1,
-      MDS2,
-      color = Type,
-      fill = Type
-    ),
-    alpha = 0.2,
-    show.legend = F
+amr_nmds <- 
+  AMR_analytic_data %>%
+  imap(
+    ~ meta_nmds(t(MRcounts(.x)), .y)
   )
 
+kraken_nmds <-
+  kraken_clade_norm_analytic %>%
+  imap(
+    ~ meta_nmds(t(MRcounts(.x)), .y)
+  )
+
+amr_nmds_points <- 
+  amr_nmds %>%
+  map(
+    ~.x$ord_points %>%
+      mutate(Matrix_Type = reorder_environments(Matrix_Type, "tidy")) %>%
+      rename(., MDS1 = Ord1) %>%
+      rename(., MDS2 = Ord2)
+    )
+
+kraken_nmds_points <- 
+  kraken_nmds %>%
+  map(
+    ~.x$ord_points %>%
+      mutate(Matrix_Type = reorder_environments(Matrix_Type, "tidy")) %>%
+      rename(., MDS1 = Ord1) %>%
+      rename(., MDS2 = Ord2)
+    )
+
+amr_hulls <-
+  amr_nmds %>%
+  map(
+    ~ .x$ord_points %>% 
+      group_by(.,Matrix_Type) %>%
+      dplyr::do(meg_find_hulls(.)) %>%
+      rename(., MDS1 = Ord1) %>%
+      rename(., MDS2 = Ord2) %>%
+      ungroup(.) %>%
+      mutate(Matrix_Type = reorder_environments(Matrix_Type, "tidy"))
+  )
+
+kraken_hulls <-
+  kraken_nmds %>%
+  map(
+    ~ .x$ord_points %>% 
+      group_by(.,Matrix_Type) %>%
+      dplyr::do(meg_find_hulls(.)) %>%
+      rename(., MDS1 = Ord1) %>%
+      rename(., MDS2 = Ord2) %>%
+      ungroup(.) %>%
+      mutate(Matrix_Type = reorder_environments(Matrix_Type, "tidy"))
+  )
+
+
+custom_nmds <- function(ord_points, hulls) {
+  level_id <- unique(ord_points$Level_ID)
+  nmds_plot <- ggplot(ord_points,
+                      aes(MDS1, MDS2, color = Matrix_Type, fill = Matrix_Type)) +
+    geom_point(size=3) +
+    geom_polygon(
+      data = hulls,
+      aes(MDS1, MDS2, fill = Matrix_Type),
+      alpha = 0.2,
+      show.legend = F
+    ) +
+    labs(title =
+           paste(
+             'NMDS',
+             'for',
+             level_id,
+             'by',
+             'Matrix Type\n',
+             sep = " ",
+             collapse = ''
+           )) +
+    theme(
+      strip.text.x = element_text(size = 26),
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.title.x = element_text(size = 26),
+      axis.title.y = element_text(size = 26, hjust = 0.5),
+      #legend.position="right",
+      legend.title = element_text(size = 24, hjust = 0.5),
+      legend.text = element_text(size = 20),
+      plot.title = element_text(size = 30, hjust = 0.5)
+    )
+  nmds_plot + 
+    guides(
+    color = guide_legend(title = "Matrix Type"), 
+    fill = F
+    )
+}
+
+amr_nmds_plots <-
+  map2(
+      amr_nmds_points,
+      amr_hulls,
+    ~ custom_nmds(.x,.y)
+  )
+
+kraken_nmds_plots <-
+  map2(
+      kraken_nmds_points,
+      kraken_hulls,
+    ~ custom_nmds(.x,.y)
+  )
+
+amr_nmds_plots %>%
+  iwalk( ~ ggsave(
+    filename = here(
+      'graphs_updated',
+      'AMR',
+      'TypeOverall',
+      paste0('NMDS_Type_',.y,'.png')
+    ),
+    plot = .x,
+    width = 11.5,
+    height = 8,
+    units = "in",
+    dpi = 600
+  ))
+
+kraken_nmds_plots %>%
+  iwalk( ~ ggsave(
+    filename = here(
+      'graphs_updated',
+      'Microbiome_cladeReads',
+      'TypeOverall',
+      paste0('NMDS_Type_',.y,'.png')
+    ),
+    plot = .x,
+    width = 11.5,
+    height = 8,
+    units = "in",
+    dpi = 600
+  ))
 
 
 exploratory_analyses %>%
@@ -1996,34 +2112,34 @@ for (a in 1:length(statistical_analyses)){
 # Attempt to include purrr functional programming approach
 
 
-write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices_updated/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices_new_norm_0.2/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_class, 'amr_matrices_updated/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_class_raw, 'amr_matrices_updated/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_class, 'amr_matrices_new_norm_0.2/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_class_raw, 'amr_matrices_new_norm_0.2/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
-write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), 'amr_matrices_updated/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), 'amr_matrices_new_norm_0.2/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_mech, 'amr_matrices_updated/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_mech_raw, 'amr_matrices_updated/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech, 'amr_matrices_new_norm_0.2/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech_raw, 'amr_matrices_new_norm_0.2/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
 
-write.csv(make_sparse(amr_group, 'group', c('group')), 'amr_matrices_updated/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
+write.csv(make_sparse(amr_group, 'group', c('group')), 'amr_matrices_new_norm_0.2/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_group, 'amr_matrices_updated/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_mech_raw, 'amr_matrices_updated/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_group, 'amr_matrices_new_norm_0.2/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_mech_raw, 'amr_matrices_new_norm_0.2/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
 
 write.csv(make_sparse(amr_norm, 'header', c('header', 'class', 'mechanism', 'group')),
-          'amr_matrices_updated/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
+          'amr_matrices_new_norm_0.2/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
           row.names=T)
-write.table(amr_norm, 'amr_matrices_updated/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
-write.table(amr_raw, 'amr_matrices_updated/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_norm, 'amr_matrices_new_norm_0.2/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
+write.table(amr_raw, 'amr_matrices_new_norm_0.2/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
 
 
 kraken_taxon_norm_summarised %>%
   iwalk(
     ~ write.csv(
       make_sparse(.x, .y, c(.y)), 
-      here('kraken_taxonReads_matrices_updated', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
+      here('kraken_taxonReads_matrices_new_norm_0.2', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
       row.names = F)
     )
 
@@ -2031,7 +2147,7 @@ kraken_taxon_norm_summarised %>%
   iwalk(
     ~ write.csv(
       .x, 
-      here('kraken_taxonReads_matrices_updated', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
+      here('kraken_taxonReads_matrices_new_norm_0.2', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
       row.names = F)
   )
 
@@ -2039,7 +2155,7 @@ kraken_taxon_raw_summarised %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_taxonReads_matrices_updated', 'raw', paste0('kraken_',.y,'_Raw.csv')),
+      here('kraken_taxonReads_matrices_new_norm_0.2', 'raw', paste0('kraken_',.y,'_Raw.csv')),
       row.names = F)
     )
 
@@ -2061,7 +2177,7 @@ kraken_clade_raw_list <-
 kraken_clade_norm_list %>%
   iwalk(~ write.csv(
     make_sparse(.x, .y, c(.y)), 
-    here('kraken_cladeReads_matrices_updated', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
+    here('kraken_cladeReads_matrices_new_norm_0.2', 'sparse_normalized', paste0('kraken_',.y,'_Sparse_Normalized.csv')),
     row.names = T)
   )
 
@@ -2069,7 +2185,7 @@ kraken_clade_norm_list %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_cladeReads_matrices_updated', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
+      here('kraken_cladeReads_matrices_new_norm_0.2', 'normalized', paste0('kraken_',.y,'_Normalized.csv')),
       row.names = F)
     )
 
@@ -2077,7 +2193,7 @@ kraken_clade_raw_list %>%
   iwalk(
     ~ write.csv(
       .x,
-      here('kraken_cladeReads_matrices_updated', 'raw', paste0('kraken_',.y,'_Raw_Normalized.csv')),
+      here('kraken_cladeReads_matrices_new_norm_0.2', 'raw', paste0('kraken_',.y,'_Raw_Normalized.csv')),
       row.names = F)
   )
 

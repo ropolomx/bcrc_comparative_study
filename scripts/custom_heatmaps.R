@@ -399,10 +399,10 @@ krakenNormSubset <-
       "CB_N002",
       "CB_N021",
       "CB_N022",
-      "CB_V011",
-      "CB_V027",
       "CB_V012",
       "CB_V028",
+      "CB_V011",
+      "CB_V027",
       "Soil_N_WF_02May14",
       "Soil_N_WF_20May15",
       "Soil_N_EF_02May14",
@@ -448,9 +448,8 @@ kraken_hm <- function(kraken_subset, tax){
     strip.text.y = element_text(size = 10, angle = 0, face = "bold", margin = margin(4.5,0,4.5,0, "cm")),
     #strip.text.y=element_blank(),
     #strip.background= element_rect(fill = amr80NormMerge$Class),
-    #axis.text.y=element_text(size=3),
-    # axis.text.x = element_blank(),
-    axis.text.x = element_text(size = 10, angle = 90,hjust=1),
+    axis.text.x = element_blank(),
+    # axis.text.x = element_text(size = 10, angle = 90,hjust=1),
     #axis.text.y=element_blank(),
     axis.text.y = element_text(size = 9),
     axis.title.x = element_text(size = 17),
@@ -458,7 +457,7 @@ kraken_hm <- function(kraken_subset, tax){
     legend.position = "bottom",
     legend.title = element_text(size = ),
     panel.spacing.x = unit(0.00, "lines"),
-    panel.spacing.y = unit(0.06, "lines"),
+    panel.spacing.y = unit(0.02, "lines"),
     plot.title = element_text(size = 24, hjust = 0.5),
     plot.margin = unit(c(0, 0, 0, 0), "cm")
   ) +
@@ -503,7 +502,7 @@ all_kraken_hm %>%
     filename = here(
       'graphs_updated',
       'Microbiome_cladeReads',
-      paste0('kraken_top_', .y, '_by_Phylum_hm.png')
+      paste0('kraken_top_', .y, '_by_Phylum_hm_nolabs.png')
     ),
     plot = .x,
     width = 18,

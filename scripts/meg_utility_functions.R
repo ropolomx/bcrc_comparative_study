@@ -851,11 +851,18 @@ meg_alpha_normalized <- function(diversity_df,
     # dev.off()
 }
 
-meta_nmds <- function(dataset){
-    metaMDS(dataset,
+meta_nmds <- function(dataset,level_id){
+  res <- metaMDS(dataset,
       autotransform = F,
-      parallel = 3, 
+      parallel = 10, 
       trymax = 49)
+  ord_points <- data.table(res$points)
+  names(ord_points) <- c('Ord1', 'Ord2')
+  ord_points[, ID :=( rownames(res$points) )]
+  ord_points[, Level_ID :=( rep(level_id, nrow(ord_points)) )]
+  ord_points <- left_join(ord_points, metadata, by ="ID")
+  ord_points <- as.data.table(ord_points)
+  return(list("res"=res, "ord_points"=ord_points))
   }
   
 
