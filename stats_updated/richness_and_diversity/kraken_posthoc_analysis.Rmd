@@ -1,0 +1,257 @@
+---
+title: "Kraken Posthoc tests"
+author: "Rodrigo Ortega Polo"
+date: "September 4, 2018"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+# Kraken posthoc tests
+
+# Observed Richness
+
+## Phylum
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Observed_Richness by Matrix_Type 
+
+                Fecal Composite Catch Basin Soil
+    Catch Basin 0.37            -           -   
+    Soil        0.16            0.77        -   
+    Wastewater  0.93            0.22        0.09
+
+P value adjustment method: none
+
+## Class
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Observed_Richness by Matrix_Type 
+
+                Fecal Composite Catch Basin Soil
+    Catch Basin 1.00            -           -   
+    Soil        1.00            1.00        -   
+    Wastewater  0.27            0.26        0.51
+
+
+P value adjustment method: none 
+
+## Order
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Observed_Richness by Matrix_Type 
+
+                Fecal Composite Catch Basin Soil
+    Catch Basin 0.99            -           -   
+    Soil        0.98            1.00        -   
+    Wastewater  0.31            0.19        0.34
+
+P value adjustment method: none 
+
+## Family
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Observed_Richness by Matrix_Type 
+
+                Fecal Composite Catch Basin Soil
+    Catch Basin 0.83            -           -   
+    Soil        0.14            0.40        -   
+    Wastewater  0.98            0.99        0.39
+
+P value adjustment method: none 
+
+## Genus
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Observed_Richness by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil  
+    Catch Basin 0.2878          -           -     
+    Soil        0.2396          0.9170      -     
+    Wastewater  0.0075          0.2921      0.8698
+
+P value adjustment method: none 
+
+## Species
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Observed_Richness by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil  
+    Catch Basin 0.5730          -           -     
+    Soil        0.8753          0.3415      -     
+    Wastewater  0.0034          0.0808      0.0047
+
+P value adjustment method: none
+
+---------
+
+# Inverse Simpson index
+
+## Phylum
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Inv_Simpson by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil  
+    Catch Basin 0.1254          -           -     
+    Soil        0.2553          0.9883      -     
+    Wastewater  0.0006          0.1589      0.5669
+
+P value adjustment method: none 
+
+## Class
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Inv_Simpson by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil 
+    Catch Basin 0.998           -           -    
+    Soil        0.445           0.365       -    
+    Wastewater  0.006           0.003       0.655
+
+P value adjustment method: none 
+
+## Order
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Inv_Simpson by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil 
+    Catch Basin 0.034           -           -    
+    Soil        0.046           0.889       -    
+    Wastewater  0.998           0.085       0.068
+
+P value adjustment method: none 
+
+## Family
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Inv_Simpson by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil  
+    Catch Basin 0.8312          -           -     
+    Soil        0.4065          0.1301      -     
+    Wastewater  0.0286          0.1550      0.0019
+
+P value adjustment method: none 
+
+## Genus
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Inv_Simpson by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil   
+    Catch Basin 0.65170         -           -      
+    Soil        0.22644         0.02929     -      
+    Wastewater  0.02987         0.26360     0.00056
+
+P value adjustment method: none 
+
+## Species
+
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Inv_Simpson by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil   
+    Catch Basin 0.73891         -           -     
+    Soil        0.20491         0.03374     -      
+    Wastewater  0.03557         0.23800     0.00056
+
+P value adjustment method: none 
+
+---------
+
+# Shannon index
+
+## Phylum
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Shannon by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil   
+    Catch Basin 0.42936         -           -      
+    Soil        0.16162         0.73687     -      
+    Wastewater  0.00078         0.04898     0.72571
+
+P value adjustment method: none 
+
+## Class
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Shannon by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil  
+    Catch Basin 0.9627          -           -     
+    Soil        0.2864          0.1410      -     
+    Wastewater  0.0086          0.0017      0.8440
+
+P value adjustment method: none 
+
+## Order
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Shannon by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil  
+    Catch Basin 0.0235          -           -     
+    Soil        0.1016          0.9880      -     
+    Wastewater  0.6479          0.0024      0.0154
+
+P value adjustment method: none 
+
+## Family
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Shannon by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil  
+    Catch Basin 0.9654          -           -     
+    Soil        0.2320          0.3946      -     
+    Wastewater  0.0518          0.0148      0.0011
+    
+P value adjustment method: none 
+
+## Genus
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Shannon by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil  
+    Catch Basin 0.9182          -           -     
+    Soil        0.0545          0.1545      -     
+    Wastewater  0.1220          0.0282      0.0003
+
+P value adjustment method: none 
+
+## Species
+
+Pairwise comparisons using Nemenyi-test with Chi-squared approximation for independent samples 
+
+data:  Shannon by as.factor(Matrix_Type) 
+
+                Fecal Composite Catch Basin Soil   
+    Catch Basin 0.99921         -           -      
+    Soil        0.08686         0.10272     -      
+    Wastewater  0.07951         0.05556     0.00034
+
+P value adjustment method: none
