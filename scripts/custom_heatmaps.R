@@ -16,7 +16,7 @@ metadata <- read.csv('BCRC_metadata.csv')
 
 # annotations <- read.csv('megares_annotations_v1.01.csv')
 
-amr_group_norm <- read.csv('amr_matrices/normalized/AMR_Group_Normalized.csv')
+amr_group_norm <- read.csv('results_normalized_all/amr_matrices_updated/normalized/AMR_Group_Normalized.csv')
 
 tax_ranks <- c(
   "Phylum",
@@ -31,6 +31,7 @@ krakenNorm <-
   tax_ranks %>%
   map(~ read.csv(
     here(
+      'results_normalized_all',
       'kraken_cladeReads_matrices_updated',
       'normalized',
       paste0('kraken_', .x, '_Normalized.csv')
@@ -46,7 +47,7 @@ krakenCladeParsed <-
 
 krakenCladeParsed <- 
   krakenCladeParsed %>%
-  left_join(.,kraken_tax_dt_clade, by = "id")
+  left_join(.,kraken_tax_dt$cladeReads, by = "id")
   
 
 # AMR heatmaps ------------------------------------------------------------
@@ -88,12 +89,15 @@ amr_group_merge$Sample_Type <-
 # Re-order factors of Type column
 
 amr_group_merge$Type <-
-  str_replace(amr_group_merge$Type, "\\_", " ")
+    str_replace(amr_group_merge$Type, "\\_", " ")
+
+amr_group_merge$Type <-
+  str_replace(amr_group_merge$Type, "Sewage Treatment", "Sewage Influent")
 
 amr_group_merge$Type <-
   factor(
     amr_group_merge$Type,
-    levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Wastewater')
+    levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Influent')
   )
 
 # Generating heatmap of subset of top X groups by sum of counts across Types
@@ -101,6 +105,13 @@ amr_group_merge$Type <-
 # 2. Summarising groups by calculating the sum
 # 3. Pick top X groups
 # 3. Cross-reference top groups vs. merge database
+
+# amr_group_merge <- 
+#   amr_group_merge %>%
+#   mutate(., ID = str_replace(ID, "FC_(006|007|008)_(.*)$", "FC_\\2")) %>%
+#   mutate(., ID = str_replace(ID, "Soil_N_(.*)_(006|007)$", "Soil_N_\\1")) %>%
+#   mutate(ID = str_replace(ID, "FC_Con_V055", "FC_V055"))
+
 
 amr_group_top <-
   amr_group_merge %>%
@@ -121,7 +132,7 @@ amr_group_subset$Type <-
       'Fecal Composite', 
       'Catch Basin', 
       'Soil', 
-      'Wastewater'
+      'Sewage Influent'
       )
   )
 

@@ -82,12 +82,12 @@ exploratory_analyses = list(
   list(
     name = 'TypeOverall',
     subsets = list(
-      # 'Matrix_Type == Fecal_Composite',
-      # 'Matrix_Type == Catch_Basin',
-      'Matrix_Type != Soil'
-      # 'Matrix_Type == Wastewater'
+      'Matrix_Type == Fecal_Composite',
+      'Matrix_Type == Catch_Basin',
+      'Matrix_Type == Soil',
+      'Matrix_Type == Sewage_Influent',
       # 'NatType != Natural'
-      # 'Matrix_Type != Wetlands'
+      'Matrix_Type != Wetlands'
       ),
     exploratory_var = 'Matrix_Type'
   )
@@ -173,11 +173,11 @@ statistical_analyses = list(
     model_matrix = '~ 0 + Matrix_Type',
     contrasts = list(
       'Matrix_TypeFecal_Composite - Matrix_TypeCatch_Basin',
-      'Matrix_TypeFecal_Composite - Matrix_TypeWastewater',
+      'Matrix_TypeFecal_Composite - Matrix_TypeSewage_Influent',
       'Matrix_TypeFecal_Composite - Matrix_TypeSoil',
-      'Matrix_TypeCatch_Basin - Matrix_TypeWastewater',
+      'Matrix_TypeCatch_Basin - Matrix_TypeSewage_Influent',
       'Matrix_TypeCatch_Basin - Matrix_TypeSoil',
-      'Matrix_TypeSoil - Matrix_TypeWastewater'
+      'Matrix_TypeSoil - Matrix_TypeSewage_Influent'
       ),
     random_effect = 'Location'
   ),
@@ -461,7 +461,7 @@ metadata[, sample_column_id] <- make.names(metadata[, sample_column_id])
 
 metadata <- 
   metadata %>%
-  mutate(Type = str_replace(Type, "Sewage_Treatment", "Wastewater"))
+  mutate(Type = str_replace(Type, "Sewage_Treatment", "Sewage_Influent"))
 
 metadata <-
   metadata %>%
@@ -728,7 +728,7 @@ kraken_raw <-
 kraken_taxon_norm_summarised <- 
   tax_levels %>%
   map(
-    ~ kraken_norm$taxonReads[!is.na(eval(as.name(.x))) & eval(as.name(.x)) != 'NA' , lapply(.SD, sum), by=.x, .SDcols=!1:10]
+     ~ kraken_norm$taxonReads[!is.na(eval(as.name(.x))) & eval(as.name(.x)) != 'NA' , lapply(.SD, sum), by=.x, .SDcols=!1:10]
   ) %>% 
   set_names(nm=tax_levels)
 
@@ -789,7 +789,7 @@ kraken_raw$taxonReads$lowest_level <- reorder_tax_ranks(kraken_raw$taxonReads$lo
 
 kraken_clade_norm_list <-
   kraken_norm$cladeReads %>%
-  split(.$lowest_level) %>%
+  base::split(.$lowest_level) %>%
   map(
     ~ .x %>%
       select(-c(Domain:id,lowest_level))
@@ -863,7 +863,7 @@ reorder_environments <- function(env_column, data_type) {
       "Fecal_Composite",
       "Catch_Basin",
       "Soil",
-      "Wastewater"
+      "Sewage_Influent"
     )
   )}
   else{
@@ -873,7 +873,7 @@ reorder_environments <- function(env_column, data_type) {
         "Fecal Composite",
         "Catch Basin",
         "Soil",
-        "Wastewater"
+        "Sewage Influent"
       )
     )
   }
@@ -1381,7 +1381,7 @@ amr_observed_species <- function(amr_df) {
 amr_norm_rich_boxplots <- amr_observed_species(amr_norm_div_subset)
 
 ggsave(
-  here('graphs_updated', 'AMR', 'TypeOverall', 'AMR_normalized_richness_by_Type.png'),
+  here('graphs_new_norm_0.5', 'AMR', 'TypeOverall', 'AMR_normalized_richness_by_Type.png'),
   amr_norm_rich_boxplots,
   height = 8,
   width = 11.5,
@@ -1418,7 +1418,7 @@ kraken_norm_rich_boxplots <- kraken_observed_species(kraken_clade_norm_div_subse
 
 ggsave(
   here(
-    'graphs_updated',
+    'graphs_new_norm_0.5',
     'Microbiome_cladeReads',
     'TypeOverall',
     'Microbiome_cladeReads_normalized_richness_by_Type.png'
@@ -1450,7 +1450,7 @@ amr_inv_simpson <- function(amr_df) {
     ) +
     # xlab("Type") +
     ylab("Inverse Simpson Index\n") +
-    scale_color_discrete(name = "Matrix Type", labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")) +
+    scale_color_discrete(name = "Matrix Type", labels=c("Fecal Composite","Catch Basin","Soil","Sewage Influent")) +
     ggtitle('Alpha Diversity by Type for Normalized Data\n') +
     # scale_color_manual(values=rev(cbPalette)) +
     facet_wrap(~ Level, nrow = 1, scales = "free_y")
@@ -1459,7 +1459,7 @@ amr_inv_simpson <- function(amr_df) {
 amr_norm_inv_simpson_box <- amr_inv_simpson(amr_norm_div_subset)
 
 ggsave(
-  here('graphs_updated', 'AMR', 'TypeOverall', 'AMR_normalized_inv_simpson_by_Type.png'),
+  here('graphs_new_norm_0.5', 'AMR', 'TypeOverall', 'AMR_normalized_inv_simpson_by_Type.png'),
   amr_norm_inv_simpson_box,
   height = 8,
   width = 11.5,
@@ -1498,7 +1498,7 @@ kraken_norm_inv_simpson_box <- kraken_inv_simpson(kraken_clade_norm_div_subset)
 
 ggsave(
   here(
-    'graphs_updated',
+    'graphs_new_norm_0.5',
     'Microbiome_cladeReads',
     'TypeOverall',
     'kraken_normalized_inv_simpson_by_Type.png'
