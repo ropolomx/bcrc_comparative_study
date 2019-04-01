@@ -125,9 +125,9 @@ amr_group_subset <-
 
 # amr_group_subset$Type <- str_replace(amr_group_subset$Type, "\\.", " ")
 
-amr_group_subset$Type <-
+amr_group_subset$Matrix_Type <-
   factor(
-    amr_group_subset$Type,
+    amr_group_subset$Matrix_Type,
     levels = c(
       'Fecal Composite', 
       'Catch Basin', 
@@ -200,7 +200,8 @@ amr_group_by_class_hm <-
   #facet_wrap(~ Type, scales ='free_x', strip.position = 'bottom', nrow = 1) +
   #facet_grid(Class ~ ., scales ='free') +
   theme(
-    panel.background = element_rect(fill = "black", colour = "black"),
+    #panel.background = element_rect(fill = "black", colour = "black"),
+    panel.background = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     strip.text.x = element_text(size = 17, face = "bold"),
@@ -222,7 +223,7 @@ amr_group_by_class_hm <-
     plot.margin = unit(c(0, 0, 0, 0), "cm")
   ) +
   xlab('\nSample Matrix Type') +
-  scale_fill_gradient(low = "black", high = "cyan") +
+  scale_fill_gradient(low = "white", high = "#318CE7") + # blue de France
   labs(fill = 'Log2 Normalized Count') +
   ggtitle(paste(
     'Normalized AMR Group Counts',
@@ -235,7 +236,7 @@ amr_group_by_class_hm <-
 amr_group_by_class_hm
 
 ggsave(
-  here('graphs_updated', 'AMR', 'amr_top_group_by_class_hm_updated.png'),
+  here('graphs_manuscript_review', 'AMR', 'amr_top_group_by_class_hm_updated.png'),
   amr_group_by_class_hm,
   width = 18,
   height = 14.5,
@@ -473,7 +474,7 @@ kraken_hm <- function(kraken_subset, tax){
     plot.margin = unit(c(0, 0, 0, 0), "cm")
   ) +
   xlab('\nSample Matrix Type') +
-  scale_fill_gradient(low = "black", high = "cyan") +
+  scale_fill_gradient(low = "white", high = "cyan") +
   labs(fill = 'Log2 Normalized Count') +
     ggtitle(paste(
       'Normalized',
@@ -563,7 +564,7 @@ meg_heatmap_kraken <- function(df,
       plot.margin = unit(c(0, 0, 0, 0), "cm")
     ) +
     xlab(paste('Samples by ', 'Type', sep = '', collapse = '')) +
-    scale_fill_gradient(low = "black", high = "cyan") +
+    scale_fill_gradient(low = "white", high = "cyan") +
     labs(fill = 'Log2 Normalized Count') +
     ggtitle(
       paste(

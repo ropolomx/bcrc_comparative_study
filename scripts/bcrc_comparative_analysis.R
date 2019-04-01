@@ -56,11 +56,11 @@ lapply(all_packages, require, character.only = TRUE)
 
 
 # Set the output directory for graphs:
-graph_output_dir = 'graphs_new_norm_0.5'
+graph_output_dir = 'graphs_manuscript_review'
 
 
 # Set the output directory for statistics:
-stats_output_dir = 'stats_new_norm_0.5'
+stats_output_dir = 'stats_manuscript_review'
 
 # Where is the metadata file stored on your machine?
 metadata_filepath = here('BCRC_metadata.csv')
@@ -347,7 +347,8 @@ ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.5/raw')), di
 
 # Load post-PhiX filtered Kraken reports
 
-kraken_analytical <- Sys.glob(here("aggregated_data_for_analysis", "krakenAnalytical_*.csv"))
+#kraken_analytical <- Sys.glob(here("aggregated_data_for_analysis", "krakenAnalytical_*.csv"))
+kraken_analytical <- here("aggregated_data_for_analysis", "krakenAnalytical.csv")
 
 kraken_names <- map_chr(
   kraken_analytical,
@@ -359,6 +360,8 @@ temp_kraken_list <- map(
   ~ read.table(.x, header = T, row.names = 1, sep = ",", quote = "\"")
 ) %>%
   set_names(nm = kraken_names)
+
+read.table(.x, header = T, row.names = 1, sep = ",", quote = "\"")
 
 temp_kraken_list <-
   temp_kraken_list %>%
@@ -1567,7 +1570,7 @@ kraken_norm_inv_simpson_box <- kraken_inv_simpson(kraken_clade_norm_div_subset)
 
 ggsave(
   here(
-    'graphs_updated',
+    graph_output_dir,
     'Microbiome_taxonReads',
     'TypeOverall',
     'kraken_normalized_inv_simpson_by_Type.png'
@@ -1580,7 +1583,7 @@ ggsave(
 )
 
 ggsave(
-  here('graphs_updated', 'AMR', 'TypeOverall', 'AMR_normalized_shannon_by_Type.png'),
+  here(graph_output_dir, 'AMR', 'TypeOverall', 'AMR_normalized_shannon_by_Type.png'),
   amr_norm_shannon_box,
   height = 8,
   width = 11.5,
@@ -1620,7 +1623,7 @@ kraken_norm_shannon_box <- kraken_shannon(kraken_clade_norm_div_subset)
 
 ggsave(
   here(
-    'graphs_updated',
+    graph_output_dir,
     'Microbiome_cladeReads',
     'TypeOverall',
     'kraken_normalized_shannon_by_Type.png'

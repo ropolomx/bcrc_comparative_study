@@ -313,7 +313,7 @@ meg_heatmap <- function(melted_data,
           plot.title=element_text(size=24, hjust=0.5),
           plot.margin=unit(c(0,0,0,0), "cm")) +
     xlab(paste('Samples by ', group_var, sep='', collapse='')) +
-    scale_fill_gradient(low="black", high="cyan") +
+    scale_fill_gradient(low="white", high="#318CE7") +
     labs(fill= 'Log2 Normalized Count') +
     ggtitle(paste(data_type, ' ', level_var, ' Normalized Counts by ', group_var, '\n',
                   sep='', collapse=''))
