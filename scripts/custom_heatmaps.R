@@ -201,7 +201,8 @@ amr_group_by_class_hm <-
   #facet_grid(Class ~ ., scales ='free') +
   theme(
     #panel.background = element_rect(fill = "black", colour = "black"),
-    panel.background = element_blank(),
+    panel.background = element_rect(colour = "gray70"),
+    #panel.background = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     strip.text.x = element_text(size = 17, face = "bold"),

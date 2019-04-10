@@ -361,8 +361,6 @@ temp_kraken_list <- map(
 ) %>%
   set_names(nm = kraken_names)
 
-read.table(.x, header = T, row.names = 1, sep = ",", quote = "\"")
-
 temp_kraken_list <-
   temp_kraken_list %>%
   map(
@@ -1212,7 +1210,7 @@ calc_diversity_df <- function(x){
   invsimpson <- diversity(x, index="invsimpson", MARGIN=2)
   simpson <- diversity(x, index="simpson", MARGIN=2)
   shannon <- diversity(x, index="shannon", MARGIN=2)
-  evenness <- shannon/log(observed_richness)
+  evenness <- shannon/log(observed_richness) # Pielou's evenness
   div_df <- data.frame(
     ID = names(observed_richness),
     Observed_Richness = observed_richness,
