@@ -348,7 +348,7 @@ ifelse(!dir.exists(file.path('kraken_cladeReads_matrices_new_norm_0.5/raw')), di
 # Load post-PhiX filtered Kraken reports
 
 #kraken_analytical <- Sys.glob(here("aggregated_data_for_analysis", "krakenAnalytical_*.csv"))
-kraken_analytical <- here("aggregated_data_for_analysis", "krakenAnalytical.csv")
+kraken_analytical <- Sys.glob(here("aggregated_data_for_analysis", "krakenAnalytical_*.csv"))
 
 kraken_names <- map_chr(
   kraken_analytical,
@@ -1633,6 +1633,50 @@ ggsave(
   dpi = 600
 )
 
+kraken_evenness <- function(kraken_df) {
+  alphaDivBoxPlot <- ggplot(kraken_df, aes(Matrix_Type, Evenness, color = Matrix_Type)) +
+    geom_boxplot(varwidth = T) +
+    theme(
+      strip.text.x = element_text(size = 24, face = "bold"),
+      axis.text.y = element_text(size = 27),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      # axis.title.x = element_text(size = 32),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(size = 30),
+      # legend.position = "none",
+      legend.title=element_text(size=28),
+      legend.text=element_text(size=24, vjust=1),
+      plot.title = element_text(size = 30, hjust = 0.5),
+      plot.margin = unit(c(2,0,2,0), "cm")
+    ) +
+    # xlab("Type") +
+    ylab("Pielou's Evenness\n") +
+    scale_color_discrete(name = "Matrix Type") +
+      # labels=c("Fecal Composite","Catch Basin","Soil","Sewage Treatment")
+    #scale_y_continuous(limits = c(-0.005,4.25)) +
+    ggtitle("Pielou's Evenness Type for Normalized Data\n") +
+    # scale_color_manual(values=rev(cbPalette)) +
+    facet_wrap( ~ Level, nrow = 2, scales = "free")
+    #facet_grid( ~ Level, scales = "free_y")
+  alphaDivBoxPlot
+}
+
+kraken_norm_evenness_box <- kraken_evenness(kraken_clade_norm_div_subset)
+
+ggsave(
+  here(
+    graph_output_dir,
+    'Microbiome_cladeReads',
+    'TypeOverall',
+    'kraken_normalized_evenness_by_Type.pdf'
+  ),
+  kraken_norm_evenness_box,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
 
 # Statistical Analyses: Richness and Diversity ----------------------------
 
