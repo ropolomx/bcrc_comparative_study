@@ -58,7 +58,6 @@ lapply(all_packages, require, character.only = TRUE)
 # Set the output directory for graphs:
 graph_output_dir = 'graphs_manuscript_review'
 
-
 # Set the output directory for statistics:
 stats_output_dir = 'stats_manuscript_review'
 
@@ -1379,10 +1378,16 @@ amr_observed_species <- function(amr_df) {
     facet_wrap(~ Level, nrow = 1, scales = "free_y")
 }
 
-amr_norm_rich_boxplots <- amr_observed_species(amr_norm_div_subset)
+amr_norm_rich_boxplots <- amr_observed_species(
+  amr_norm_div_subset %>%
+    filter(Level == "Group"))
 
 ggsave(
-  here('graphs_new_norm_0.5', 'AMR', 'TypeOverall', 'AMR_normalized_richness_by_Type.png'),
+  here(
+    'graphs_manuscript_review', 
+    'AMR', 
+    'TypeOverall',
+    'AMR_normalized_richness_by_Type.png'),
   amr_norm_rich_boxplots,
   height = 8,
   width = 11.5,
@@ -1415,11 +1420,14 @@ kraken_observed_species <- function(kraken_df) {
     facet_wrap(~ Level, nrow = 2, scales = "free_y")
 }
 
-kraken_norm_rich_boxplots <- kraken_observed_species(kraken_clade_norm_div_subset)
+kraken_norm_rich_boxplots <- kraken_observed_species(
+  kraken_clade_norm_div_subset %>%
+    filter(Level == "Genus")
+  )
 
 ggsave(
   here(
-    'graphs_new_norm_0.5',
+    'graphs_manuscript_review',
     'Microbiome_cladeReads',
     'TypeOverall',
     'Microbiome_cladeReads_normalized_richness_by_Type.png'
@@ -1457,16 +1465,63 @@ amr_inv_simpson <- function(amr_df) {
     facet_wrap(~ Level, nrow = 1, scales = "free_y")
 }
 
-amr_norm_inv_simpson_box <- amr_inv_simpson(amr_norm_div_subset)
+amr_norm_inv_simpson_box <- amr_inv_simpson(
+  amr_norm_div_subset %>% 
+    filter(Level=="Group")
+  )
 
 ggsave(
-  here('graphs_new_norm_0.5', 'AMR', 'TypeOverall', 'AMR_normalized_inv_simpson_by_Type.png'),
+  here('graphs_manuscript_review', 
+       'AMR', 'TypeOverall', 'AMR_normalized_inv_simpson_by_Type.png'),
   amr_norm_inv_simpson_box,
   height = 8,
   width = 11.5,
   units = "in",
   dpi = 600
 )
+
+
+amr_evenness <- function(amr_df) {
+  alphaDivBoxPlot <-
+    ggplot(amr_df, aes(Matrix_Type, Evenness, color = Matrix_Type)) +
+    geom_boxplot(size = 1) +
+    theme(
+      strip.text.x = element_text(size = 24, face = "bold"),
+      axis.text.y = element_text(size = 27),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      # axis.title.x = element_text(size = 32),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(size = 30),
+      # legend.position = "none",
+      legend.title=element_text(size=28),
+      legend.text=element_text(size=24, vjust=1),
+      plot.title = element_text(size = 30, hjust = 0.5),
+      plot.margin = unit(c(2,0,2,0), "cm")
+    ) +
+    # xlab("Type") +
+    ylab("Pielou's Evenness\n") +
+    scale_color_discrete(name = "Matrix Type", labels=c("Fecal Composite","Catch Basin","Soil","Sewage Influent")) +
+    ggtitle('Alpha Diversity by Type for Normalized Data\n') +
+    # scale_color_manual(values=rev(cbPalette)) +
+    facet_wrap(~ Level, nrow = 1, scales = "free_y")
+}
+
+amr_evenness_box <- amr_evenness(
+  amr_norm_div_subset %>% 
+    filter(Level=="Group")
+  )
+
+ggsave(
+  here('graphs_manuscript_review', 
+       'AMR', 'TypeOverall', 'AMR_evenness_by_Type.png'),
+  amr_evenness_box,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
+
 
 kraken_inv_simpson <- function(kraken_df) {
   alphaDivBoxPlot <-
@@ -1495,11 +1550,14 @@ kraken_inv_simpson <- function(kraken_df) {
     facet_wrap(. ~ Level, nrow = 2, scales = "free_y")
 }
 
-kraken_norm_inv_simpson_box <- kraken_inv_simpson(kraken_clade_norm_div_subset)
+kraken_norm_inv_simpson_box <- kraken_inv_simpson(
+  kraken_clade_norm_div_subset %>% 
+    filter(Level == "Genus")
+  )
 
 ggsave(
   here(
-    'graphs_new_norm_0.5',
+    'graphs_manuscript_review',
     'Microbiome_cladeReads',
     'TypeOverall',
     'kraken_normalized_inv_simpson_by_Type.png'
@@ -1562,9 +1620,24 @@ amr_shannon <- function(amr_df) {
   alphaDivBoxPlot
 }
 
-amr_norm_shannon_box <- amr_shannon(amr_norm_div_subset)
+amr_norm_shannon_box <- amr_shannon(
+  amr_norm_div_subset %>%
+    filter(Level == "Group")
+  )
 
-kraken_norm_inv_simpson_box <- kraken_inv_simpson(kraken_clade_norm_div_subset)
+amr_nomr_shannon_box <- 
+
+kraken_norm_inv_simpson_box <- kraken_inv_simpson(kraken_clade_norm_div_subset %>% 
+                                                    filter(Level == "Genus")
+ggsave(
+  here('graphs_manuscript_review', 
+       'AMR', 'TypeOverall', 'AMR_shannon_by_Type.png'),
+  amr_norm_shannon_box,
+  height = 8,
+  width = 11.5,
+  units = "in",
+  dpi = 600
+)
 
 ggsave(
   here(
@@ -1587,7 +1660,7 @@ ggsave(
   width = 11.5,
   units = "in",
   dpi = 600
-)
+))
 
 kraken_shannon <- function(kraken_df) {
   alphaDivBoxPlot <- ggplot(kraken_df, aes(Matrix_Type, Shannon, color = Matrix_Type)) +
@@ -1617,7 +1690,10 @@ kraken_shannon <- function(kraken_df) {
   alphaDivBoxPlot
 }
 
-kraken_norm_shannon_box <- kraken_shannon(kraken_clade_norm_div_subset)
+kraken_norm_shannon_box <- kraken_shannon(
+  kraken_clade_norm_div_subset %>%
+    filter(Level == "Genus")
+  )
 
 ggsave(
   here(
@@ -1626,7 +1702,7 @@ ggsave(
     'TypeOverall',
     'kraken_normalized_shannon_by_Type.png'
   ),
-  kraken_norm_inv_simpson_box,
+  kraken_norm_shannon_box,
   height = 8,
   width = 11.5,
   units = "in",
@@ -1635,7 +1711,7 @@ ggsave(
 
 kraken_evenness <- function(kraken_df) {
   alphaDivBoxPlot <- ggplot(kraken_df, aes(Matrix_Type, Evenness, color = Matrix_Type)) +
-    geom_boxplot(varwidth = T) +
+    geom_boxplot(size=1) +
     theme(
       strip.text.x = element_text(size = 24, face = "bold"),
       axis.text.y = element_text(size = 27),
@@ -1662,14 +1738,14 @@ kraken_evenness <- function(kraken_df) {
   alphaDivBoxPlot
 }
 
-kraken_norm_evenness_box <- kraken_evenness(kraken_clade_norm_div_subset)
+kraken_norm_evenness_box <- kraken_evenness(kraken_clade_norm_div_subset %>% filter(Level == "Genus"))
 
 ggsave(
   here(
     graph_output_dir,
     'Microbiome_cladeReads',
     'TypeOverall',
-    'kraken_normalized_evenness_by_Type.pdf'
+    'kraken_normalized_evenness_by_Type.png'
   ),
   kraken_norm_evenness_box,
   height = 8,
@@ -1728,6 +1804,27 @@ amr_kruskal_output_shannon <-
 write_csv(amr_kruskal_output_shannon,
   here('stats_updated', 'AMR', 'richness_and_diversity', 'amr_kruskal_wallis_shannon.csv'))
 
+amr_kruskal_tests_evenness <-
+  amr_norm_diversity %>%
+  group_by(Level) %>%
+  do(kruskal = kruskal.test(Evenness ~ Matrix_Type, data = .)) %>%
+  ungroup() %>%
+  mutate(kruskal_tidy = map(kruskal, broom::tidy)) %>%
+  unnest(kruskal_tidy, .preserve = kruskal, kruskal_tidy)
+
+amr_kruskal_output_evenness <-
+  amr_kruskal_tests_evenness %>%
+  select(-kruskal) %>%
+  rename(Chi_Square = statistic, df = parameter)
+
+write_csv(amr_kruskal_output_evenness,
+  here(
+    'stats_manuscript_review',
+    'AMR', 
+    'richness_and_diversity', 
+    'amr_kruskal_wallis_evenness.csv')
+  )
+
 amr_posthoc <-
   amr_norm_diversity %>%
   group_by(Level) %>%
@@ -1758,6 +1855,16 @@ amr_posthoc_shannon <-
       dist = "Chisq")) %>%
   ungroup()
 
+amr_posthoc_evenness <-
+  amr_norm_diversity %>%
+  group_by(Level) %>%
+  do(
+    nemenyi = posthoc.kruskal.nemenyi.test(
+      Evenness ~ Matrix_Type,
+      data = .,
+      dist = "Chisq")) %>%
+  ungroup()
+
 kraken_clade_kruskal_tests <-
   kraken_clade_norm_div_subset %>%
   group_by(Level) %>%
@@ -1772,7 +1879,12 @@ kraken_clade_kruskal_output <-
   rename(Chi_Square = statistic, df = parameter)
 
 write_csv(kraken_clade_kruskal_output,
-  here('stats_updated', 'richness_and_diversity', 'kraken_clade_kruskal_wallis_obs_richness.csv'))
+  here(
+    'stats_updated', 
+    'richness_and_diversity', 
+    'kraken_clade_kruskal_wallis_obs_richness.csv'
+    )
+  )
 
 kraken_clade_kruskal_tests_inv <-
   kraken_clade_norm_div_subset %>%
@@ -1788,7 +1900,12 @@ kraken_clade_kruskal_output_inv <-
   rename(Chi_Square = statistic, df = parameter)
 
 write_csv(kraken_clade_kruskal_output_inv,
-  here('stats_updated', 'richness_and_diversity', 'kraken_clade_kruskal_wallis_inv_simpson.csv'))
+  here(
+    'stats_updated', 
+    'richness_and_diversity', 
+    'kraken_clade_kruskal_wallis_inv_simpson.csv'
+    )
+  )
 
 kraken_clade_kruskal_tests_shannon <-
   kraken_clade_norm_div_subset %>%
@@ -1804,7 +1921,34 @@ kraken_clade_kruskal_output_shannon <-
   rename(Chi_Square = statistic, df = parameter)
 
 write_csv(kraken_clade_kruskal_output_shannon,
-  here('stats_updated', 'richness_and_diversity', 'kraken_clade_kruskal_wallis_shannon.csv'))
+  here(
+    'stats_updated', 
+    'richness_and_diversity', 
+    'kraken_clade_kruskal_wallis_shannon.csv'
+    )
+  )
+
+kraken_clade_kruskal_tests_evenness <-
+  kraken_clade_norm_div_subset %>%
+  group_by(Level) %>%
+  do(kruskal = kruskal.test(Evenness ~ as.factor(Matrix_Type), data = .)) %>%
+  ungroup() %>%
+  mutate(kruskal_tidy = map(kruskal, broom::tidy)) %>%
+  unnest(kruskal_tidy, .preserve = kruskal, kruskal_tidy)
+
+kraken_clade_kruskal_output_evenness <-
+  kraken_clade_kruskal_tests_evenness %>%
+  select(-kruskal) %>%
+  rename(Chi_Square = statistic, df = parameter)
+
+write_csv(kraken_clade_kruskal_output_evenness,
+  here(
+    'stats_manuscript_review', 
+    'Microbiome_cladeReads',
+    'richness_and_diversity', 
+    'kraken_clade_kruskal_wallis_evenness.csv'
+    )
+  )
 
 kraken_clade_posthoc <-
   kraken_clade_norm_div_subset %>%
@@ -1832,6 +1976,16 @@ kraken_clade_posthoc_shannon <-
   do(
     nemenyi = posthoc.kruskal.nemenyi.test(
       Shannon ~ as.factor(Matrix_Type),
+      data = .,
+      dist = "Chisq")) %>%
+  ungroup()
+
+kraken_clade_posthoc_evenness <-
+  kraken_clade_norm_div_subset %>%
+  group_by(Level) %>%
+  do(
+    nemenyi = posthoc.kruskal.nemenyi.test(
+      Evenness ~ as.factor(Matrix_Type),
       data = .,
       dist = "Chisq")) %>%
   ungroup()

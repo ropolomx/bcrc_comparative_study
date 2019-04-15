@@ -12,7 +12,7 @@ library(here)
 
 # Read data ---------------------------------------------------------------
 
-metadata <- read.csv('BCRC_metadata.csv')
+#metadata <- read.csv('BCRC_metadata.csv')
 
 # annotations <- read.csv('megares_annotations_v1.01.csv')
 
@@ -65,8 +65,8 @@ amr_group_merge <- merge(amr_group_tidy, annotations, by = "group")
 
 amr_group_merge <- merge(amr_group_merge, metadata)
 
-amr_group_merge <-
-  amr_group_merge[amr_group_merge$Type != "Wetlands", ]
+#amr_group_merge <-
+#  amr_group_merge[amr_group_merge$Type != "Wetlands", ]
 
 amr_group_merge <-
   amr_group_merge %>%
@@ -82,21 +82,21 @@ names(amr_group_merge) <-
   str_replace(names(amr_group_merge), "class", "Class")
 
 amr_group_merge$Sample_Type <-
-  interaction(amr_group_merge$ID, amr_group_merge$Type)
+  interaction(amr_group_merge$ID, amr_group_merge$Matrix_Type)
 
 # Plot the tidy data
 
 # Re-order factors of Type column
 
-amr_group_merge$Type <-
-    str_replace(amr_group_merge$Type, "\\_", " ")
+amr_group_merge$Matrix_Type <-
+    str_replace(amr_group_merge$Matrix_Type, "\\_", " ")
 
-amr_group_merge$Type <-
-  str_replace(amr_group_merge$Type, "Sewage Treatment", "Sewage Influent")
+amr_group_merge$Matrix_Type <-
+  str_replace(amr_group_merge$Matrix_Type, "Sewage Treatment", "Sewage Influent")
 
-amr_group_merge$Type <-
+amr_group_merge$Matrix_Type <-
   factor(
-    amr_group_merge$Type,
+    amr_group_merge$Matrix_Type,
     levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Influent')
   )
 
@@ -191,7 +191,7 @@ amr_group_by_class_hm <-
   ggplot(amr_group_subset, aes(x = ID, y = Group)) +
   geom_tile(aes(fill = log2(Normalized_Counts + 1))) +
   facet_grid(
-    Class ~ Type,
+    Class ~ Matrix_Type,
     scales = 'free',
     switch = 'x',
     drop = TRUE,
@@ -224,7 +224,8 @@ amr_group_by_class_hm <-
     plot.margin = unit(c(0, 0, 0, 0), "cm")
   ) +
   xlab('\nSample Matrix Type') +
-  scale_fill_gradient(low = "white", high = "#318CE7") + # blue de France
+  #scale_fill_gradient(low = "white", high = "#318CE7") + # blue de France
+  scale_fill_gradient(low = "white", high = "#cc5500") + # blue de France
   labs(fill = 'Log2 Normalized Count') +
   ggtitle(paste(
     'Normalized AMR Group Counts',
@@ -237,7 +238,9 @@ amr_group_by_class_hm <-
 amr_group_by_class_hm
 
 ggsave(
-  here('graphs_manuscript_review', 'AMR', 'amr_top_group_by_class_hm_updated.png'),
+  here('graphs_manuscript_review', 
+       'AMR', 
+       'amr_top_group_by_class_hm_updated_ORANGE.png'),
   amr_group_by_class_hm,
   width = 18,
   height = 14.5,
@@ -299,7 +302,7 @@ krakenNormMerge <-
   krakenNormMerge %>%
   map(~ mutate(.x, Matrix_Type = factor(
     Matrix_Type,
-    levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Wastewater')
+    levels = c('Fecal Composite', 'Catch Basin', 'Soil', 'Sewage Influent')
   )))
 
 krakenNormTop_Phylum <- 
@@ -383,7 +386,7 @@ krakenNormSubset <-
     levels = c('Fecal Composite',
       'Catch Basin',
       'Soil',
-      'Wastewater')
+      'Sewage Influent')
   )))
 
 krakenNormSubset <-
@@ -454,7 +457,7 @@ kraken_hm <- function(kraken_subset, tax){
   #facet_wrap(~ Type, scales ='free_x', strip.position = 'bottom', nrow = 1) +
   #facet_grid(Class ~ ., scales ='free') +
   theme(
-    panel.background = element_rect(fill = "black", colour = "black"),
+    panel.background = element_rect(colour = "gray70"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     strip.text.x = element_text(size = 17, face = "bold"),
@@ -475,7 +478,10 @@ kraken_hm <- function(kraken_subset, tax){
     plot.margin = unit(c(0, 0, 0, 0), "cm")
   ) +
   xlab('\nSample Matrix Type') +
-  scale_fill_gradient(low = "white", high = "cyan") +
+  #scale_fill_gradient(low = "white", high = "cyan") +
+  #scale_fill_gradient(low = "white", high = "#318CE7") +
+  #scale_fill_gradient(low = "white", high = "orange") +
+  scale_fill_gradient(low = "white", high = "#cc5500") + # blue de France
   labs(fill = 'Log2 Normalized Count') +
     ggtitle(paste(
       'Normalized',
@@ -489,15 +495,15 @@ kraken_hm <- function(kraken_subset, tax){
     ))
 }
 
-kraken_hm_species <- kraken_hm(krakenNormSubset$Species, "Species")
+kraken_hm_class <- kraken_hm(krakenNormSubset$Class, "Class")
 
 ggsave(
   here(
-    'graphs_updated',
+    'graphs_manuscript_review',
     'Microbiome_cladeReads',
-    'kraken_top_Species_by_Phylum_hm.png'
+    'kraken_top_Class_by_Phylum_hm_ORANGE.png'
   ),
-  kraken_hm_species,
+  kraken_hm_class,
   width = 18,
   height = 14.5,
   units = "in",
